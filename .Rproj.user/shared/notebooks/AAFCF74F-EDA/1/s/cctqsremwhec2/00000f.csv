@@ -1,0 +1,52 @@
+"0","kf = KFold(n_splits=10, shuffle=True, random_state=53)"
+"0",""
+"0","param_grid = {"
+"0"," 'n_neighbors': range(4, 30),"
+"0"," 'weights': ['uniform', 'distance'],"
+"0"," 'metric': [ 'manhattan', 'euclidean', ]"
+"0","}"
+"0","    "
+"0","    "
+"0","          "
+"0","scnd_knn_pipe_cv2 = Pipeline(["
+"0","  ('prep',preprocessor),"
+"0","  ('selector', selectorr),"
+"0","  ('cv', GridSearchCV("
+"0","      KNeighborsRegressor(), "
+"0","      param_grid, "
+"0","      cv=kf, "
+"0","      scoring=scoring, "
+"0","      refit='neg_mean_squared_error',"
+"0","      verbose=3, "
+"0","      n_jobs=7))"
+"0","  ])"
+"0",""
+"0","scnd_knn_pipe_cv2.fit(ames_x_train, Sale_Price_train)"
+"1","Fitting 10 folds for each of 104 candidates, totalling 1040 fits
+"
+"1","Pipeline(steps=[('prep',
+                 ColumnTransformer(transformers=[('std', StandardScaler(),
+                                                  ['Bedroom_AbvGr',
+                                                   'BsmtFin_SF_1',
+                                                   'BsmtFin_SF_2',
+                                                   'Bsmt_Full_Bath',
+                                                   'Bsmt_Half_Bath',
+                                                   'Bsmt_Unf_SF',"
+"1","
+                                                   'Enclosed_Porch',
+                                                   'Fireplaces', 'First_Flr_SF',
+                                                   'Full_Bath', 'Garage_Area',
+                                                   'Garage_Cars', 'Gr_Liv_Area',
+                                                   'Half_Bath', 'Kitchen_AbvGr',
+                                                   'Latitude', 'Longitude',
+                                     "
+"1","              'Lot_Area', 'Lot_Frontage'...
+                                          'weights': ['uniform', 'distance']},
+                              refit='neg_mean_squared_error',
+                              scoring={'mape': make_scorer(mean_absolute_percentage_error, greater_is_better=False),
+                                       'neg_mean_absolute_error': make_scorer(mean_absolute_error, greater_is_better=False),
+                                       'neg_mean_squared_error': make_scorer(mea"
+"1","n_squared_error, greater_is_better=False),
+                                       'r2': make_scorer(adjusted_r2_score, n=2051.0, p=35)},
+                              verbose=3))])
+"

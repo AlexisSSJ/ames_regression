@@ -1,0 +1,8 @@
+"1","<Figure Size: (633 x 391)>
+"
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\stats\stat_density.py:164: PlotnineWarning: To compute the density of a group with only one value set the bandwidth manually. e.g `bw=0.1`
+"
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\stats\stat_density.py:169: PlotnineWarning: Groups with fewer than 2 data points have been removed.
+"
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\positions\position.py:229: PlotnineWarning: position_dodge requires non-overlapping x intervals
+"

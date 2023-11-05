@@ -1,0 +1,4 @@
+"0","#| echo: false"
+"0","# pd.to_pickle(scnd_knn_pipe_cv2,'scnd_knn_pipe_cv2_num.pkl')"
+"0","scnd_knn_pipe_cv2 = pd.read_pickle('scnd_knn_pipe_cv2_num.pkl')"
+"0",""

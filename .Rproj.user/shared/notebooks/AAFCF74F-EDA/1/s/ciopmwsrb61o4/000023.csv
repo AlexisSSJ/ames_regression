@@ -1,0 +1,12 @@
+"1","<Figure Size: (605 x 374)>
+"
+"0","("
+"0","ames_test >>"
+"0","  select(_.Sale_Price, _.Sale_Price_Pred) >>"
+"0","  mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>"
+"0","  ggplot(aes(sample = ""error"")) +"
+"0","  geom_qq(alpha = 0.3) + stat_qq_line(color = ""red"") +"
+"0","  scale_y_continuous(labels=dollar_format(big_mark=',', digits = 0)) + "
+"0","  xlab(""Distribución normal"") + ylab(""Distribución de errores"") +"
+"0","  ggtitle(""QQ-Plot"")"
+"0",")"

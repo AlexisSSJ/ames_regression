@@ -1,0 +1,3 @@
+"0","use_virtualenv(""CD_AMAT_2023"")
+"
+"2","Warning: Previous request to `use_python(""C:/Users/HP/Documents/.virtualenvs/r-reticulate/Scripts/python.exe"", required = TRUE)` will be ignored. It is superseded by request to `use_python(""C:/Users/HP/Documents/.virtualenvs/CD_AMAT_2023/Scripts/python.exe"")"

@@ -1,0 +1,512 @@
+drop_cols=['Neighborhood_Crawford',
+'Neighborhood_infrequent_sklearn',
+'BsmtFin_Type_1_BLQ',
+# 'Foundation_Wood',
+# 'Condition_2_Feedr',
+'Condition_1_RRAe',
+# 'Condition_1_Feedr',
+'Garage_Type_No_Garage',
+# 'Condition_1_PosA',
+'Bsmt_Full_Bath',
+'Bsmt_Half_Bath',
+# 'Condition_2_RRAe',
+'Foundation_CBlock',
+'MS_SubClass_Two_Story_1946_and_Newer',
+'Garage_Finish_No_Garage',
+'Bldg_Type_TwoFmCon',
+'Mo_Sold_5',
+'Paved_Drive_Partial_Pavement',
+'Bsmt_Cond_Typical',
+'Heating_QC_Fair',
+'BsmtFin_Type_1_Unf',
+'Electrical_SBrkr',
+'Fence_Good_Wood',
+# 'Electrical_Unknown',
+'Garage_Type_Detchd',
+'Foundation_Slab',
+'House_Style_infrequent_sklearn',
+'Three_season_porch',
+# 'Fence_Minimum_Wood_Wire',
+'Mo_Sold_7',
+'Misc_Val',
+'BsmtFin_Type_1_No_Basement',
+'Foundation_PConc',
+'Mo_Sold_12',
+'Mo_Sold_10',
+'BsmtFin_Type_2_No_Basement',
+'last_remod',
+'Bsmt_Cond_No_Basement',
+'Condition_2_infrequent_sklearn',
+'Exter_Cond_Typical',
+'Bldg_Type_OneFam',
+'Mo_Sold_9',
+'Electrical_infrequent_sklearn',
+'Bsmt_Cond_infrequent_sklearn',
+'Bsmt_Cond_Good',
+'Foundation_infrequent_sklearn',
+'Fence_No_Fence']
+preprocessor_2=ColumnTransformer(
+transformers=[
+("selector", "drop", drop_cols),
+('interaction_1', interaction_transformer_wb, ['Lot_Area', 'Gr_Liv_Area']),
+('interactions2', interaction_transformer, ['Year_Built', 'Overall_Cond_Average']),
+('interactions3', interaction_transformer, ['Full_Bath', 'Bedroom_AbvGr']),
+('interactions3.1', interaction_transformer, ['House_Style_SLvl', 'Overall_Cond_Fair']),
+('interactions3.3', interaction_transformer, ['Central_Air_Y', 'Neighborhood_Northridge']),
+('interactions3.2', interaction_transformer, ['First_Flr_SF', 'last_remod']),
+('interactions3.4', interaction_transformer, ['wood_prop', 'Mas_Vnr_Area']),
+('interactions4', interaction_transformer, ['Misc_Val', 'Misc_Feature_TenC'])
+# ('div', FunctionTransformer(
+#               div_columns,
+#               feature_names_out = 'one-to-one',
+#               kw_args={'c1': 'Gr_Liv_Area', 'c2': 'Lot_Area'}), ['Gr_Liv_Area', 'Lot_Area'])
+],
+verbose_feature_names_out = False,
+remainder='passthrough'
+)
+preprocessor_2.fit(ames_x_train_trans)
+# new_interactions= ['Lot_div_Gross']
+feature_names = list(preprocessor_2.get_feature_names_out())
+# feature_names.append(new_interactions)
+##### Extracción de coeficientes
+transformed_df = pd.DataFrame(
+preprocessor_2.fit_transform(ames_x_train_trans),
+columns=feature_names
+)
+#
+X_train_with_intercept = sm.add_constant(transformed_df)
+model = sm.OLS(ames_y_train, X_train_with_intercept).fit()
+model.summary()
+pipeline = Pipeline([
+('preprocessor', preprocessor_2),
+('regressor', LinearRegression())
+])
+# Entrenar el pipeline
+results = pipeline.fit(ames_x_train_trans, ames_y_train)
+## PREDICCIONES
+y_pred = pipeline.predict(ames_x_test_trans)
+ames_test = (
+ames_x_test >>
+mutate(Sale_Price_Pred = y_pred*_.Gr_Liv_Area, Sale_Price =ames_y_test*_.Gr_Liv_Area)
+)
+##### Métricas de desempeño
+y_obs = ames_test["Sale_Price"]
+y_pred = ames_test["Sale_Price_Pred"]
+pd.options.display.float_format = '{:.2f}'.format
+predictores = transformed_df.columns.to_list()
+mtrcs_dt=get_metrics(y_pred, y_obs,predictors=transformed_df.columns.to_list() )
+metrics_df = pd.DataFrame(mtrcs_dt)
+print(metrics_df)
+drop_cols=['Neighborhood_Crawford',
+'Neighborhood_infrequent_sklearn',
+'BsmtFin_Type_1_BLQ',
+# 'Foundation_Wood',
+# 'Condition_2_Feedr',
+'Condition_1_RRAe',
+# 'Condition_1_Feedr',
+'Garage_Type_No_Garage',
+# 'Condition_1_PosA',
+'Bsmt_Full_Bath',
+'Bsmt_Half_Bath',
+# 'Condition_2_RRAe',
+'Foundation_CBlock',
+'MS_SubClass_Two_Story_1946_and_Newer',
+'Garage_Finish_No_Garage',
+'Bldg_Type_TwoFmCon',
+'Mo_Sold_5',
+'Paved_Drive_Partial_Pavement',
+'Bsmt_Cond_Typical',
+'Heating_QC_Fair',
+'BsmtFin_Type_1_Unf',
+'Electrical_SBrkr',
+'Fence_Good_Wood',
+# 'Electrical_Unknown',
+'Garage_Type_Detchd',
+'Foundation_Slab',
+'House_Style_infrequent_sklearn',
+'Three_season_porch',
+# 'Fence_Minimum_Wood_Wire',
+'Mo_Sold_7',
+'Misc_Val',
+'BsmtFin_Type_1_No_Basement',
+'Foundation_PConc',
+'Mo_Sold_12',
+'Mo_Sold_10',
+'BsmtFin_Type_2_No_Basement',
+'last_remod',
+'Bsmt_Cond_No_Basement',
+'Condition_2_infrequent_sklearn',
+'Exter_Cond_Typical',
+'Bldg_Type_OneFam',
+'Mo_Sold_9',
+'Electrical_infrequent_sklearn',
+'Bsmt_Cond_infrequent_sklearn',
+'Bsmt_Cond_Good',
+'Foundation_infrequent_sklearn',
+'Fence_No_Fence']
+preprocessor_2=ColumnTransformer(
+transformers=[
+("selector", "drop", drop_cols),
+('interaction_1', interaction_transformer_wb, ['Lot_Area', 'Gr_Liv_Area']),
+('interactions2', interaction_transformer, ['Year_Built', 'Overall_Cond_Average']),
+('interactions3', interaction_transformer, ['Full_Bath', 'Bedroom_AbvGr']),
+('interactions3.1', interaction_transformer, ['House_Style_SLvl', 'Overall_Cond_Fair']),
+('interactions3.3', interaction_transformer, ['Central_Air_Y', 'Neighborhood_Northridge']),
+('interactions3.2', interaction_transformer, ['First_Flr_SF', 'last_remod']),
+('interactions3.4', interaction_transformer, ['wood_prop', 'Mas_Vnr_Area']),
+('interactions4', interaction_transformer, ['Misc_Val', 'Misc_Feature_TenC'])
+# ('div', FunctionTransformer(
+#               div_columns,
+#               feature_names_out = 'one-to-one',
+#               kw_args={'c1': 'Gr_Liv_Area', 'c2': 'Lot_Area'}), ['Gr_Liv_Area', 'Lot_Area'])
+],
+verbose_feature_names_out = False,
+remainder='passthrough'
+)
+preprocessor_2.fit(ames_x_train_trans)
+# new_interactions= ['Lot_div_Gross']
+feature_names = list(preprocessor_2.get_feature_names_out())
+# feature_names.append(new_interactions)
+##### Extracción de coeficientes
+transformed_df = pd.DataFrame(
+preprocessor_2.fit_transform(ames_x_train_trans),
+columns=feature_names
+)
+#
+X_train_with_intercept = sm.add_constant(transformed_df)
+model = sm.OLS(ames_y_train, X_train_with_intercept).fit()
+model.summary()
+drop_cols=['Neighborhood_Crawford',
+'Neighborhood_infrequent_sklearn',
+'BsmtFin_Type_1_BLQ',
+# 'Foundation_Wood',
+# 'Condition_2_Feedr',
+'Condition_1_RRAe',
+# 'Condition_1_Feedr',
+'Garage_Type_No_Garage',
+# 'Condition_1_PosA',
+'Bsmt_Full_Bath',
+'Bsmt_Half_Bath',
+# 'Condition_2_RRAe',
+'Foundation_CBlock',
+'MS_SubClass_Two_Story_1946_and_Newer',
+'Garage_Finish_No_Garage',
+'Bldg_Type_TwoFmCon',
+'Mo_Sold_5',
+'Paved_Drive_Partial_Pavement',
+'Bsmt_Cond_Typical',
+'Heating_QC_Fair',
+'BsmtFin_Type_1_Unf',
+'Electrical_SBrkr',
+'Fence_Good_Wood',
+# 'Electrical_Unknown',
+'Garage_Type_Detchd',
+'Foundation_Slab',
+'House_Style_infrequent_sklearn',
+'Three_season_porch',
+# 'Fence_Minimum_Wood_Wire',
+'Mo_Sold_7',
+'Misc_Val',
+'BsmtFin_Type_1_No_Basement',
+'Foundation_PConc',
+'Mo_Sold_12',
+'Mo_Sold_10',
+'BsmtFin_Type_2_No_Basement',
+'last_remod',
+'Bsmt_Cond_No_Basement',
+'Condition_2_infrequent_sklearn',
+'Exter_Cond_Typical',
+'Bldg_Type_OneFam',
+'Mo_Sold_9',
+'Electrical_infrequent_sklearn',
+'Bsmt_Cond_infrequent_sklearn',
+'Bsmt_Cond_Good',
+'Foundation_infrequent_sklearn',
+'Bldg_Type_TwnhsE',
+'Fence_No_Fence']
+preprocessor_2=ColumnTransformer(
+transformers=[
+("selector", "drop", drop_cols),
+('interaction_1', interaction_transformer_wb, ['Lot_Area', 'Gr_Liv_Area']),
+('interactions2', interaction_transformer, ['Year_Built', 'Overall_Cond_Average']),
+('interactions3', interaction_transformer, ['Full_Bath', 'Bedroom_AbvGr']),
+('interactions3.1', interaction_transformer, ['House_Style_SLvl', 'Overall_Cond_Fair']),
+('interactions3.3', interaction_transformer, ['Central_Air_Y', 'Neighborhood_Northridge']),
+('interactions3.2', interaction_transformer, ['First_Flr_SF', 'last_remod']),
+('interactions3.4', interaction_transformer, ['wood_prop', 'Mas_Vnr_Area']),
+('interactions4', interaction_transformer, ['Misc_Val', 'Misc_Feature_TenC'])
+# ('div', FunctionTransformer(
+#               div_columns,
+#               feature_names_out = 'one-to-one',
+#               kw_args={'c1': 'Gr_Liv_Area', 'c2': 'Lot_Area'}), ['Gr_Liv_Area', 'Lot_Area'])
+],
+verbose_feature_names_out = False,
+remainder='passthrough'
+)
+preprocessor_2.fit(ames_x_train_trans)
+# new_interactions= ['Lot_div_Gross']
+feature_names = list(preprocessor_2.get_feature_names_out())
+# feature_names.append(new_interactions)
+##### Extracción de coeficientes
+transformed_df = pd.DataFrame(
+preprocessor_2.fit_transform(ames_x_train_trans),
+columns=feature_names
+)
+#
+X_train_with_intercept = sm.add_constant(transformed_df)
+model = sm.OLS(ames_y_train, X_train_with_intercept).fit()
+model.summary()
+pipeline = Pipeline([
+('preprocessor', preprocessor_2),
+('regressor', LinearRegression())
+])
+# Entrenar el pipeline
+results = pipeline.fit(ames_x_train_trans, ames_y_train)
+## PREDICCIONES
+y_pred = pipeline.predict(ames_x_test_trans)
+ames_test = (
+ames_x_test >>
+mutate(Sale_Price_Pred = y_pred*_.Gr_Liv_Area, Sale_Price =ames_y_test*_.Gr_Liv_Area)
+)
+##### Métricas de desempeño
+y_obs = ames_test["Sale_Price"]
+y_pred = ames_test["Sale_Price_Pred"]
+pd.options.display.float_format = '{:.2f}'.format
+predictores = transformed_df.columns.to_list()
+mtrcs_dt=get_metrics(y_pred, y_obs,predictors=transformed_df.columns.to_list() )
+metrics_df = pd.DataFrame(mtrcs_dt)
+print(metrics_df)
+drop_cols=['Neighborhood_Crawford',
+'Neighborhood_infrequent_sklearn',
+'BsmtFin_Type_1_BLQ',
+# 'Foundation_Wood',
+# 'Condition_2_Feedr',
+'Condition_1_RRAe',
+# 'Condition_1_Feedr',
+'Garage_Type_No_Garage',
+# 'Condition_1_PosA',
+'Bsmt_Full_Bath',
+'Bsmt_Half_Bath',
+# 'Condition_2_RRAe',
+'Foundation_CBlock',
+'MS_SubClass_Two_Story_1946_and_Newer',
+'Garage_Finish_No_Garage',
+'Bldg_Type_TwoFmCon',
+'Mo_Sold_5',
+'Paved_Drive_Partial_Pavement',
+'Bsmt_Cond_Typical',
+'Heating_QC_Fair',
+'BsmtFin_Type_1_Unf',
+'Electrical_SBrkr',
+'Fence_Good_Wood',
+# 'Electrical_Unknown',
+'Garage_Type_Detchd',
+'Foundation_Slab',
+'House_Style_infrequent_sklearn',
+'Three_season_porch',
+# 'Fence_Minimum_Wood_Wire',
+'Mo_Sold_7',
+'Misc_Val',
+'BsmtFin_Type_1_No_Basement',
+'Foundation_PConc',
+'Mo_Sold_12',
+'Mo_Sold_10',
+'BsmtFin_Type_2_No_Basement',
+'last_remod',
+'Bsmt_Cond_No_Basement',
+'Condition_2_infrequent_sklearn',
+'Exter_Cond_Typical',
+'Bldg_Type_OneFam',
+'Mo_Sold_9',
+'Electrical_infrequent_sklearn',
+'Bsmt_Cond_infrequent_sklearn',
+'Bsmt_Cond_Good',
+'Foundation_infrequent_sklearn',
+'Bldg_Type_TwnhsE',
+'Fence_No_Fence']
+preprocessor_2=ColumnTransformer(
+transformers=[
+("selector", "drop", drop_cols),
+('interaction_1', interaction_transformer_wb, ['Lot_Area', 'Gr_Liv_Area']),
+('interactions2', interaction_transformer, ['Year_Built', 'Overall_Cond_Average']),
+('interactions3', interaction_transformer, ['Full_Bath', 'Bedroom_AbvGr']),
+('interactions3.1', interaction_transformer, ['House_Style_SLvl', 'Overall_Cond_Fair']),
+('interactions3.3', interaction_transformer, ['Central_Air_Y', 'Neighborhood_Northridge']),
+('interactions3.2', interaction_transformer, ['First_Flr_SF', 'last_remod']),
+('interactions3.4', interaction_transformer, ['wood_prop', 'Mas_Vnr_Area']),
+('interactions4', interaction_transformer, ['Misc_Val', 'Misc_Feature_TenC'])
+# ('div', FunctionTransformer(
+#               div_columns,
+#               feature_names_out = 'one-to-one',
+#               kw_args={'c1': 'Gr_Liv_Area', 'c2': 'Lot_Area'}), ['Gr_Liv_Area', 'Lot_Area'])
+],
+verbose_feature_names_out = False,
+remainder='passthrough'
+)
+preprocessor_2.fit(ames_x_train_trans)
+# new_interactions= ['Lot_div_Gross']
+feature_names = list(preprocessor_2.get_feature_names_out())
+# feature_names.append(new_interactions)
+##### Extracción de coeficientes
+transformed_df = pd.DataFrame(
+preprocessor_2.fit_transform(ames_x_train_trans),
+columns=feature_names
+)
+#
+X_train_with_intercept = sm.add_constant(transformed_df)
+model = sm.OLS(ames_y_train, X_train_with_intercept).fit()
+model.summary()
+drop_cols=['Neighborhood_Crawford',
+'Neighborhood_infrequent_sklearn',
+'BsmtFin_Type_1_BLQ',
+# 'Foundation_Wood',
+# 'Condition_2_Feedr',
+'Condition_1_RRAe',
+# 'Condition_1_Feedr',
+'Garage_Type_No_Garage',
+# 'Condition_1_PosA',
+'Bsmt_Full_Bath',
+'Bsmt_Half_Bath',
+# 'Condition_2_RRAe',
+'Foundation_CBlock',
+'MS_SubClass_Two_Story_1946_and_Newer',
+'Garage_Finish_No_Garage',
+'Bldg_Type_TwoFmCon',
+'Mo_Sold_5',
+'Paved_Drive_Partial_Pavement',
+'Bsmt_Cond_Typical',
+'Heating_QC_Fair',
+'BsmtFin_Type_1_Unf',
+'Electrical_SBrkr',
+'Fence_Good_Wood',
+# 'Electrical_Unknown',
+'Garage_Type_Detchd',
+'Foundation_Slab',
+'House_Style_infrequent_sklearn',
+'Three_season_porch',
+'BsmtFin_Type_2_GLQ',
+'Mo_Sold_7',
+'Misc_Val',
+'BsmtFin_Type_1_No_Basement',
+'Foundation_PConc',
+'Mo_Sold_12',
+'Mo_Sold_10',
+'BsmtFin_Type_2_No_Basement',
+'last_remod',
+'Bsmt_Cond_No_Basement',
+'Condition_2_infrequent_sklearn',
+'Exter_Cond_Typical',
+'Bldg_Type_OneFam',
+'Mo_Sold_9',
+'Electrical_infrequent_sklearn',
+'Bsmt_Cond_infrequent_sklearn',
+'Bsmt_Cond_Good',
+'Foundation_infrequent_sklearn',
+'Bldg_Type_TwnhsE',
+'Fence_No_Fence']
+preprocessor_2=ColumnTransformer(
+transformers=[
+("selector", "drop", drop_cols),
+('interaction_1', interaction_transformer_wb, ['Lot_Area', 'Gr_Liv_Area']),
+('interactions2', interaction_transformer, ['Year_Built', 'Overall_Cond_Average']),
+('interactions3', interaction_transformer, ['Full_Bath', 'Bedroom_AbvGr']),
+('interactions3.1', interaction_transformer, ['House_Style_SLvl', 'Overall_Cond_Fair']),
+('interactions3.3', interaction_transformer, ['Central_Air_Y', 'Neighborhood_Northridge']),
+('interactions3.2', interaction_transformer, ['First_Flr_SF', 'last_remod']),
+('interactions3.4', interaction_transformer, ['wood_prop', 'Mas_Vnr_Area']),
+('interactions4', interaction_transformer, ['Misc_Val', 'Misc_Feature_TenC'])
+# ('div', FunctionTransformer(
+#               div_columns,
+#               feature_names_out = 'one-to-one',
+#               kw_args={'c1': 'Gr_Liv_Area', 'c2': 'Lot_Area'}), ['Gr_Liv_Area', 'Lot_Area'])
+],
+verbose_feature_names_out = False,
+remainder='passthrough'
+)
+preprocessor_2.fit(ames_x_train_trans)
+# new_interactions= ['Lot_div_Gross']
+feature_names = list(preprocessor_2.get_feature_names_out())
+# feature_names.append(new_interactions)
+##### Extracción de coeficientes
+transformed_df = pd.DataFrame(
+preprocessor_2.fit_transform(ames_x_train_trans),
+columns=feature_names
+)
+#
+X_train_with_intercept = sm.add_constant(transformed_df)
+model = sm.OLS(ames_y_train, X_train_with_intercept).fit()
+model.summary()
+pipeline = Pipeline([
+('preprocessor', preprocessor_2),
+('regressor', LinearRegression())
+])
+# Entrenar el pipeline
+results = pipeline.fit(ames_x_train_trans, ames_y_train)
+## PREDICCIONES
+y_pred = pipeline.predict(ames_x_test_trans)
+ames_test = (
+ames_x_test >>
+mutate(Sale_Price_Pred = y_pred*_.Gr_Liv_Area, Sale_Price =ames_y_test*_.Gr_Liv_Area)
+)
+##### Métricas de desempeño
+y_obs = ames_test["Sale_Price"]
+y_pred = ames_test["Sale_Price_Pred"]
+pd.options.display.float_format = '{:.2f}'.format
+predictores = transformed_df.columns.to_list()
+mtrcs_dt=get_metrics(y_pred, y_obs,predictors=transformed_df.columns.to_list() )
+metrics_df = pd.DataFrame(mtrcs_dt)
+print(metrics_df)
+ames.info(0)
+reticulate::repl_python()
+#### Gráficos de desempeño de modelo
+(
+ggplot(aes(x = y_obs, y = y_pred)) +
+geom_point(alpha=0.5) +
+scale_y_continuous(labels = dollar_format(digits=0, big_mark=','), limits = [0, 600000] ) +
+scale_x_continuous(labels = dollar_format(digits=0, big_mark=','), limits = [0, 600000]) +
+geom_abline(color = "red") +
+coord_equal() +
+labs(
+title = "Comparación entre predicción y observación",
+x = "Predicción",
+y = "Observación")
+)
+(
+ames_test >>
+select(_.Sale_Price, _.Sale_Price_Pred) >>
+mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
+ggplot(aes(x = "error")) +
+geom_histogram(color = "white", fill = "black") +
+geom_vline(xintercept = 0, color = "red") +
+scale_x_continuous(labels=dollar_format(big_mark=',', digits=0)) +
+ylab("Conteos de clase") + xlab("Errores") +
+ggtitle("Distribución de error")
+)
+(
+ames_test >>
+select(_.Sale_Price, _.Sale_Price_Pred) >>
+mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
+ggplot(aes(sample = "error")) +
+geom_qq(alpha = 0.3) + stat_qq_line(color = "red") +
+scale_y_continuous(labels=dollar_format(big_mark=',', digits = 0)) +
+xlab("Distribución normal") + ylab("Distribución de errores") +
+ggtitle("QQ-Plot")
+)
+(
+ames_test >>
+select(_.Sale_Price, _.Sale_Price_Pred) >>
+mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
+ggplot(aes(x = "Sale_Price")) +
+geom_linerange(aes(ymin = 0, ymax = "error"), colour = "purple") +
+geom_point(aes(y = "error"), size = 0.05, alpha = 0.5) +
+geom_abline(intercept = 0, slope = 0) +
+scale_x_continuous(labels=dollar_format(big_mark=',', digits=0)) +
+scale_y_continuous(labels=dollar_format(big_mark=',', digits=0)) +
+xlab("Precio real") + ylab("Error de estimación") +
+ggtitle("Relación entre error y precio de venta")
+)
+quit
+#| label: startPy
+#| include: false
+library(reticulate)
+use_virtualenv("CD_AMAT_2023")

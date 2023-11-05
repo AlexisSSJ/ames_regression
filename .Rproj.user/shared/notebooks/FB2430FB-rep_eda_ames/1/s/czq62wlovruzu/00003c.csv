@@ -1,0 +1,14 @@
+"0","#| results: hide"
+"0","#| fig-keep: all"
+"0",""
+"0","plt.figure()"
+"1","<Figure size 640x480 with 0 Axes>
+"
+"0","# g.plot.joins(sns.kdeplot)"
+"0","plt.show()"
+"0",""
+"0","plt.figure()"
+"1","<Figure size 640x480 with 0 Axes>
+"
+"0","# g.plot.joins(sns.kdeplot)"
+"0","plt.show()"

@@ -1,0 +1,7 @@
+"0","#| echo: false"
+"0","# pd.to_pickle(idf, 'knn_num_idf.pkl')"
+"0",""
+"0","idf = pd.read_pickle('knn_num_idf.pkl')"
+"0","best_features_from_num = (idf >> top_n(-1, _.MSE) >> pull ('vars'))[0]"
+"0",""
+"0",""

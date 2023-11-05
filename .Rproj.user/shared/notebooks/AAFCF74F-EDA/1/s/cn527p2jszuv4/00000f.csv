@@ -1,0 +1,17 @@
+"0","#| output: false"
+"0","#| echo: false"
+"0","Sale_Price=ames_y_train*ames_x_train.Gr_Liv_Area"
+"0",""
+"0","Sale_Price.describe()"
+"1","count     2051.0000
+mean    179122.6441
+std      79337.4591
+min      12789.0000
+25%     128225.0000
+50%     159500.0000
+75%     211000.0000
+max     755000.0000
+Name: Gr_Liv_Area, dtype: float64
+"
+"0","summary = ""count: 2051\nmean: $179,122.64\nstd: $79,337.45\nQ1: $128,225\nQ2:$159,500\nQ3: $211,000\nmin: $12,789\nmax:$755,000"""
+"0",""

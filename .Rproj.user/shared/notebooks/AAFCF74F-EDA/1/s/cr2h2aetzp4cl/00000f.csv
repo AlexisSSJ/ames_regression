@@ -1,0 +1,5 @@
+"0","from sklearn.preprocessing import PolynomialFeatures"
+"0",""
+"0","interaction_transformer = PolynomialFeatures(degree = 2, interaction_only = True, include_bias = False)"
+"0","interaction_transformer_wb = PolynomialFeatures(degree = 2, interaction_only = True, include_bias = False)"
+"0",""

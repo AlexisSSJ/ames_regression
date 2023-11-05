@@ -1,0 +1,89 @@
+"0","import plotly.express as px"
+"0","import plotly.io as pio"
+"0","gapminder = px.data.gapminder()"
+"0","gapminder2007 = gapminder.query(""year == 2007"")"
+"0","fig = px.scatter(gapminder2007, "
+"0","                 x=""gdpPercap"", y=""lifeExp"", color=""continent"", "
+"0","                 size=""pop"", size_max=60,"
+"0","                 hover_name=""country"")"
+"0","fig.show()"
+"2","Traceback (most recent call last):
+  File ""<string>"", line 1, in <module>
+  File ""[90m]8;line = 3412;file://C:\Users\HP\Documents\.virtualenvs\cd_2023_py\Lib\site-packages\plotly\basedatatypes.pyC:\Users\HP\DOCUME~1\VIRTUA~1\CD_202~1\lib\site-packages\plotly\basedatatypes.py]8;;[39m"", line 3412, in show
+    return pio.show(self, *args, **kwargs)
+  File ""[90m]8;line = 36;file://C:\Users\HP\Documents\.virtualenvs\cd_2023_py\Lib\site-packages\_plotly_utils\importers.pyC:\Users\HP\DOCUME~1\VIRTUA~1\CD_202~1\lib\site-packages\_plotly_utils\importers.py]8;;[39m"", line 36, in __getattr__
+    class_module = importlib.import_module(rel_module, parent_name)
+  File ""[90m]8;line = 126;file://C:\Users\HP\AppData\Local\Programs\Python\Python310\Lib\importlib\__init__.pyC:\Users\HP\AppData\Local\Programs\Python\PYTHON~1\lib\importlib\__init__.py]8;;[39m"", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File ""<frozen importlib._bootstrap>"", line 1050, in _gcd_import
+  File ""[90m]8;line = 119;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 119, in _find_and_load_hook
+    return _run_hook(name, _hook)
+  File ""[90m]8;line = 93;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 93, in _run_hook
+    module = hook()
+  File ""[90m]8;line = 117;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 117, in _hook
+    return _find_and_load(name, import_)
+  File ""<frozen importlib._bootstrap>"", line 1027, in _find_and_load
+  File ""<frozen importlib._bootstrap>"", line 1006, in _find_and_load_unlocked
+  File ""<frozen importlib._bootstrap>"", line 688, in _load_unlocked
+  File ""<frozen importlib._bootstrap_external>"", line 883, in exec_module
+  File ""<frozen importlib._bootstrap>"", line 241, in _call_with_frames_removed
+  File ""[90m]8;line = 11;file://C:\Users\HP\Documents\.virtualenvs\cd_2023_py\Lib\site-packages\plotly\io\_renderers.pyC:\Users\HP\DOCUME~1\VIRTUA~1\CD_202~1\lib\site-packages\plotly\io\_renderers.py]8;;[39m"", line 11, in <module>
+    from plotly.io._base_renderers import (
+  File ""[90m]8;line = 119;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 119, in _find_and_load_hook
+    return _run_hook(name, _hook)
+  File ""[90m]8;line = 93;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 93, in _run_hook
+    module = hook()
+  File ""[90m]8;line = 117;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 117, in _hook
+    return _find_and_load(name, import_)
+  File ""[90m]8;line = 11;file://C:\Users\HP\Documents\.virtualenvs\cd_2023_py\Lib\site-packages\plotly\io\_base_renderers.pyC:\Users\HP\DOCUME~1\VIRTUA~1\CD_202~1\lib\site-packages\plotly\io\_base_renderers.py]8;;[39m"", line 11, in <module>
+    from plotly.io._orca import ensure_server
+  File ""[90m]8;line = 119;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 119, in _find_and_load_hook
+    return _run_hook(name, _hook)
+  File ""[90m]8;line = 93;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 93, in _run_hook
+    module = hook()
+  File ""[90m]8;line = 117;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 117, in _hook
+    return _find_and_load(name, import_)
+  File ""[90m]8;line = 15;file://C:\Users\HP\Documents\.virtualenvs\cd_2023_py\Lib\site-packages\plotly\io\_orca.pyC:\Users\HP\DOCUME~1\VIRTUA~1\CD_202~1\lib\site-packages\plotly\io\_orca.py]8;;[39m"", line 15, in <module>
+    import tenacity
+  File ""[90m]8;line = 119;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 119, in _find_and_load_hook
+    return _run_hook(name, _hook)
+  File ""[90m]8;line = 93;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 93, in _run_hook
+    module = hook()
+  File ""[90m]8;line = 117;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 117, in _hook
+    return _find_and_load(name, import_)
+  File ""[90m]8;line = 546;file://C:\Users\HP\Documents\.virtualenvs\cd_2023_py\Lib\site-packages\tenacity\__init__.pyC:\Users\HP\DOCUME~1\VIRTUA~1\CD_202~1\lib\site-packages\tenacity\__init__.py]8;;[39m"", line 546, in <module>
+    from tenacity._asyncio import AsyncRetrying  # noqa:E402,I100
+  File ""[90m]8;line = 119;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 119, in _find_and_load_hook
+    return _run_hook(name, _hook)
+  File ""[90m]8;line = 93;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 93, in _run_hook
+    module = hook()
+  File ""[90m]8;line = 117;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 117, in _hook
+    return _find_and_load(name, import_)
+  File ""[90m]8;line = 21;file://C:\Users\HP\Documents\.virtualenvs\cd_2023_py\Lib\site-packages\tenacity\_asyncio.pyC:\Users\HP\DOCUME~1\VIRTUA~1\CD_202~1\lib\site-packages\tenacity\_asyncio.py]8;;[39m"", line 21, in <module>
+    from asyncio import sleep
+  File ""[90m]8;line = 119;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 119, in _find_and_load_hook
+    return _run_hook(name, _hook)
+  File ""[90m]8;line = 93;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 93, in _run_hook
+    module = hook()
+  File ""[90m]8;line = 117;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 117, in _hook
+    return _find_and_load(name, import_)
+  File ""[90m]8;line = 39;file://C:\Users\HP\AppData\Local\Programs\Python\Python310\Lib\asyncio\__init__.pyC:\Users\HP\AppData\Local\Programs\Python\PYTHON~1\lib\asyncio\__init__.py]8;;[39m"", line 39, in <module>
+    from .windows_events import *
+  File ""[90m]8;line = 119;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 119, in _find_and_load_hook
+    return _run_hook(name, _hook)
+  File ""[90m]8;line = 93;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 93, in _run_hook
+    module = hook()
+  File ""[90m]8;line = 117;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 117, in _hook
+    return _find_and_load(name, import_)
+  File ""[90m]8;line = 20;file://C:\Users\HP\AppData\Local\Programs\Python\Python310\Lib\asyncio\windows_events.pyC:\Users\HP\AppData\Local\Programs\Python\PYTHON~1\lib\asyncio\windows_events.py]8;;[39m"", line 20, in <module>
+    from . import windows_utils
+  File ""[90m]8;line = 119;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 119, in _find_and_load_hook
+    return _run_hook(name, _hook)
+  File ""[90m]8;line = 93;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 93, in _run_hook
+    module = hook()
+  File ""[90m]8;line = 117;file://C:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.pyC:\Users\HP\AppData\Local\R\win-library\4.3\reticulate\python\rpytools\loader.py]8;;[39m"", line 117, in _hook
+    return _find_and_load(name, import_)
+  File ""[90m]8;line = 125;file://C:\Users\HP\AppData\Local\Programs\Python\Python310\Lib\asyncio\windows_utils.pyC:\Users\HP\AppData\Local\Programs\Python\PYTHON~1\lib\asyncio\windows_utils.py]8;;[39m"", line 125, in <module>
+    class Popen(subprocess.Popen):
+TypeError: the first argument must be callable
+"

@@ -1,0 +1,8 @@
+"0","knn_cat_best=KNeighborsRegressor("
+"0","           n_neighbors = 15,"
+"0","           weights ='distance',"
+"0","           metric='hamming')"
+"0",""
+"0","knn_cat_best.fit(transformed_df, Sale_Price_train)"
+"1","KNeighborsRegressor(metric='hamming', n_neighbors=15, weights='distance')
+"

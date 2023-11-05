@@ -1,0 +1,9 @@
+"0","#| results: hide"
+"0","#| fig-keep: 'all'"
+"0","(ames_data >> "
+"0","    ggplot(aes(x='Sale_Price'))+"
+"0","    geom_density()+"
+"0","    ggtitle('Distribución de Sale Price (sin outliers)')"
+"0","    )"
+"1","<Figure Size: (842 x 520)>
+"

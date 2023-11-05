@@ -1,0 +1,16 @@
+"0","#| output: false"
+"0","#| echo: false"
+"0","Sale_Price=ames_y_train*ames_x_train.Gr_Liv_Area"
+"0",""
+"0","Sale_Price.describe()"
+"1","count      2344.000000
+mean     179353.253840
+std       79481.791048
+min       12789.000000
+25%      128987.500000
+50%      159900.000000
+75%      212075.000000
+max      755000.000000
+Name: Gr_Liv_Area, dtype: float64
+"
+"0",""

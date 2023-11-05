@@ -1,0 +1,5 @@
+"0","#| echo: false"
+"0",""
+"0","# pd.to_pickle(final_cv_knn, 'final_cv_knn_fm.pkl')"
+"0","final_cv_knn = pd.read_pickle('final_cv_knn_fm.pkl')"
+"0",""

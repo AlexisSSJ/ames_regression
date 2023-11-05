@@ -1,0 +1,22 @@
+"0","validation_results("
+"0","      x_val = ames_x_val,"
+"0","      y_val = Sale_Price_validation, "
+"0","      pipeline = voting, "
+"0","      n_preds=18)"
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\sklearn\preprocessing\_encoders.py:202: UserWarning: Found unknown categories in columns [16] during transform. These unknown categories will be encoded as all zeros
+"
+"2","Traceback (most recent call last):
+  File ""<string>"", line 1, in <module>
+  File ""<string>"", line 6, in validation_results
+  File ""[90m]8;line = 76;file://C:\Users\HP\Documents\.virtualenvs\CD_AMAT_2023\Lib\site-packages\pandas\core\ops\common.pyC:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\pandas\core\ops\common.py]8;;[39m"", line 76, in new_method
+    if isinstance(other, cls):
+  File ""[90m]8;line = 44;file://C:\Users\HP\Documents\.virtualenvs\CD_AMAT_2023\Lib\site-packages\pandas\core\dtypes\generic.pyC:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\pandas\core\dtypes\generic.py]8;;[39m"", line 44, in _instancecheck
+    return _check(inst) and not isinstance(inst, type)
+  File ""[90m]8;line = 38;file://C:\Users\HP\Documents\.virtualenvs\CD_AMAT_2023\Lib\site-packages\pandas\core\dtypes\generic.pyC:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\pandas\core\dtypes\generic.py]8;;[39m"", line 38, in _check
+    return getattr(inst, attr, ""_typ"") in comp
+  File ""[90m]8;line = 106;file://C:\Users\HP\Documents\.virtualenvs\CD_AMAT_2023\Lib\site-packages\siuba\siu\symbolic.pyC:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\siuba\siu\symbolic.py]8;;[39m"", line 106, in __bool__
+    raise TypeError(""Symbolic objects can not be converted to True/False, or used ""
+TypeError: Symbolic objects can not be converted to True/False, or used with these keywords: not, and, or.
+"
+"0","      "
+"0",""

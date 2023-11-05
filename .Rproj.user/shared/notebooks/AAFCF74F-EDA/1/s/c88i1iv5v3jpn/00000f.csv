@@ -1,0 +1,27 @@
+"0","results = pipline_knn_cv.named_steps['cv'].cv_results_"
+"0","best_knn_cat = pipline_knn_cv.named_steps['cv'].best_estimator_"
+"0",""
+"0","summary_num_cv = ("
+"0","  pd.DataFrame(results) >>"
+"0","  select(-_.contains(""split""), -_.contains(""time""), -_.params)"
+"0",")"
+"0","("
+"0","  summary_num_cv "
+"0","  >> arrange(_.rank_test_r2) "
+"0","  >> select(_.contains('r2'), _.contains('param')) "
+"0",").head(10)"
+"1","    mean_test_r2  std_test_r2  ...  param_n_neighbors param_weights
+4           0.72         0.07  ...                  8      distance
+7           0.72         0.06  ...                 11      distance
+39          0.71         0.05  ...                 11      distance
+6           0.71         0.06  ...                 10      distance
+40          0.71         0.05  ...                 12      distance
+9           0.71         0.05  ...                 13      distance
+10          0.71         0.05"
+"1","  ...                 14      distance
+34          0.71         0.07  ...                  6      distance
+5           0.71         0.06  ...                  9      distance
+8           0.71         0.06  ...                 12      distance
+
+[10 rows x 6 columns]
+"

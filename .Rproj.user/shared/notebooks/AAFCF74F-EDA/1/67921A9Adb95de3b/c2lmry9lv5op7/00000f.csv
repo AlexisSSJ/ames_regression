@@ -1,0 +1,72 @@
+"0","drop_cols=['Neighborhood_Crawford',
+            'Neighborhood_infrequent_sklearn',
+            'BsmtFin_Type_1_BLQ',
+            'Exter_Cond_Good',
+            # 'Condition_2_Feedr',
+            'Condition_1_RRAe',
+            # 'Condition_1_Feedr',
+            'Garage_Type_No_Garage',
+            # 'Condition_1_PosA',
+            'Bsmt_Full_Bath',
+            'Bsmt_Half_Bath',
+            # 'Condition_2_RRAe',
+            'Foundation_CBlock',
+            'MS_SubClass_Two_Story_1946_and_Newer',
+            'Garage_Finish_No_Garage',
+            'Bldg_Type_TwoFmCon',
+            'Mo_Sold_5',
+            'Paved_Drive_Partial_Pavement',
+            'Bsmt_Cond_Typical',
+            'Heating_QC_Fair',
+            'BsmtFin_Type_1_Unf',
+            'Electrical_SBrkr',
+            'Fence_Good_Wood',
+            # 'Electrical_Unknown',
+            'Garage_Type_Detchd',
+            'Foundation_Slab',
+            'House_Style_infrequent_sklearn',
+            'Three_season_porch',
+            'BsmtFin_Type_2_GLQ',
+            'Mo_Sold_7',
+            'Misc_Val',
+            'BsmtFin_Type_1_No_Basement',
+            'Foundation_PConc',
+            'Mo_Sold_12',
+            'Mo_Sold_10',
+            'BsmtFin_Type_2_No_Basement',
+            'last_remod',
+            'Bsmt_Cond_No_Basement',
+            'Condition_2_infrequent_sklearn',
+            'Exter_Cond_Typical',
+            'Bldg_Type_OneFam',
+            'Mo_Sold_9',
+            'Electrical_infrequent_sklearn',
+            'Bsmt_Cond_infrequent_sklearn',
+            'Bsmt_Cond_Good',
+            'Foundation_infrequent_sklearn',
+            'Bldg_Type_TwnhsE',
+            'Fence_No_Fence']
+
+  
+
+preprocessor_2=ColumnTransformer(
+  transformers=[
+    (""selector"", ""drop"", drop_cols),
+    ('interaction_1', interaction_transformer_wb, ['Lot_Area', 'Gr_Liv_Area']),
+    ('interactions2', interaction_transformer, ['Year_Built', 'Overall_Cond_Average']),
+    ('interactions3', interaction_transformer, ['Full_Bath', 'Bedroom_AbvGr']),
+    ('interactions3.1', interaction_transformer, ['House_Style_SLvl', 'Overall_Cond_Fair']),
+    ('interactions3.4', interaction_transformer, ['wood_prop', 'Mas_Vnr_Area']),
+    ('interactions3.2', interaction_transformer, ['First_Flr_SF', 'last_remod']),
+    ('interactions3.5', interaction_transformer, ['BsmtFin_SF_1', 'BsmtFin_Type_2_Unf']),
+    ('interactions4', interaction_transformer, ['Misc_Val', 'Misc_Feature_TenC'])
+  ],
+  verbose_feature_names_out = False,
+  remainder='passthrough'
+)
+"
+"2","Traceback (most recent call last):
+  File ""<string>"", line 4, in <module>
+NameError: name 'interaction_transformer_wb' is not defined
+"
+"0",""

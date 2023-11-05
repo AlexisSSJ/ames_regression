@@ -1,0 +1,64 @@
+"0","fst_knn_pipe = Pipeline(["
+"0","  ('prep',preprocessor),"
+"0","  ('regressor', KNeighborsRegressor("
+"0","    n_neighbors = 16,"
+"0","    weights = 'distance',"
+"0","    metric ='manhattan')"
+"0","    )]"
+"0","    )"
+"0","    "
+"0","fst_knn_pipe.fit(ames_x_train , Sale_Price_train)"
+"1","Pipeline(steps=[('prep',
+                 ColumnTransformer(transformers=[('std', StandardScaler(),
+                                                  ['Bedroom_AbvGr',
+                                                   'BsmtFin_SF_1',
+                                                   'BsmtFin_SF_2',
+                                                   'Bsmt_Full_Bath',
+                                                   'Bsmt_Half_Bath',
+                                                   'Bsmt_Unf_SF',"
+"0","y_pred  = fst_knn_pipe.predict(ames_x_test)"
+"1","
+                                                   'Enclosed_Porch',
+                                                   'Fireplaces', 'First_Flr_SF',
+                                                   'Full_Bath', 'Garage_Area',
+                                                   'Garage_Cars', 'Gr_Liv_Area',
+                                                   'Half_Bath', 'Kitchen_AbvGr',
+                                                   'Latitude', 'Longitude',
+                                     "
+"1","              'Lot_Area', 'Lot_Frontage',
+                                                   'Mas_Vnr_Area', 'Misc_Val',
+                                                   'Open_Porch_SF', 'Pool_Area',
+                                                   'Screen_Porch',
+                                                   'Second_Flr_SF',
+                                                   'Three_season_porch',
+                                                   'TotRms_AbvGrd',
+                           "
+"1","                        'Total_Bsmt_SF',
+                                                   'Wood_Deck_SF', 'Year_Built', ...])],
+                                   verbose_feature_names_out=False)),
+                ('regressor',
+                 KNeighborsRegressor(metric='manhattan', n_neighbors=16,
+                                     weights='distance'))])
+"
+"0","get_metrics(y_pred, Sale_Price_test, len(preprocessor.get_feature_names_out()))"
+"1","                 Value
+Metric                
+ME           7227.3248
+MAE         20821.5875
+MAPE            0.1107
+MSE    1209723375.5859
+RMSE        34781.0778
+R2              0.8131
+R2Adj           0.8012
+"
+"0","get_metrics(y_pred, Sale_Price_test, len(preprocessor.get_feature_names_out()))"
+"1","                 Value
+Metric                
+ME           7227.3248
+MAE         20821.5875
+MAPE            0.1107
+MSE    1209723375.5859
+RMSE        34781.0778
+R2              0.8131
+R2Adj           0.8012
+"

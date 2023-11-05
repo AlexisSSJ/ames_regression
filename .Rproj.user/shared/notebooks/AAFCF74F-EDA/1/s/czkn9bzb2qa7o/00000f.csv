@@ -1,0 +1,53 @@
+"0","cat = left_join(ames_train.select_dtypes('object').reset_index(),"
+"0","            ames_train.Sale_Price.reset_index(), on= 'index')"
+"0","categoricals = ames_train.select_dtypes('object').columns.to_list()"
+"0","cat.set_index('index', inplace=True)"
+"0",""
+"0","for col in categoricals:"
+"0","    "
+"0","    ("
+"0","        cat >>"
+"0","            ggplot(aes(y='Sale_Price', "
+"0","                        x='fct_infreq(factor({}))'.format(col), "
+"0","                        color= col, "
+"0","                        fill= col))+"
+"0","            geom_jitter(width=0.3,"
+"0","                        alpha=0.3,"
+"0","                        show_legend=False)+"
+"0","            geom_violin(width= 1.2,alpha= 0.4, "
+"0","                        style= 'left', "
+"0","                        color='#484f58', "
+"0","                        fill='#858783',"
+"0","                        show_legend=False)+"
+"0","            geom_boxplot(alpha=0, "
+"0","                        color='black',"
+"0","                        width=0.4,"
+"0","                        show_legend=False)+"
+"0","            ggtitle('Distribución de Sale Price por '+col)+"
+"0","            scale_y_continuous(labels=dollar_format(big_mark=',', digits = 0)) +"
+"0","            xlab('')+ylab('')+"
+"0","            theme_minimal()+"
+"0","            theme(axis_text_x=element_text(rotation=90,hjust = -1),"
+"0","                figure_size=(10,10))"
+"0","    )"
+"0","    "
+"0","    "
+"0",""
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\stats\stat_density.py:164: PlotnineWarning: To compute the density of a group with only one value set the bandwidth manually. e.g `bw=0.1`
+"
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\stats\stat_density.py:169: PlotnineWarning: Groups with fewer than 2 data points have been removed.
+"
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\positions\position.py:229: PlotnineWarning: position_dodge requires non-overlapping x intervals
+"
+"1","<Figure Size: (633 x 391)>
+"
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\stats\stat_density.py:164: PlotnineWarning: To compute the density of a group with only one value set the bandwidth manually. e.g `bw=0.1`
+"
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\stats\stat_density.py:169: PlotnineWarning: Groups with fewer than 2 data points have been removed.
+"
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\stats\stat_density.py:164: PlotnineWarning: To compute the density of a group with only one value set the bandwidth manually. e.g `bw=0.1`
+"
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\stats\stat_density.py:169: PlotnineWarning: Groups with fewer than 2 data points have been removed.
+"
+"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\positions\position.py:229: PlotnineWarning: position_dodge requires non-overlapping x intervals
+"
