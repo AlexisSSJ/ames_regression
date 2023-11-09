@@ -1,3 +1,0 @@
-"0","# pd.to_pickle(importance_df, 'knn_num_importance_df.pkl')"
-"0","importance_df = pd.read_pickle('knn_num_importance_df.pkl')"
-"0",""

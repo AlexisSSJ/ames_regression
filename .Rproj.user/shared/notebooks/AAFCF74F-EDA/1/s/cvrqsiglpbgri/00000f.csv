@@ -1,9 +1,0 @@
-"0","#| echo: false"
-"0","#| "
-"0","transformed_test_df = preprocessor.transform(ames_x_test)"
-"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\sklearn\preprocessing\_encoders.py:202: UserWarning: Found unknown categories in columns [0, 11, 16, 17, 18, 19, 26] during transform. These unknown categories will be encoded as all zeros
-"
-"0","# pd.to_pickle(importance_df , 'importance_df_fm.pkl')"
-"0","importance_df = pd.read_pickle('importance_df_fm.pkl')"
-"0",""
-"0",""

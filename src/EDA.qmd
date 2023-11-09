@@ -118,6 +118,11 @@ from plydata.tidy import pivot_wider, pivot_longer
 import matplotlib.pyplot as plt
 ```
 
+
+```{r}
+py_run_file('Custom_functions_ ames.py')
+```
+
 ## Analísis de Sale Price
 
 A continuación se muestra el split inicial
@@ -189,9 +194,7 @@ Cómo se observa, la distribución de los precios de venta se encuentra sesgada 
 ```{python}
 #| output: false
 #| echo: false
-Sale_Price=ames_y_train*ames_x_train.Gr_Liv_Area
 
-Sale_Price.describe()
 summary = "count: 2051\nmean: $179,122.64\nstd: $79,337.45\nQ1: $128,225\nQ2:$159,500\nQ3: $211,000\nmin: $12,789\nmax:$755,000"
 ```
 
@@ -203,7 +206,7 @@ summary = "count: 2051\nmean: $179,122.64\nstd: $79,337.45\nQ1: $128,225\nQ2:$15
 
 # plt.figure()
 (
-  ggplot(aes(y=Sale_Price, x=0))+
+  ggplot(aes(y=Sale_Price_train, x=0))+
                 geom_violin( fill='#702C27',
                                 style='right',
                                 alpha=0.6)+
@@ -240,10 +243,10 @@ summary = "count: 2051\nmean: $179,122.64\nstd: $79,337.45\nQ1: $128,225\nQ2:$15
 #| echo: false
 #| results: hide
 
-params={'loc':Sale_Price.mean(), 'scale':Sale_Price.std()}
+params={'loc':Sale_Price_train.mean(), 'scale':Sale_Price_train.std()}
 
 (
-                ggplot(aes(sample=Sale_Price))+
+                ggplot(aes(sample=Sale_Price_train))+
                 geom_qq(alpha = 0.3,distribution='norm', dparams=params)+
                 stat_qq_line(distribution='norm', dparams=params,color = "red")+
                 scale_y_continuous(labels=dollar_format(big_mark=',', digits = 0)) + 
@@ -548,91 +551,91 @@ import statsmodels.api as sm
 #| results: hide
 #| code-fold: true
 pd.options.display.float_format = '{:.2f}'.format
-
-def importance_from_model (test_frame, y_obs, selected_columns, pipeline, actual_mse, n_permutations=50 ,trans_pred= False ):
-  performance_losses = []
-  
-  for i in range(test_frame[selected_columns].shape[1]):
-    loss = []
-    for j in range(n_permutations):
-        test_frame_permuted = test_frame[selected_columns].copy()
-        test_frame_permuted.iloc[:, i] = np.random.permutation(test_frame_permuted.iloc[:, i])
-        if trans_pred == False:
-            y_pred_permuted = pipeline.predict(test_frame_permuted)
-        else:
-            y_pred_permuted = pipeline.predict(test_frame_permuted)* test_frame_permuted.Gr_Liv_Area
-        mse_permuted = mean_squared_error(y_obs, y_pred_permuted)
-        loss.append(mse_permuted)
-    performance_losses.append(loss)
-  
-  performance_losses = performance_losses/np.sum(performance_losses, axis=0)
-  mean_losses = np.mean(performance_losses, axis=1)
-  std_losses = np.std(performance_losses, axis=1)
-  
-  importance_df = pd.DataFrame({
-  'Variable': selected_columns, 
-  'Mean_Loss': mean_losses, 
-  'Std_Loss': std_losses
-  })
-  return importance_df
-  
-def adjusted_r2_score(y_true, y_pred, n, p):
-  r2 = r2_score(y_true, y_pred)
-  adjusted_r2 = 1 - (1 - r2) * (n - 1) / (n - p - 1)
-  return adjusted_r2 
-
-
-def div_columns(X, c1, c2):
-    X["c1_c2"] = X[c1]/ X[c2]
-    return X
-
-
-
-def adj_r(y_o, y_p , p, n):
-  r2_adj = 1 - (n - 1) / (n - p - 1) * (1 - r2_score(y_o, y_p))
-  
-  
-def get_metrics (y_pred, y_obs,predictors):
-  me = np.mean(y_obs - y_pred)
-  mae = mean_absolute_error(y_obs, y_pred)
-  mape = mean_absolute_percentage_error(y_obs, y_pred)
-  mse = mean_squared_error(y_obs, y_pred)
-  rmse = np.sqrt(mse)
-  r2 = r2_score(y_obs, y_pred)
-
-  n = len(y_obs)  # Número de observaciones
-  p = predictors  # Número de predictores 
-  r2_adj = 1 - (n - 1) / (n - p - 1) * (1 - r2)
-  
-
-  metrics_data = {
-      "Metric": ["ME", "MAE", "MAPE", "MSE", "RMSE", "R2", "R2Adj"],
-      "Value": [me, mae, mape, mse, rmse, r2, r2_adj]
-  }
-  return pd.DataFrame(metrics_data).set_index('Metric')
-
-
-
-def rmv_elements (list_of_elements, complete_list):
-  for element in list_of_elements:
-    complete_list.remove(element)
-  return complete_list
-
-
-
-def validation_results(x_val,y_val,  pipeline , n_preds):
-  y_pred = pipeline.predict(x_val)
-  
-  ames_test = (
-    ames_x_val >>
-    mutate(Sale_Price_Pred = y_pred*_.Gr_Liv_Area, Sale_Price =y_val*_.Gr_Liv_Area))
-  
-  ##### Métricas de desempeño
-  
-  y_obs = ames_test["Sale_Price"]
-  y_pred = ames_test["Sale_Price_Pred"]
-  return get_metrics(y_pred, y_obs, n_preds)
-
+# 
+# def importance_from_model (test_frame, y_obs, selected_columns, pipeline, actual_mse, n_permutations=50 ,trans_pred= False ):
+#   performance_losses = []
+#   
+#   for i in range(test_frame[selected_columns].shape[1]):
+#     loss = []
+#     for j in range(n_permutations):
+#         test_frame_permuted = test_frame[selected_columns].copy()
+#         test_frame_permuted.iloc[:, i] = np.random.permutation(test_frame_permuted.iloc[:, i])
+#         if trans_pred == False:
+#             y_pred_permuted = pipeline.predict(test_frame_permuted)
+#         else:
+#             y_pred_permuted = pipeline.predict(test_frame_permuted)* test_frame_permuted.Gr_Liv_Area
+#         mse_permuted = mean_squared_error(y_obs, y_pred_permuted)
+#         loss.append(mse_permuted)
+#     performance_losses.append(loss)
+#   
+#   performance_losses = performance_losses/np.sum(performance_losses, axis=0)
+#   mean_losses = np.mean(performance_losses, axis=1)
+#   std_losses = np.std(performance_losses, axis=1)
+#   
+#   importance_df = pd.DataFrame({
+#   'Variable': selected_columns, 
+#   'Mean_Loss': mean_losses, 
+#   'Std_Loss': std_losses
+#   })
+#   return importance_df
+#   
+# def adjusted_r2_score(y_true, y_pred, n, p):
+#   r2 = r2_score(y_true, y_pred)
+#   adjusted_r2 = 1 - (1 - r2) * (n - 1) / (n - p - 1)
+#   return adjusted_r2 
+# 
+# 
+# def div_columns(X, c1, c2):
+#     X["c1_c2"] = X[c1]/ X[c2]
+#     return X
+# 
+# 
+# 
+# def adj_r(y_o, y_p , p, n):
+#   r2_adj = 1 - (n - 1) / (n - p - 1) * (1 - r2_score(y_o, y_p))
+#   
+#   
+# def get_metrics (y_pred, y_obs,predictors):
+#   me = np.mean(y_obs - y_pred)
+#   mae = mean_absolute_error(y_obs, y_pred)
+#   mape = mean_absolute_percentage_error(y_obs, y_pred)
+#   mse = mean_squared_error(y_obs, y_pred)
+#   rmse = np.sqrt(mse)
+#   r2 = r2_score(y_obs, y_pred)
+# 
+#   n = len(y_obs)  # Número de observaciones
+#   p = predictors  # Número de predictores 
+#   r2_adj = 1 - (n - 1) / (n - p - 1) * (1 - r2)
+#   
+# 
+#   metrics_data = {
+#       "Metric": ["ME", "MAE", "MAPE", "MSE", "RMSE", "R2", "R2Adj"],
+#       "Value": [me, mae, mape, mse, rmse, r2, r2_adj]
+#   }
+#   return pd.DataFrame(metrics_data).set_index('Metric')
+# 
+# 
+# 
+# def rmv_elements (list_of_elements, complete_list):
+#   for element in list_of_elements:
+#     complete_list.remove(element)
+#   return complete_list
+# 
+# 
+# 
+# def validation_results(x_val,y_val,  pipeline , n_preds):
+#   y_pred = pipeline.predict(x_val)
+#   
+#   ames_test = (
+#     ames_x_val >>
+#     mutate(Sale_Price_Pred = y_pred*_.Gr_Liv_Area, Sale_Price =y_val*_.Gr_Liv_Area))
+#   
+#   ##### Métricas de desempeño
+#   
+#   y_obs = ames_test["Sale_Price"]
+#   y_pred = ames_test["Sale_Price_Pred"]
+#   return get_metrics(y_pred, y_obs, n_preds)
+# 
 
 ```
 
@@ -692,24 +695,6 @@ cat_cols = ['Bldg_Type',
             'Neighborhood']
             
 columnas_seleccionadas = num_cols + sorted(cat_cols + ['Year_Built','Garage_Cars','Misc_Feature'])
-
-pipe = ColumnSelector(columnas_seleccionadas)
-ames_x_train_selected = pipe.fit_transform(ames_x_train)
-
-ames_train_selected = pd.DataFrame(
-  ames_x_train_selected, 
-  columns = columnas_seleccionadas
-  )
-
-ames_test_selected = pd.DataFrame(
-  pipe.transform(ames_x_test), 
-  columns = columnas_seleccionadas
-  )
-
-ames_validation_selected = pd.DataFrame(
-  pipe.transform(ames_x_val), 
-  columns = columnas_seleccionadas
-  )
  
 #######################################################################
 preprocessor_1 = ColumnTransformer(
@@ -720,26 +705,8 @@ preprocessor_1 = ColumnTransformer(
         ('OHE_1', OneHotEncoder(drop='first',handle_unknown='ignore' , sparse_output=False), ['Misc_Feature'])
     ],
     verbose_feature_names_out = False,
-    remainder = 'passthrough'  # Mantener las columnas restantes sin cambios
-    )
-
-
-ames_x_train_trans = pd.DataFrame(
-  preprocessor_1.fit_transform(ames_train_selected),
-  columns=preprocessor_1.get_feature_names_out()
-  )
-  
-ames_x_test_trans = pd.DataFrame(
-  preprocessor_1.transform(ames_test_selected),
-  columns=preprocessor_1.get_feature_names_out()
-  )
-
-ames_x_val_trans = pd.DataFrame(
-  preprocessor_1.transform(ames_validation_selected),
-  columns=preprocessor_1.get_feature_names_out()
-  )
-  
-  
+    remainder = 'drop'  
+    ).set_output(transform = 'pandas')
 ```
 
 ```{python}
@@ -815,17 +782,15 @@ preprocessor_2=ColumnTransformer(
   ],
   verbose_feature_names_out = False,
   remainder='passthrough'
-)
+).set_output(transform = 'pandas')
 
-preprocessor_2.fit(ames_x_train_trans)
-feature_names = list(preprocessor_2.get_feature_names_out())
-
+prep_pipe = Pipeline([
+  ('prep1',preprocessor_1),
+  ('selec_inter', preprocessor_2)
+])
   
 ##### Extracción de coeficientes
-transformed_df = pd.DataFrame(
-  preprocessor_2.fit_transform(ames_x_train_trans ),
-  columns=feature_names
-  )
+transformed_df = prep_pipe.fit_transform(ames_x_train)
 # 
 X_train_with_intercept = sm.add_constant(transformed_df)
 model = sm.OLS(ames_y_train, X_train_with_intercept).fit()
@@ -836,14 +801,15 @@ model.summary()
 
 ```{python}
 pipeline = Pipeline([
-  ('preprocessor', preprocessor_2),
+  ('preprocessor', preprocessor_1),
+  ('select_interac', preprocessor_2),
   ('regressor', LinearRegression())])
 
 # Entrenar el pipeline
-results = pipeline.fit(ames_x_train_trans, ames_y_train)
+results = pipeline.fit(ames_x_train, ames_y_train)
 
 ## PREDICCIONES
-y_pred = pipeline.predict(ames_x_test_trans)
+y_pred = pipeline.predict(ames_x_test)
 
 ames_test = (
   ames_x_test >>
@@ -867,7 +833,9 @@ print(metrics_df)
 El modelo muestra una $R^2_{adj}=0.85$ con los datos de test, y tienen un error aproximado del $\pm10\%$ con respecto del precio real.
 
 ```{python}
-validation_results(ames_x_val_trans, ames_y_val, pipeline, len(transformed_df.columns ))
+y_pred = pipeline.predict(ames_x_val)*ames_x_val.Gr_Liv_Area
+
+get_metrics(y_pred,Sale_Price_validation,len(transformed_df.columns ) )
 ```
 
 En cuanto al análisis de los residuos, no parece seguir completamente los supuestos, pues visualmete se puede detectar heterocedasticidad, lo cual puede afectar el preformance del modelo.
@@ -930,8 +898,11 @@ ames_test >>
 ```
 
 # Regresión con Knn
-
+## Cross validation con todas las variables
+Se hace un cross validation con todas las features que se tienen, em busca de los hiperparámetros adecuados para el modelo, al menos de manera provisional
 ```{python}
+#| label: libs_knn
+#| echo: false
 from mlxtend.feature_selection import ColumnSelector
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -944,6 +915,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.utils import shuffle
 
 from plydata.one_table_verbs import pull
+from plydata.tidy import pivot_longer
 from mizani.formatters import comma_format, dollar_format
 from plotnine import *
 from siuba import *
@@ -955,7 +927,8 @@ from sklearn.ensemble import VotingRegressor
 
 
 ```{python}
-
+#| label: column_cat_num_divisor
+#| echo: false
 cat_cols = ['MS_SubClass', 
                 'MS_Zoning',
                 'Street', 
@@ -1034,686 +1007,23 @@ num_cols =[ 'Bedroom_AbvGr',
             'area_per_car',
             'last_remod',
             'wood_prop']  
-```
-
-## KNN usando unicamente variables categóricas
-
-```{python}
-preprocessor = ColumnTransformer(
-    transformers = [
-        ('onehotencoding', OneHotEncoder(drop='first',handle_unknown = 'ignore', sparse_output=False, min_frequency=15), cat_cols)
-    ],
-    verbose_feature_names_out = False,
-    remainder = 'drop'  # Mantener las columnas restantes sin cambios
-).set_output(transform = 'pandas')
-
-transformed_df = preprocessor.fit_transform(ames_x_train) 
-
-```
-
-```{python}
-kf = KFold(n_splits=10, shuffle=True, random_state=42)
-
-
-
-scoring = {
-    'neg_mean_squared_error': make_scorer(mean_squared_error, greater_is_better=False),
-    'r2': make_scorer(adjusted_r2_score, greater_is_better=True, n=np.ceil(len(ames_x_train)), p=len(num_cols)),
-    'neg_mean_absolute_error': make_scorer(mean_absolute_error, greater_is_better=False),
-    'mape': make_scorer(mean_absolute_percentage_error, greater_is_better=False)
-}
-
-
-param_grid = {
- 'n_neighbors': range(4, 20,),
- 'weights': [ 'distance'],
- 'metric': ['manhattan', 'hamming', 'cosine', 'chebyshev']
-}
-
-
-pipline_knn_cv=Pipeline([
-  ('prep', preprocessor),
-  ('cv' , GridSearchCV(
-    KNeighborsRegressor(), 
-      param_grid, 
-      cv=kf, 
-      scoring=scoring, 
-      refit='neg_mean_squared_error',
-      verbose=2, 
-      n_jobs=7)
-      )]
-      )
-```
-
-
-```{python}
-#| eval: false 
-pipline_knn_cv.fit(ames_x_train, Sale_Price_train)
-pd.to_pickle(pipline_knn_cv,'pipline_cateogrico_knn_cv.pkl')
-```
-
-```{python}
-pipline_knn_cv = pd.read_pickle('pipline_cateogrico_knn_cv.pkl')
-results = pipline_knn_cv.named_steps['cv'].cv_results_
-best_knn_cat = pipline_knn_cv.named_steps['cv'].best_estimator_
-
-summary_num_cv = (
-  pd.DataFrame(results) >>
-  select(-_.contains("split"), -_.contains("time"), -_.params)
-)
-(
-  summary_num_cv 
-  >> arrange(_.rank_test_r2) 
-  >> select(_.contains('r2'), _.contains('param')) 
-).head(10)
-```
-
-```{python}
-
-
-summary_plot = (
-  summary_num_cv 
-  >> filter(_.mean_test_r2>0, _.param_n_neighbors>5) >>
-  ggplot(aes(x = "param_n_neighbors", y = "mean_test_r2", 
-             shape = "param_weights", color= 'param_metric')) +
-  geom_point() +
-  ggtitle("Parametrización de KNN vs R^2") +
-  xlab("Parámetro: Número de vecinos cercanos") +
-  ylab("R^2 promedio")
-)
-
-
-```
-
-```{python}
-results = pipline_knn_cv.named_steps['cv'].cv_results_
-best_knn_cat = pipline_knn_cv.named_steps['cv'].best_estimator_
-
-summary_num_cv = (
-  pd.DataFrame(results) >>
-  select(-_.contains("split"), -_.contains("time"), -_.params)
-)
-(
-  summary_num_cv 
-  >> arrange(_.rank_test_r2) 
-  >> select(_.contains('r2'), _.contains('param')) 
-).head(10)
-```
-
-```{python}
-summary_plot = (
-  summary_num_cv 
-  >> filter(_.mean_test_r2>0, _.param_n_neighbors>4) >>
-  mutate(min_err=_.mean_test_r2-_.std_test_r2,max_err=_.mean_test_r2+_.std_test_r2 ) >>
-  ggplot(aes(x = "param_n_neighbors", y = "mean_test_r2", 
-             shape = "param_weights", color= 'param_metric')) +
-  geom_point(alpha = 1,position=position_dodge(width=0.7)) +
-  geom_errorbar(aes(ymin='min_err', ymax='max_err'),
-                  position=position_dodge(width=0.7),show_legend=False) +
-  ggtitle("Parametrización de KNN vs R^2") +
-  xlab("Parámetro: Número de vecinos cercanos") +
-  ylab("R^2 promedio")
-)
-
-```
-
-
-```{python}
-knn_cat_best=KNeighborsRegressor(
-           n_neighbors = 15,
-           weights ='distance',
-           metric='hamming')
-
-knn_cat_best.fit(transformed_df, Sale_Price_train)
-
-```
-
-```{python}
-
-test_transformed = preprocessor.transform(ames_x_test)
-pred= knn_cat_best.predict(test_transformed)
-predictors = len(preprocessor.get_feature_names_out())
-mse= get_metrics(y_pred=pred, y_obs=Sale_Price_test, predictors=predictors) .loc['MSE']
-```
-```{python}
-#| eval: false
-
-importance = importance_from_model(
-  test_transformed ,
-  Sale_Price_test,
-  list(preprocessor.get_feature_names_out()),
-  knn_cat_best,
-  actual_mse = mse,
-  n_permutations = 50 ,
-  trans_pred = False)
-pd.to_pickle(importance,'importance_cat_knn.pkl')
-```
-
-
-```{python}
-#| echo: false
-importance = pd.read_pickle('importance_cat_knn.pkl')
-importance >> arrange(_.Mean_Loss)
-```
-
-```{python}
-(
-  importance >> top_n(20, _.Mean_Loss) >>
-  mutate(
-    ymin = _.Mean_Loss - _.Std_Loss,
-    ymax = _.Mean_Loss + _.Std_Loss) >>
-  ggplot(aes(x = 'reorder(Variable, Mean_Loss)', y = "Mean_Loss")) +
-  geom_errorbar(aes(ymin='ymin', ymax='ymax'),
-    width=0.2, position=position_dodge(0.9)) +
-  geom_point(alpha = 0.65) +
-  labs(title='Importancia de las Variables', x='Variable', y='Importancia') +
-  coord_flip()
-)
-```
-
-```{python}
-(
-  importance >> top_n(-20, _.Mean_Loss)>>
-  mutate(
-    ymin = _.Mean_Loss - _.Std_Loss,
-    ymax = _.Mean_Loss + _.Std_Loss) >>
-  ggplot(aes(x = 'reorder(Variable, Mean_Loss)', y = "Mean_Loss")) +
-  geom_errorbar(aes(ymin='ymin', ymax='ymax'),
-    width=0.2, position=position_dodge(0.9)) +
-  geom_point(alpha = 0.65) +
-  labs(title='Importancia de las Variables', x='Variable', y='Importancia') +
-  coord_flip()
-)
-```
-
-
-```{python}
-#| eval: false
-vars_importance_order =list( importance >> arrange(_.Mean_Loss) >> pull('Variable'))
-
-v=[]
-r2=[]
-mse_=[]
-for i in range(150):
-  vars_to_train = vars_importance_order[i:]
-  
-  knn_cat_best.fit(transformed_df[vars_to_train], Sale_Price_train)
-  pred= knn_cat_best.predict(test_transformed[vars_to_train])
-  mse_.append(get_metrics(pred,Sale_Price_test, len(vars_to_train)).loc['MSE'].values[0])
-  r2.append(get_metrics(pred,Sale_Price_test, len(vars_to_train)).loc['R2Adj'].values[0])
-  v.append(vars_to_train)
-idf = pd.DataFrame({'MSE':mse_, 'R2_adj':r2,'vars':v})
-best_features_from_cat = (idf >> top_n(-1, _.MSE) >> pull ('vars'))[0]
-  
-```
-```{python}
-#| echo: false
-
-# pd.to_pickle(idf, 'bfcknn.pkl')
-idf= pd.read_pickle('bfcknn.pkl')
-best_features_from_cat = (idf >> top_n(-1, _.MSE) >> pull ('vars'))[0]
-best_features_from_cat
-```
-
-
-```{python}
-#| eval: false
-selectorr= ColumnTransformer([('selector', 'passthrough', best_features_from_cat)],
-          remainder= 'drop',
-          verbose_feature_names_out=False)
-          
-param_grid = {
- 'n_neighbors': range(4, 30),
- 'weights': [ 'distance','uniform'],
- 'metric': ['manhattan', 'hamming', 'cosine', 'chebyshev']
-}
-
-
-final_cat_knn_pipeline_cv = Pipeline([
-  ('prep', preprocessor),
-  ('selector', selectorr),
-  ('cv', GridSearchCV(
-    KNeighborsRegressor(), 
-    param_grid, 
-    cv=kf, 
-    scoring=scoring, 
-    refit='neg_mean_squared_error',
-    verbose=2, 
-    n_jobs=7))]
-)
-
-final_cat_knn_pipeline_cv.fit(ames_x_train, Sale_Price_train)
-```
-```{python}
-#| echo: false
-# pd.to_pickle(final_cat_knn_pipeline_cv,'cv_l_knn_cat.pkl')
-selectorr= ColumnTransformer([('selector', 'passthrough', best_features_from_cat)],
-          remainder= 'drop',
-          verbose_feature_names_out=False)
-final_cat_knn_pipeline_cv = pd.read_pickle('cv_l_knn_cat.pkl')
-```
-
-```{python}
-(
-  pd.DataFrame(final_cat_knn_pipeline_cv.named_steps['cv'].cv_results_) 
-  >> filter(_.param_metric != 'chebyshev',
-            _.param_weights == 'distance',
-            _.param_metric != 'cosine',
-            _.param_n_neighbors >12)
-  >> mutate(min_err=_.mean_test_r2-_.std_test_r2,max_err=_.mean_test_r2+_.std_test_r2 )
-  >> ggplot(aes(x = "param_n_neighbors", y = "mean_test_r2", 
-             shape = "param_weights", color= 'param_metric')) +
-  geom_point(alpha = 1,position=position_dodge(width=0.7)) +
-  geom_errorbar(aes(ymin='min_err', ymax='max_err'),
-                  position=position_dodge(width=0.7),show_legend=False) +
-  ggtitle("Parametrización de KNN vs R^2") +
-  ylim([0.6,0.8])+
-  xlab("Parámetro: Número de vecinos cercanos") +
-  ylab('R ^2 ajustada promedio')
-)
-```
-```{python}
-f_cat_knn_pipeline = Pipeline([
-  ('prep', preprocessor),
-  ('selector', selectorr),
-  ('cv', KNeighborsRegressor(
-            n_neighbors = 22,
-            weights ='distance',
-            metric='hamming'))]
-)
-
-
-f_cat_knn_pipeline.fit(ames_x_train, Sale_Price_train)
-
-y_pred =  f_cat_knn_pipeline.predict(ames_x_test)
-pd.options.display.float_format = '{:.4f}'.format
-get_metrics(y_pred, Sale_Price_test, len(selectorr.get_feature_names_out()))
-```
-
-## KNN con variables númericas
-
-```{python}
-#| eval: false
 preprocessor= ColumnTransformer([
-  ('std', StandardScaler(), num_cols)
+  ('std', StandardScaler(), num_cols),
+  ('onehotencoding', OneHotEncoder(drop='first',handle_unknown = 'ignore', sparse_output=False, min_frequency=15), cat_cols)
   ],
   remainder = 'drop', 
   verbose_feature_names_out= False).set_output(transform = 'pandas')
-
-param_grid = {
- 'n_neighbors': range(0, 105, 5),
- 'weights': ['uniform', 'distance'],
- 'metric': ['minkowski','euclidean', 'manhattan', 'hamming', 'cosine', 'chebyshev'],
- 'p': range(3,10)
-}
-    
-    
-gs_knn_cv = Pipeline([
-  ('prep', preprocessor),
-  ('cv', GridSearchCV(
-      KNeighborsRegressor(), 
-      param_grid, 
-      cv=kf, 
-      scoring=scoring, 
-      refit='neg_mean_squared_error',
-      verbose=3, 
-      n_jobs=7))
-])
-
-gs_knn_cv.fit(ames_x_train, Sale_Price_train)
 ```
 
-```{python}
-#| echo: false
-# pd.to_pickle(gs_knn_cv, 'gs_knn_cv.pkl')
-preprocessor= ColumnTransformer([
-  ('std', StandardScaler(), num_cols)
-  ],
-  remainder = 'drop', 
-  verbose_feature_names_out= False).set_output(transform = 'pandas')
-gs_knn_cv = pd.read_pickle('gs_knn_cv.pkl')
-```
-
-
-```{python}
-
-(
-  pd.DataFrame(gs_knn_cv.named_steps['cv'].cv_results_) 
-  # >> filter(_.param_metric != 'chebyshev',
-  #           _.param_weights == 'distance',
-  #           _.param_metric != 'cosine',
-            # _.param_n_neighbors >12)
-  # >> mutate(min_err=_.mean_test_r2-_.std_test_r2,max_err=_.mean_test_r2+_.std_test_r2 )
-  >> ggplot(aes(x = "param_n_neighbors", y = "mean_test_r2", 
-             shape = "param_weights", color= 'param_metric', size='param_p')) +
-  geom_point(alpha = 1,position=position_dodge(width=0.7)) +
-  # geom_errorbar(aes(ymin='min_err', ymax='max_err'),
-                  # position=position_dodge(width=0.7),show_legend=False) +
-  ggtitle("Parametrización de KNN vs R^2") +
-  # ylim([0.6,0.8])+
-  xlab("Parámetro: Número de vecinos cercanos") +
-  ylab('R ^2 ajustada promedio')
-)
-```
-
+### Preprocesado de las variables 
+ Para el modelo de KNN se tomará como variable predictiva el precio de venta, sin ninguna transformación. 
+  -   Variables númericas:
+      _   Estadarización
+  -     Variables categóricas:
+      - One hot econding, tomando un mínimo de 15 observaciones en las categorías
 ```{python}
 #| eval: false
 
-param_grid = {
- 'n_neighbors': range(5, 20),
- 'weights': ['uniform', 'distance'],
- 'metric': ['minkowski','euclidean', 'manhattan', 'hamming', 'cosine', 'chebyshev'],
- 'p': range(3,10)
-}
-    
-    
-gs_knn_cv2 = Pipeline([
-  ('prep', preprocessor),
-  ('cv', GridSearchCV(
-      KNeighborsRegressor(), 
-      param_grid, 
-      cv=kf, 
-      scoring=scoring, 
-      refit='neg_mean_squared_error',
-      verbose=3, 
-      n_jobs=7))
-])
-
-gs_knn_cv2.fit(ames_x_train, Sale_Price_train)
-```
-
-```{python}
-#| echo: false
-
-# pd.to_pickle(gs_knn_cv2,'gs_knn_cv2.pkl')gs_knn_cv2
-gs_knn_cv2 = pd.read_pickle('gs_knn_cv2.pkl')
-```
-
-```{python}
-# gs_knn_cv.named_steps['cv'].cv_results_
-
-(
-  pd.DataFrame(gs_knn_cv2.named_steps['cv'].cv_results_) 
-  >> filter(_.param_metric == 'manhattan',
-            _.param_weights == 'distance',_.param_n_neighbors>9
-              )
-  >> mutate(min_err=_.mean_test_r2-_.std_test_r2,max_err=_.mean_test_r2+_.std_test_r2 )
-  >> ggplot(aes(x = "param_n_neighbors", y = "mean_test_r2", 
-             shape = "param_weights", color= 'param_metric')) +
-  geom_point(alpha = 1,position=position_dodge(width=0.7)) +
-  geom_errorbar(aes(ymin='min_err', ymax='max_err'),
-                  position=position_dodge(width=0.7),show_legend=False) +
-  ggtitle("Parametrización de KNN vs R^2") +
-  # ylim([0.6,0.8])+
-  xlab("Parámetro: Número de vecinos cercanos") +
-  ylab('R ^2 ajustada promedio')
-)
-```
-
-```{python}
-fst_knn_pipe = Pipeline([
-  ('prep',preprocessor),
-  ('regressor', KNeighborsRegressor(
-    n_neighbors = 16,
-    weights = 'distance',
-    metric ='manhattan')
-    )]
-    )
-    
-fst_knn_pipe.fit(ames_x_train , Sale_Price_train)
-y_pred  = fst_knn_pipe.predict(ames_x_test)
-
-get_metrics(y_pred, Sale_Price_test, len(preprocessor.get_feature_names_out()))
-get_metrics(y_pred, Sale_Price_test, len(preprocessor.get_feature_names_out()))
-```
-
-```{python}
-#| eval: false
-importance_df =importance_from_model(
-  test_frame = ames_x_test,
-  y_obs = Sale_Price_test ,
-  selected_columns = num_cols, 
-  pipeline = fst_knn_pipe,
-  actual_mse =get_metrics(y_pred, Sale_Price_test, len(preprocessor.get_feature_names_out())).loc['MSE'].values[0] ,
-  n_permutations= 50,
-  trans_pred= False
-)
-```
-
-```{python}
-# pd.to_pickle(importance_df, 'knn_num_importance_df.pkl')
-importance_df = pd.read_pickle('knn_num_importance_df.pkl')
-```
-
-
-
-```{python}
-(
-  importance_df >># top_n(-20, _.Mean_Loss)>>
-  mutate(
-    ymin = _.Mean_Loss - _.Std_Loss,
-    ymax = _.Mean_Loss + _.Std_Loss) >>
-  ggplot(aes(x = 'reorder(Variable, Mean_Loss)', y = "Mean_Loss")) +
-  geom_errorbar(aes(ymin='ymin', ymax='ymax'),
-    width=0.2, position=position_dodge(0.9)) +
-  geom_point(alpha = 0.65) +
-  labs(title='Importancia de las Variables', x='Variable', y='Importancia') +
-  coord_flip()
-)
-
-
-```
-```{python}
-#| eval: false
-vars_importance_order =list( importance_df >> arrange(_.Mean_Loss) >> pull('Variable'))
-
-knn_reg=KNeighborsRegressor(
-      n_neighbors = 16,
-      weights = 'distance',
-      metric ='manhattan')
-      
-v=[]
-r2=[]
-mse_=[]
-for i in range(30):
-  vars_to_train = vars_importance_order[i:]
-  
-  selectorr = ColumnTransformer([('selector', 'passthrough', vars_to_train)],
-          remainder= 'drop',
-          verbose_feature_names_out=False)
-          
-  fst_knn_pipe = Pipeline([
-    ('prep',preprocessor),
-    ('selector', selectorr),
-    ('regressor', knn_reg)
-    ])
-  
-  fst_knn_pipe.fit(ames_x_train, Sale_Price_train)
-  pred=  fst_knn_pipe.predict( ames_x_test )
-  mse_.append(get_metrics(pred,Sale_Price_test, len(vars_to_train)).loc['MSE'].values[0])
-  r2.append(get_metrics(pred,Sale_Price_test, len(vars_to_train)).loc['R2Adj'].values[0])
-  v.append(vars_to_train)
-  
-idf = pd.DataFrame({'MSE':mse_, 'R2_adj':r2,'vars':v})
-best_features_from_num = (idf >> top_n(-1, _.MSE) >> pull ('vars'))[0]
-```
-```{python}
-#| echo: false
-# pd.to_pickle(idf, 'knn_num_idf.pkl')
-
-idf = pd.read_pickle('knn_num_idf.pkl')
-best_features_from_num = (idf >> top_n(-1, _.MSE) >> pull ('vars'))[0]
-
-```
-
-
-```{python}
-#| eval: false
-selectorr = ColumnTransformer([('selector', 'passthrough', best_features_from_num)],
-          remainder= 'drop',
-          verbose_feature_names_out=False).set_output(transform = 'pandas')
-          
-kf = KFold(n_splits=10, shuffle=True, random_state=50)
-
-param_grid = {
- 'n_neighbors': range(0, 105, 5),
- 'weights': ['uniform', 'distance'],
- 'metric': ['minkowski','euclidean', 'manhattan', 'hamming', 'cosine', 'chebyshev'],
- 'p': range(3,10)
-}
-    
-    
-          
-scnd_knn_pipe_cv = Pipeline([
-  ('prep',preprocessor),
-  ('selector', selectorr),
-  ('cv', GridSearchCV(
-      KNeighborsRegressor(), 
-      param_grid, 
-      cv=kf, 
-      scoring=scoring, 
-      refit='neg_mean_squared_error',
-      verbose=3, 
-      n_jobs=7))
-  ])
-
-scnd_knn_pipe_cv.fit(ames_x_train, Sale_Price_train)
-
-```
-
-```{python}
-#| echo: false
-selectorr = ColumnTransformer([('selector', 'passthrough', best_features_from_num)],
-          remainder= 'drop',
-          verbose_feature_names_out=False).set_output(transform = 'pandas')
-# pd.to_pickle(scnd_knn_pipe_cv,'scnd_knn_pipe_cv_num.pkl')
-scnd_knn_pipe_cv = pd.read_pickle('scnd_knn_pipe_cv_num.pkl')
-```
-
-
-```{python}
-
-(
-  pd.DataFrame(scnd_knn_pipe_cv.named_steps['cv'].cv_results_) 
-  # >> filter(_.param_metric != 'chebyshev',
-  #           _.param_weights == 'distance',
-  #           _.param_metric != 'cosine',
-            # _.param_n_neighbors >12)
-  # >> mutate(min_err=_.mean_test_r2-_.std_test_r2,max_err=_.mean_test_r2+_.std_test_r2 )
-  >> ggplot(aes(x = "param_n_neighbors", y = "mean_test_r2", 
-             shape = "param_weights", color= 'param_metric', size='param_p')) +
-  geom_point(alpha = 1,position=position_dodge(width=0.7)) +
-  # geom_errorbar(aes(ymin='min_err', ymax='max_err'),
-                  # position=position_dodge(width=0.7),show_legend=False) +
-  ggtitle("Parametrización de KNN vs R^2") +
-  # ylim([0.6,0.8])+
-  xlab("Parámetro: Número de vecinos cercanos") +
-  ylab('R ^2 ajustada promedio')
-)
-```
-
-
-```{python}
-#| eval: false
-kf = KFold(n_splits=10, shuffle=True, random_state=53)
-
-param_grid = {
- 'n_neighbors': range(4, 30),
- 'weights': ['uniform', 'distance'],
- 'metric': [ 'manhattan', 'euclidean', ]
-}
-    
-    
-          
-scnd_knn_pipe_cv2 = Pipeline([
-  ('prep',preprocessor),
-  ('selector', selectorr),
-  ('cv', GridSearchCV(
-      KNeighborsRegressor(), 
-      param_grid, 
-      cv=kf, 
-      scoring=scoring, 
-      refit='neg_mean_squared_error',
-      verbose=3, 
-      n_jobs=7))
-  ])
-
-scnd_knn_pipe_cv2.fit(ames_x_train, Sale_Price_train)
-
-```
-
-```{python}
-#| echo: false
-# pd.to_pickle(scnd_knn_pipe_cv2,'scnd_knn_pipe_cv2_num.pkl')
-scnd_knn_pipe_cv2 = pd.read_pickle('scnd_knn_pipe_cv2_num.pkl')
-```
-
-```{python}
-(
-  pd.DataFrame(scnd_knn_pipe_cv2.named_steps['cv'].cv_results_) 
-  >> filter(_.param_weights == 'distance',
-            _.param_metric != 'euclidean',
-            _.param_n_neighbors <10)
-  >> mutate(min_err=_.mean_test_r2-_.std_test_r2,max_err=_.mean_test_r2+_.std_test_r2 )
-  >> ggplot(aes(x = "param_n_neighbors", y = "mean_test_r2", 
-             shape = "param_weights", color= 'param_metric')) +
-  geom_point(alpha = 1,position=position_dodge(width=0.7)) +
-  geom_errorbar(aes(ymin='min_err', ymax='max_err'),
-                  position=position_dodge(width=0.7),show_legend=False) +
-  ggtitle("Parametrización de KNN vs R^2") +
-  # ylim([0.6,0.8])+
-  xlab("Parámetro: Número de vecinos cercanos") +
-  ylab('R ^2 ajustada promedio')
-)
-```
-
-```{python}
-knn_reg=KNeighborsRegressor(
-      n_neighbors = 8,
-      weights = 'distance',
-      metric ='manhattan')
-      
-
-f_num_knn_reg = Pipeline([
-  ('prep',preprocessor),
-  ('selector', selectorr ),
-  ('regressor', knn_reg)
-  ])
-
-f_num_knn_reg.fit(ames_x_train, Sale_Price_train)
-
-y_pred = f_num_knn_reg.predict(ames_x_test)
-get_metrics(y_pred, Sale_Price_test, len (best_features_from_num))
-
-```
-```{python}
-voting = VotingRegressor(
-  [('knn_num', f_num_knn_reg),
-  ('knn_cat',f_cat_knn_pipeline)],
-  weights =[.80,.1]
-)
-voting.fit(ames_x_train, Sale_Price_train)
-
-y_pred = voting.predict(ames_x_test)
-get_metrics(y_pred, Sale_Price_test, len (best_features_from_num))
-```
-
-## KNN con todas las variables
-
-```{python}
-#| eval: false
-###################################################
-##############  Full model ########################
-###################################################
-
-scoring = {
-    'neg_mean_squared_error': make_scorer(mean_squared_error, greater_is_better=False),
-    'r2': make_scorer(adjusted_r2_score, greater_is_better=True, n=np.ceil(len(ames_x_train)), p=len(num_cols)),
-    'neg_mean_absolute_error': make_scorer(mean_absolute_error, greater_is_better=False),
-    'mape': make_scorer(mean_absolute_percentage_error, greater_is_better=False)
-}
-
- 
 preprocessor= ColumnTransformer([
   ('std', StandardScaler(), num_cols),
   ('onehotencoding', OneHotEncoder(drop='first',handle_unknown = 'ignore', sparse_output=False, min_frequency=15), cat_cols)
@@ -1721,16 +1031,25 @@ preprocessor= ColumnTransformer([
   remainder = 'drop', 
   verbose_feature_names_out= False).set_output(transform = 'pandas')
 
+predictors = preprocessor.fit_transform(ames_x_train).columns
+
+scoring = {
+    'neg_mean_squared_error': make_scorer(mean_squared_error, greater_is_better=False),
+    'r2': make_scorer(adjusted_r2_score, greater_is_better=True, n=np.ceil(len(ames_x_train)), p=len(predictors)),
+    'neg_mean_absolute_error': make_scorer(mean_absolute_error, greater_is_better=False),
+    'mape': make_scorer(mean_absolute_percentage_error, greater_is_better=False)
+}
+
 
 
 kf = KFold(n_splits=10, shuffle=True, random_state=7)
 
 
 param_grid = {
- 'n_neighbors': range(0, 105, 5),
+ 'n_neighbors': range(0, 70, 5),
  'weights': ['uniform', 'distance'],
- 'metric': ['minkowski','euclidean', 'manhattan', 'hamming', 'cosine', 'chebyshev'],
- 'p': range(3,10)
+ 'metric': ['euclidean', 'manhattan', 'cosine'],
+
 }
     
     
@@ -1751,44 +1070,47 @@ gs_knn_fm_cv.fit(ames_x_train, Sale_Price_train )
 
 ```{python}
 #| echo: false
-
-preprocessor= ColumnTransformer([
-  ('std', StandardScaler(), num_cols),
-  ('onehotencoding', OneHotEncoder(drop='first',handle_unknown = 'ignore', sparse_output=False, min_frequency=15), cat_cols)
-  ],
-  remainder = 'drop', 
-  verbose_feature_names_out= False).set_output(transform = 'pandas') 
-  
-# pd.to_pickle(gs_knn_fm_cv, 'gs_knn_fm_cv.pkl')
-gs_knn_fm_cv = pd.read_pickle('gs_knn_fm_cv.pkl')
+# pd.to_pickle(gs_knn_fm_cv, "first_knn_cv_.pkl")
+gs_knn_fm_cv = pd.read_pickle('first_knn_cv_.pkl')
 ```
 
+### Resultados CV
+En la siguiente gráfica se puede ver el las estimaciones  de las metricas de $R^2_{adj},\space RMSE\text{ y } MAPE$. La distancia de $manhattan$  parece ser la que tiene mejores resultados en las tres métricas, y el hiper-parámetro $K$ muestra mejores cuando es menor a 25. 
 
 ```{python}
+#| label: plot_knn_cv1
+#| fig-keep: all
+#| code-fold: true
+cv_results = pd.DataFrame(gs_knn_fm_cv.named_steps['cv'].cv_results_)
+
+cv_results = (cv_results 
+              >> select(-_.contains('split'),-_.params, -_.contains('time'))
+              >> mutate(RMSE = abs(_.mean_test_neg_mean_squared_error)**0.5)
+             >> pivot_longer(
+                  cols=['mean_test_r2', 'mean_test_mape','RMSE'],
+                  names_to='parameter', 
+                  values_to='value') >> mutate(value = abs(_.value))
+                  )
+
+
 (
-  pd.DataFrame(gs_knn_fm_cv.named_steps['cv'].cv_results_) 
-  # >> filter(_.param_metric != 'chebyshev',
-  #           _.param_weights == 'distance',
-  #           _.param_metric != 'cosine',
-            # _.param_n_neighbors >12)
-  # >> mutate(min_err=_.mean_test_r2-_.std_test_r2,max_err=_.mean_test_r2+_.std_test_r2 )
-  >> ggplot(aes(x = "param_n_neighbors", y = "mean_test_r2", 
-             shape = "param_weights", color= 'param_metric', size='param_p')) +
-  geom_point(alpha = 1,position=position_dodge(width=0.7)) +
-  # geom_errorbar(aes(ymin='min_err', ymax='max_err'),
-                  # position=position_dodge(width=0.7),show_legend=False) +
-  ggtitle("Parametrización de KNN vs R^2") +
-  # ylim([0.6,0.8])+
-  xlab("Parámetro: Número de vecinos cercanos") +
-  ylab('R ^2 ajustada promedio')
+  cv_results 
+    >> ggplot( aes(x = "param_n_neighbors", y = "value", shape = "param_weights", color= 'param_metric')) 
+    + geom_point(alpha = 0.9,position=position_dodge(width=0.1))
+    + facet_wrap("~parameter",ncol =1, scales = "free_y")
+    + labs( y = '',x= 'Parámetro: vecinos cercanos K' ,shape = 'Ponderación',color = 'Métrica' )
 )
+
+
+
 ```
+### Párametros óptimos para el full model
 
 ```{python}
 #| eval: false
 param_grid = {
- 'n_neighbors': range(3, 20),
- 'weights': ['uniform', 'distance'],
+ 'n_neighbors': range(3, 26),
+ 'weights': ['uniform'],
  'metric': ['euclidean', 'manhattan', 'cosine']
 }
     
@@ -1802,7 +1124,7 @@ gs_knn_fm_cv2 = Pipeline([
       scoring=scoring, 
       refit='neg_mean_squared_error',
       verbose=3, 
-      n_jobs=7))
+      n_jobs=-1))
 ])
 
 gs_knn_fm_cv2.fit(ames_x_train, Sale_Price_train )
@@ -1810,83 +1132,112 @@ gs_knn_fm_cv2.fit(ames_x_train, Sale_Price_train )
 
 ```{python}
 #| echo: false
-# pd.to_pickle(gs_knn_fm_cv2, 'gs_knn_fm_cv2.pkl')
-gs_knn_fm_cv2 = pd.read_pickle('gs_knn_fm_cv2.pkl')
+# pd.to_pickle(gs_knn_fm_cv2, 'second_knn_cv_.pkl')
+gs_knn_fm_cv2 = pd.read_pickle('second_knn_cv_.pkl')
 ```
 
+```{python}
+cv_results = pd.DataFrame(gs_knn_fm_cv2.named_steps['cv'].cv_results_)
+
+cv_results = (cv_results 
+              >> select(-_.contains('split'),-_.params, -_.contains('time'))
+              >> mutate(RMSE = abs(_.mean_test_neg_mean_squared_error)**0.5)
+             >> pivot_longer(
+                  cols=['mean_test_r2', 'mean_test_mape','RMSE'],
+                  names_to='parameter', 
+                  values_to='value') >> mutate(value = abs(_.value))
+                  )
+
+
+(
+  cv_results 
+    >> ggplot( aes(x = "param_n_neighbors", y = "value", shape = "param_weights", color= 'param_metric')) 
+    + geom_point(alpha = 1)
+    + facet_wrap("~parameter",ncol =1, scales = "free_y")
+    + labs( y = '',x= 'Parámetro: vecinos cercanos K' ,shape = 'Ponderación',color = 'Métrica' )
+)
+```
+Analizando los diferentes resultados se opta por un parametro de $K=10$ pues muestra una buena estimación tanto para $R^2_{adj}$ y $MAPE$, además, esta elección nos proporcionara un modelo más robusto que otras opciones que parecen arrojar mejores métricas.
 
 ```{python}
 (
-  pd.DataFrame(gs_knn_fm_cv2.named_steps['cv'].cv_results_) 
-  >> filter(_.param_metric != 'chebyshev',
-            _.param_weights == 'distance')
-  #           _.param_metric != 'cosine',
-            # _.param_n_neighbors >12)
-  >> mutate(min_err=_.mean_test_r2-_.std_test_r2,max_err=_.mean_test_r2+_.std_test_r2 )
-  >> ggplot(aes(x = "param_n_neighbors", y = "mean_test_r2", 
-             shape = "param_weights", color= 'param_metric')) +
-  geom_point(alpha = 1,position=position_dodge(width=0.7)) +
-  geom_errorbar(aes(ymin='min_err', ymax='max_err'),
-                  position=position_dodge(width=0.7),show_legend=False) +
-  ggtitle("Parametrización de KNN vs R^2") +
-  # ylim([0.6,0.8])+
-  xlab("Parámetro: Número de vecinos cercanos") +
-  ylab('R ^2 ajustada promedio')
+  cv_results
+      >> mutate( 
+        error_min = case_when({
+          _.parameter == 'mean_test_r2': _.value - _.std_test_r2,
+          _.parameter == 'mean_test_mape': _.value - _.std_test_mape, True:1
+        }),
+        error_max = case_when({
+          _.parameter == 'mean_test_r2': _.value + _.std_test_r2,
+          _.parameter == 'mean_test_mape': _.value + _.std_test_mape, True:1
+                                })
+        )
+      >> filter(_.param_n_neighbors.astype(int) <=15, 
+                _.parameter != 'RMSE',
+                _.param_metric == 'manhattan') 
+      >> ggplot( aes(x = "param_n_neighbors", y = "value", color= 'param_metric')) 
+      + geom_point(alpha = 1,position=position_dodge(width=0.7))
+      + geom_errorbar(aes(ymin='error_min', ymax='error_max'),
+      position=position_dodge(width=0.7),show_legend=False)
+      + facet_wrap("~parameter",ncol =1, scales = "free_y")
+      + labs( y = '',x= 'Parámetro: vecinos cercanos K' ,shape = 'Ponderación',color = 'Métrica' )
 )
 ```
 
 
+## Feature selection
+Se hara un analísis del preformance del modelo en test, y se analizará la importancia de las variables y se buscara hara una selección de variables de acuerdo a eso mismo.El  modelo muestra los siguientes resultados:
+
 
 ```{python}
-
-fst_knn_fm__pipe = Pipeline([
-  ('prep',preprocessor),
-  ('regressor', KNeighborsRegressor(
-    n_neighbors = 8,
-    weights = 'distance',
+knn_reg = KNeighborsRegressor(
+    n_neighbors = 10,
+    weights = 'uniform',
     metric ='manhattan')
-    )]
-    )
     
-fst_knn_fm__pipe.fit(ames_x_train , Sale_Price_train)
-y_pred  = fst_knn_fm__pipe.predict(ames_x_test)
+knn_= Pipeline([
+  ('prep',preprocessor),
+  ('regressor',knn_reg )
+  ])
+    
+knn_.fit(ames_x_train , Sale_Price_train)
 
-get_metrics(y_pred, Sale_Price_test, len(preprocessor.get_feature_names_out()))
-get_metrics(y_pred, Sale_Price_test, len(preprocessor.get_feature_names_out() ) )
+y_pred  = knn_.predict(ames_x_test)
+predictors = preprocessor.get_feature_names_out()
+
+metrics = get_metrics(y_pred, Sale_Price_test, len(predictors))
+
+print(metrics)
 ```
-
+A continucación se calcula la importancia de variables para el full model
 ```{python}
 #| eval: false
-knn_reg = KNeighborsRegressor(
-    n_neighbors = 8,
-    weights = 'distance',
-    metric ='manhattan')
-
-knn_reg.fit(preprocessor.fit_transform(ames_x_train), Sale_Price_train)
-
-
 importance_df = importance_from_model(
-  test_frame = transformed_test_df,
+  test_frame = preprocessor.transform(ames_x_test) ,
   y_obs = Sale_Price_test ,
-  selected_columns = transformed_test_df.columns.to_list(), 
+  selected_columns = list(predictors), 
   pipeline = knn_reg,
-  actual_mse =get_metrics(y_pred, Sale_Price_test, len(preprocessor.get_feature_names_out())).loc['MSE'].values[0] ,
+  actual_mse = metrics.loc['MSE'].values[0] ,
   n_permutations= 50,
   trans_pred= False
 )
 ```
 ```{python}
 #| echo: false
-#| 
-transformed_test_df = preprocessor.transform(ames_x_test)
-# pd.to_pickle(importance_df , 'importance_df_fm.pkl')
-importance_df = pd.read_pickle('importance_df_fm.pkl')
-
+# importance_df.to_csv( 'importance_knn_1_.csv')
+importance_df = pd.read_csv('importance_knn_1_.csv') 
+pd.options.display.float_format = '{:.5f}'.format
 ```
-
+Al tener muchas variables, el efecto en los shuffles es muy pequeño para todas las variables, pero aún as;i es comparable entre ellas, a continuación se muestran los resultados.
 ```{python}
+importance_df.iloc[:,1:].head(10)
+```
+En las siguientes gráficas se pueden observar las 15 variables que más afectan al $MSE$, es decir, las que se podrían considerar más importatntes, y también se muestran las 15 variables con menos impacto al modelo.
+```{python}
+#| fig-keep: all
+#| code-fold: true
 (
-  importance_df >> top_n(30, _.Mean_Loss)>>
+  importance_df >> top_n(15, _.Mean_Loss) >>
   mutate(
     ymin = _.Mean_Loss - _.Std_Loss,
     ymax = _.Mean_Loss + _.Std_Loss) >>
@@ -1894,11 +1245,11 @@ importance_df = pd.read_pickle('importance_df_fm.pkl')
   geom_errorbar(aes(ymin='ymin', ymax='ymax'),
     width=0.2, position=position_dodge(0.9)) +
   geom_point(alpha = 0.65) +
-  labs(title='Importancia de las Variables', x='Variable', y='Importancia') +
+  labs(title='Importancia de las Variables (TOP 15)', x='Variable', y='Importancia') +
   coord_flip()
 )
 (
-  importance_df >> top_n(-30, _.Mean_Loss)>>
+  importance_df >> top_n(-15, _.Mean_Loss)>>
   mutate(
     ymin = _.Mean_Loss - _.Std_Loss,
     ymax = _.Mean_Loss + _.Std_Loss) >>
@@ -1906,41 +1257,79 @@ importance_df = pd.read_pickle('importance_df_fm.pkl')
   geom_errorbar(aes(ymin='ymin', ymax='ymax'),
     width=0.2, position=position_dodge(0.9)) +
   geom_point(alpha = 0.65) +
-  labs(title='Importancia de las Variables', x='Variable', y='Importancia') +
+  labs(title='Importancia de las Variables (Peores 15)', x='', y='Importancia') +
   coord_flip()
 )
 
 ```
-
+Para poder hacer selección de features, se probaran 200 modelos, donde se irán eliminando variables de acuerdo a su importancia, de la menos importante hacia las que más importancia tienen, posteriormente se elegira el mejor de esos 150 modelos
 ```{python}
 #| eval: false
 vars_importance_order = list( importance_df >> arrange(_.Mean_Loss) >> pull('Variable'))
 transformed_df = preprocessor.fit_transform(ames_x_train)
+transformed_test_df = preprocessor.transform(ames_x_test)
 v=[]
 r2=[]
 mse_=[]
-for i in range(150):
+p=[]
+for i in range(200):
   vars_to_train = vars_importance_order[i:]
-  
+  p.append(len(vars_to_train))
   knn_reg.fit(transformed_df[vars_to_train], Sale_Price_train)
   pred= knn_reg.predict(transformed_test_df[vars_to_train])
   mse_.append(get_metrics(pred,Sale_Price_test, len(vars_to_train)).loc['MSE'].values[0])
   r2.append(get_metrics(pred,Sale_Price_test, len(vars_to_train)).loc['R2Adj'].values[0])
   v.append(vars_to_train)
-idf = pd.DataFrame({'MSE':mse_, 'R2_adj':r2,'vars':v})
+idf = pd.DataFrame({'MSE':mse_, 'R2_adj':r2,'vars':v, 'predictors':p})
+idf.to_csv('iters_knn_feature_selection.csv')
 best_features_from_fm = (idf >> mutate(MSE= (_.MSE)**(0.5) ) >> filter(_.MSE < 33500) >> top_n(1, _.R2_adj) >> pull('vars'))[0]
 ```
 
 
 ```{python}
 #| echo: false
-
-# pd.to_pickle(idf, 'idf_fm_knn.pkl')
-
-idf= pd.read_pickle('idf_fm_knn.pkl')
+pd.options.display.float_format = '{:.2f}'.format
+idf = pd.read_csv('iters_knn_feature_selection.csv')
 best_features_from_fm = (idf >> mutate(MSE= (_.MSE)**(0.5) ) >> filter(_.MSE < 33500) >> top_n(1, _.R2_adj) >> pull('vars'))[0]
+(idf.iloc[:,1:] >> select(-_.vars)).head()
+```
+Podemos ver que el mejor modelo podría encontrarse entre 50 y 75 predictores, de acuerdo a los modelos que se probaron, pues entre ese inrevalo el MSE toma valores menores y la $R^2_{adj}$ se mantiene en valores por encima de 0.8.
+```{python}
+(
+  idf 
+    >> pivot_longer(
+        cols=['MSE','R2_adj' ],names_to='variables', values_to='value'
+                  )
+    >> ggplot(aes(x ='predictors', y='value'))
+    +  geom_point(alpha = 0.5)
+    +  facet_wrap('~variables', ncol=1, scales ='free_y')
+)
+```
+Haciendo un zoom podemos ver que el mejor candidato es el modelo con 63 predictores
+```{python}
+(
+  idf 
+    >> filter  (_.predictors.between(10,63))
+    >> pivot_longer(
+        cols=['MSE','R2_adj' ],names_to='variables', values_to='value'
+                  )
+    >> ggplot(aes(x ='predictors', y='value'))
+    +  geom_point(alpha = 0.5)
+    +  facet_wrap('~variables', ncol=1, scales ='free_y')
+)
 ```
 
+```{python}
+#| label: best_vars_knn and selector def
+#| echo: false
+
+idf >> filter(_.predictors == 20) >> pull('vars')
+bm_features =  ['Second_Flr_SF', 'Lot_Area', 'Neighborhood_Timberland', 'Garage_Type_BuiltIn', 'Latitude', 'Half_Bath', 'Screen_Porch', 'Year_Remod_Add', 'Garage_Cars', 'TotRms_AbvGrd', 'Neighborhood_Stone_Brook', 'Full_Bath', 'Garage_Area', 'Open_Porch_SF', 'Bsmt_Full_Bath', 'Mas_Vnr_Area', 'Total_Bsmt_SF', 'Fireplaces', 'Gr_Liv_Area', 'First_Flr_SF']
+selectorr = ColumnTransformer(
+  [('selector', 'passthrough',bm_features)],
+  remainder = 'drop',
+  verbose_feature_names_out= False).set_output(transform = 'pandas')
+```
 
 ```{python}
 #| eval: false
@@ -1953,7 +1342,7 @@ preprocessor= ColumnTransformer([
   verbose_feature_names_out= False).set_output(transform = 'pandas')
 
 selectorr = ColumnTransformer(
-  [('selector', 'passthrough',best_features_from_fm)],
+  [('selector', 'passthrough',bm_features)],
   remainder = 'drop',
   verbose_feature_names_out= False).set_output(transform = 'pandas')
 
@@ -1963,10 +1352,9 @@ kf = KFold(n_splits=10, shuffle=True, random_state=77)
 
 
 param_grid = {
- 'n_neighbors': range(0, 50, 1),
+ 'n_neighbors': range(5, 33, 1),
  'weights': ['uniform', 'distance'],
- 'metric': ['minkowski','euclidean', 'manhattan', 'hamming', 'cosine', 'chebyshev'],
- 'p': range(3,10)
+ 'metric': ['euclidean', 'manhattan', 'cosine' ],
 }
     
     
@@ -1991,63 +1379,54 @@ final_cv_knn.fit(ames_x_train, Sale_Price_train )
 ```{python}
 #| echo: false
 
-# pd.to_pickle(final_cv_knn, 'final_cv_knn_fm.pkl')
-final_cv_knn = pd.read_pickle('final_cv_knn_fm.pkl')
+# pd.to_pickle(final_cv_knn, 'knn_cv_after_feature_s.pkl')
+final_cv_knn = pd.read_pickle('knn_cv_after_feature_s.pkl')
 ```
 
 
 ```{python}
+cv_results = pd.DataFrame(final_cv_knn.named_steps['cv'].cv_results_)
+
+cv_results = (cv_results 
+              >> select(-_.contains('split'),-_.params, -_.contains('time'))
+              >> mutate(RMSE = abs(_.mean_test_neg_mean_squared_error)**0.5)
+              >> pivot_longer(
+                  cols=['mean_test_r2', 'mean_test_mape','RMSE'],
+                  names_to='parameter', 
+                  values_to='value') >> mutate(value = abs(_.value))
+                  )
+
+
 (
-  pd.DataFrame(final_cv_knn.named_steps['cv'].cv_results_) 
-  >> filter(_.param_metric != 'chebyshev',
-            _.param_weights == 'distance',
-            _.param_metric == 'manhattan',
-            _.param_metric != 'hamming',
-            _.param_n_neighbors <22)
-  >> mutate(min_err=_.mean_test_r2-_.std_test_r2,max_err=_.mean_test_r2+_.std_test_r2 )
-  >> ggplot(aes(x = "param_n_neighbors", y = "mean_test_r2", 
-             shape = "param_weights", color= 'param_metric')) +
-  geom_point(alpha = 1,position=position_dodge(width=0.7)) +
-  geom_errorbar(aes(ymin='min_err', ymax='max_err'),
-                  position=position_dodge(width=0.7),show_legend=False) +
-  ggtitle("Parametrización de KNN vs R^2") +
-  # ylim([0.6,0.8])+
-  xlab("Parámetro: Número de vecinos cercanos") +
-  ylab('R ^2 ajustada promedio')
+  cv_results 
+    >>filter(_.param_metric != 'minkowski')
+    >> ggplot( aes(x = "param_n_neighbors", y = "value", shape = "param_weights", color= 'param_metric')) 
+    + geom_point(alpha = 0.9,position=position_dodge(width=0.1))
+    + facet_wrap("~parameter",ncol =1, scales = "free_y")
+    + labs( y = '',x= 'Parámetro: vecinos cercanos K' ,shape = 'Ponderación',color = 'Métrica' )
 )
 ```
 
 ```{python}
-      
+knn_reg = KNeighborsRegressor(
+    n_neighbors = 14,
+    weights = 'distance',
+    metric ='manhattan')
 
 f_num_knn_reg_fm = Pipeline([
   ('prep',preprocessor),
   ('selector', selectorr ),
-  ('regressor', final_cv_knn.named_steps['cv'].best_estimator_)
+  ('regressor', knn_reg )
   ])
 
 f_num_knn_reg_fm .fit(ames_x_train, Sale_Price_train)
 
 y_pred = f_num_knn_reg_fm .predict(ames_x_test)
-get_metrics(y_pred, Sale_Price_test, len (best_features_from_fm))
+get_metrics(y_pred, Sale_Price_test, len (bm_features))
+
+validation_results(x_val=ames_x_val,pipeline=f_num_knn_reg_fm,y_val=Sale_Price_validation,n_preds = len (bm_features))
 ```
-```{python}
-voting = VotingRegressor(
-  [('knn_num', f_num_knn_reg),
-  ('knn_fm', f_num_knn_reg_fm)],
-  weights  = [0.9, 0.1]
-)
-m1 = list(f_num_knn_reg.named_steps['selector'].get_feature_names_out())
-m3 = list(f_num_knn_reg_fm.named_steps['selector'].get_feature_names_out())
-predictors =list( set(m1+m3 ))
 
-
-
-voting.fit(ames_x_train, Sale_Price_train)
-
-y_pred = voting.predict(ames_x_test)
-get_metrics(y_pred, Sale_Price_test, len(predictors) )
-```
 
 ```{python}
 y_obs = Sale_Price_test
@@ -2109,12 +1488,256 @@ ames_test >>
 )
 ```
 
+# Random Forest
+
 ```{python}
-# validation_results(
-#       x_val = ames_x_val,
-#       y_val = Sale_Price_validation, 
-#       pipeline = voting, 
-#       n_preds=18)
-      
+from sklearn.ensemble import RandomForestRegressor
+rf_gs = pd.read_pickle('grid_search_random_forest.pkl')
+
+
 ```
 
+
+
+```{python}
+cv_results = pd.DataFrame(rf_gs.named_steps['regressor'].cv_results_)
+cv_results = (cv_results 
+              >> select(-_.contains('split|tiime'))
+              >> mutate(RMSE = abs(_.mean_test_neg_mean_squared_error)**0.5)
+             >> pivot_longer(
+                  cols=['mean_test_r2', 'mean_test_mape','RMSE'],
+                  names_to='parameter', 
+                  values_to='value') >> mutate(value = abs(_.value))
+                  )
+
+
+(
+  cv_results 
+    >> ggplot( aes(x = "param_max_features", y = "value", color ='param_min_samples_leaf' )) 
+    + geom_jitter(alpha = 0.5,size=0.7)
+    + facet_wrap("~parameter",ncol =1, scales = "free_y")
+)
+```
+
+```{python}
+(
+  cv_results >> filter(_.param_min_samples_leaf <7, _.param_max_features >30)
+    >> ggplot( aes(x = "param_max_features", y = "value", color ='param_min_samples_leaf' )) 
+    + geom_boxplot(alpha = 0.5,size=0.7)
+    + facet_wrap("~parameter",ncol =1, scales = "free_y")
+)
+```
+```{python}
+(
+  cv_results >> filter(_.param_min_samples_leaf <6, _.param_max_features >30)
+    >> ggplot( aes(x = "param_max_depth", y = "value")) 
+    + geom_boxplot(alpha = 0.5,size=0.7)
+    + facet_wrap("~parameter",ncol =1, scales = "free_y")
+)
+```
+
+
+```{python}
+cv_results = pd.DataFrame(rf_gs.named_steps['regressor'].cv_results_)
+
+(
+  cv_results >> filter ( _.mean_test_r2>0.8)>>
+  select(_.param_max_depth, _.param_max_features, _.param_min_samples_leaf, 
+         _.param_min_samples_split, _.mean_test_r2) >>
+  pivot_longer(
+    cols = ["param_max_depth", "param_max_features", "param_min_samples_leaf", "param_min_samples_split"],
+    names_to="parameter",
+    values_to="value") >>
+  ggplot(aes(x = "value", y = "mean_test_r2")) +
+  geom_point(size = 0.7, alpha = 0.5) +
+  facet_wrap("~parameter", scales = "free_x") +
+  xlab("Parameter value") +
+  ylab("R^2 promedio") +
+  ggtitle("Parametrización de Random Forest vs R^2")
+)
+```
+
+```{python}
+
+
+
+
+prep = ColumnTransformer([
+    ('dummy', OneHotEncoder(drop = 'first',handle_unknown  = 'ignore', sparse_output = False), cat_cols),
+    ('selector' , 'passthrough', num_cols)],
+    remainder = 'drop',
+    verbose_feature_names_out = False).set_output(transform = 'pandas')
+
+rf_model =  rf_gs.named_steps['regressor'].best_estimator_
+    
+rf_pipe = Pipeline([
+  ('preprocesado', prep),
+  ('rf', rf_model)
+])
+
+
+rf_pipe.fit(ames_x_train, Sale_Price_train)
+```
+
+```{python}
+y_pred = rf_pipe.predict(ames_x_test)
+p = len(rf_pipe.named_steps['preprocesado'].get_feature_names_out())
+actual_mse = get_metrics(y_pred, Sale_Price_test, p).iloc[3,0]
+```
+
+## importance
+
+```{python}
+#| eval: false
+transformed_test_df = rf_pipe.named_steps['preprocesado'].transform(ames_x_test)
+
+importance_df = importance_from_model(
+  test_frame = transformed_test_df ,
+  y_obs = Sale_Price_test,
+  selected_columns = list(rf_pipe.named_steps['preprocesado'].transform(ames_x_test).columns) ,
+  pipeline = rf_model,
+  actual_mse = actual_mse,
+  n_permutations = 50,
+  trans_pred = False)
+importance_df.to_csv('importance_rf_1.csv')
+```
+
+```{python}
+#| eval: false
+transformed_test_df = rf_pipe.named_steps['preprocesado'].transform(ames_x_test)
+vars_importance_order = list( importance_df >> arrange(_.Mean_Loss) >> pull('Variable'))
+transformed_df = rf_pipe.named_steps['preprocesado'].transform(ames_x_train)
+v=[]
+r2=[]
+mse_=[]
+p=[]
+for i in range(260):
+  vars_to_train = vars_importance_order[i:]
+  
+  mf = max(55-i, round(len(vars_to_train)**0.5))
+  
+  rf = RandomForestRegressor(max_depth=13, max_features=mf, min_samples_leaf=3,min_samples_split=6, random_state=8)
+  
+  p.append(len(vars_to_train))
+  
+  
+  rf.fit(transformed_df[vars_to_train], Sale_Price_train)
+  pred = rf.predict(transformed_test_df[vars_to_train])
+  
+  mse_.append(get_metrics(pred,Sale_Price_test, len(vars_to_train)).loc['MSE'].values[0])
+  r2.append(get_metrics(pred,Sale_Price_test, len(vars_to_train)).loc['R2Adj'].values[0])
+  v.append(vars_to_train)
+  
+  
+idf = pd.DataFrame({'MSE':mse_, 'R2_adj':r2,'vars':v, 'predictors':p})
+idf.to_csv('idf_rf.csv')
+```
+
+```{python}
+importance_df = pd.read_csv('importance_rf_1.csv')
+idf=pd.read_csv('idf_rf.csv')
+(
+  idf 
+    # >> filter(_.predictors<150)
+    >> pivot_longer(
+        cols=['MSE','R2_adj' ],names_to='variables', values_to='value'
+                  )
+    >> ggplot(aes(x ='predictors', y='value'))
+    +  geom_point(alpha = 0.5)
+    +  facet_wrap('~variables', ncol=1, scales ='free_y')
+)
+
+
+(
+  idf 
+    >> filter(_.predictors<80)
+    >> pivot_longer(
+        cols=['MSE','R2_adj' ],names_to='variables', values_to='value'
+                  )
+    >> ggplot(aes(x ='predictors', y='value'))
+    +  geom_point(alpha = 0.5)
+    +  geom_smooth(span=.3)
+    +  facet_wrap('~variables', ncol=1, scales ='free_y')
+)
+```
+
+
+```{python}
+
+pd.options.display.float_format = '{:.4f}'.format
+
+(
+  idf 
+            >> select(-_.vars) 
+            >> mutate (MSE = _.MSE.round(2), R2_adj = _.R2_adj.round(3))
+            >> top_n(10, _.R2_adj)
+            >> arrange(_.R2_adj, -_.MSE)
+)
+```
+```{python}
+#| label: bm_f_rf
+bm_features = ['Neighborhood_Stone_Brook', 'Land_Contour_Low', 'Lot_Shape_Regular', 'BsmtFin_Type_1_Unf', 'Neighborhood_Northridge_Heights', 'Overall_Cond_Excellent', 'BsmtFin_Type_1_No_Basement', 'Paved_Drive_Paved', 'Garage_Type_Detchd', 'Bldg_Type_OneFam', 'House_Style_Two_Story', 'Garage_Finish_Unf', 'Garage_Cond_Typical', 'Heating_QC_Typical', 'Bsmt_Exposure_No', 'Kitchen_AbvGr', 'MS_Zoning_Residential_Low_Density', 'Central_Air_Y', 'Bedroom_AbvGr', 'MS_SubClass_Two_Story_1946_and_Newer', 'Half_Bath', 'Neighborhood_Crawford', 'Bsmt_Unf_SF', 'Foundation_CBlock', 'BsmtFin_SF_1', 'Bsmt_Exposure_Gd', 'Longitude', 'Roof_Style_Hip', 'Lot_Frontage', 'Wood_Deck_SF', 'BsmtFin_Type_1_GLQ', 'Bsmt_Full_Bath', 'Roof_Style_Gable', 'Full_Bath', 'Open_Porch_SF', 'Second_Flr_SF', 'Foundation_PConc', 'Mas_Vnr_Area', 'TotRms_AbvGrd', 'Fireplaces', 'Year_Remod_Add', 'Lot_Area', 'Latitude', 'Garage_Area', 'Year_Built', 'Garage_Cars', 'First_Flr_SF', 'last_remod', 'Total_Bsmt_SF', 'Gr_Liv_Area']
+
+
+# (
+#   idf       >> filter(_.predictors ==50 )
+#             >> pull('vars')
+# )[0]
+
+```
+
+
+```{python}
+selector = ColumnTransformer(
+  [('select', 'passthrough', bm_features)],
+  verbose_feature_names_out= False,
+  remainder = 'drop'
+).set_output(transform='pandas')
+
+
+rf_model = RandomForestRegressor(
+                  n_estimators = 350,
+                  n_jobs=7, 
+                  max_depth=13, 
+                  max_features=7, 
+                  min_samples_leaf=3,
+                  min_samples_split=6, 
+                  random_state=8)
+
+
+rf_pipe = Pipeline([
+  ('preprocesado', prep),
+  ('selector', selector),
+  ('rf', rf_model)
+])
+
+
+rf_pipe.fit(ames_x_train, Sale_Price_train)
+importances_df = pd.DataFrame({"Variable" : rf_pipe.named_steps['rf'].feature_names_in_ , 
+                               "Importancia" : rf_pipe.named_steps['rf'].feature_importances_})
+
+```
+
+```{python}
+(
+  importances_df >>
+  ggplot(aes(x = 'reorder(Variable, Importancia)', y = "Importancia")) +
+  geom_point(alpha = 0.65) +
+  coord_flip()
+)
+```
+
+```{python}
+y_pred = rf_pipe.predict(ames_x_test)
+
+get_metrics(y_pred, Sale_Price_test, predictors=50)
+```
+
+
+```{python}
+y_pred = rf_pipe.predict(ames_x_val)
+
+get_metrics(y_pred, Sale_Price_validation, predictors=50)
+```
+ 
+ 

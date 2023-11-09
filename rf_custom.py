@@ -121,16 +121,16 @@ prep = ColumnTransformer([
     remainder = 'drop',
     verbose_feature_names_out = False).set_output(transform = 'pandas')
     
-
+t_df=prep.fit_transform(ames_x_train)
 # Definir el objeto K-Fold Cross Validator
 k = 10
 kf = KFold(n_splits=k, shuffle=True, random_state=42)
 
 param_grid = {
- 'max_depth': range(7, 30,2),
- 'min_samples_split': range(3, 33,3),
- 'min_samples_leaf': range(3,33,3),
- 'max_features': range(15, 60,2)
+ 'max_depth': range(5, 10),
+ 'min_samples_split': range(3, 10),
+ 'min_samples_leaf': range(3,10),
+ 'max_features': range(13, 57,5)
 }
 
 
@@ -138,7 +138,7 @@ param_grid = {
 
 scoring = {
     'neg_mean_squared_error': make_scorer(mean_squared_error, greater_is_better=False),
-    'r2': make_scorer(adjusted_r2_score, greater_is_better=True, n=np.ceil(len(ames_x_train)), p=len(prep.fit(ames_x_train).get_feature_names_out())),
+    'r2': make_scorer(adjusted_r2_score, greater_is_better=True, n=np.ceil(len(ames_x_train)), p=len(t_df.columns)),
     'neg_mean_absolute_error': make_scorer(mean_absolute_error, greater_is_better=False),
     'mape': make_scorer(mean_absolute_percentage_error, greater_is_better=False)
 }
@@ -164,7 +164,7 @@ pipeline = Pipeline([
 
 pipeline.fit(ames_x_train, Sale_Price_train)
 
-pd.to_pickle(pipeline, 'grid_search_random_forest.pkl')
+pd.to_pickle(pipeline, 'grid_search_random_forest2.pkl')
 
 CV_results = pd.DataFrame(pipeline.named_steps['regressor'].cv_results_)
 

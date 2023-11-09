@@ -1,5 +1,0 @@
-"0","ames_data=pd.read_csv(""../data/ames.csv"")"
-"0","ames_data=ames_data.drop_duplicates()"
-"0","ames_data.Misc_Feature.replace( np.nan, ""None"",inplace=True)"
-"0","ames_data.Mas_Vnr_Type.replace( np.nan, ""None"",inplace=True)"
-"0",""

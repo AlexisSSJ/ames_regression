@@ -1,4 +1,0 @@
-"0","#| include: false"
-"0","#| label: removing_ol"
-"0","ames_data=remove_outliers(ames_data, 'Sale_Price',get='cd')"
-"0",""

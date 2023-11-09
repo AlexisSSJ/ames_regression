@@ -1,6 +1,0 @@
-"1","<Figure Size: (605 x 374)>
-"
-"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\stats\stat_smooth.py:210: PlotnineWarning: Smoothing requires 2 or more points. Got 1. Not enough points for smoothing. If this message a surprise, make sure the column mapped to the x aesthetic has the right dtype.
-"
-"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\plotnine\layer.py:364: PlotnineWarning: geom_point : Removed 5 rows containing missing values.
-"

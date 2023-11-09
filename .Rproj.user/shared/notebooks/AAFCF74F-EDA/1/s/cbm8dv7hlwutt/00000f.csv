@@ -1,8 +1,0 @@
-"0",""
-"0","test_transformed = preprocessor.transform(ames_x_test)"
-"2","C:\Users\HP\DOCUME~1\VIRTUA~1\CD_AMA~1\lib\site-packages\sklearn\preprocessing\_encoders.py:202: UserWarning: Found unknown categories in columns [0, 11, 16, 17, 18, 19, 26] during transform. These unknown categories will be encoded as all zeros
-"
-"0","pred= knn_cat_best.predict(test_transformed)"
-"0","predictors = len(preprocessor.get_feature_names_out())"
-"0","mse= get_metrics(y_pred=pred, y_obs=Sale_Price_test, predictors=predictors) .loc['MSE']"
-"0",""

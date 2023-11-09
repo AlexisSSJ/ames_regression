@@ -1,3 +1,0 @@
-"0","library(reticulate)"
-"0","use_virtualenv(""cd_2023_py"")"
-"2","Warning: Previous request to `use_python(""C:/Users/HP/Documents/.virtualenvs/r-reticulate/Scripts/python.exe"", required = TRUE)` will be ignored. It is superseded by request to `use_python(""C:/Users/HP/Documents/.virtualenvs/cd_2023_py/Scripts/python.exe"")"

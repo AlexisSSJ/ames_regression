@@ -1,7 +1,0 @@
-"0",""
-"0","plt.figure()"
-"1","<Figure size 640x480 with 0 Axes>
-"
-"0","g=sns.jointplot(ames_datan,x='Second_Flr_SF', y='price_4ftsqr', marker='+',hue='Bsmt_Exposure')"
-"0","# g.plot.joins(sns.kdeplot)"
-"0","plt.show()"

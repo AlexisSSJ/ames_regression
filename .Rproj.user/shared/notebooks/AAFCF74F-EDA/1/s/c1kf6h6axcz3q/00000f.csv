@@ -1,7 +1,0 @@
-"0","pd.to_pickle('importance_cat_knn.pkl')
-"
-"2","Traceback (most recent call last):
-  File ""<string>"", line 1, in <module>
-TypeError: to_pickle() missing 1 required positional argument: 'filepath_or_buffer'
-"
-"0",""

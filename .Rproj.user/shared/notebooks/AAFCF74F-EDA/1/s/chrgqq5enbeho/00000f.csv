@@ -1,7 +1,0 @@
-"0","#| echo: false"
-"0","# pd.to_pickle(final_cat_knn_pipeline_cv,'cv_l_knn_cat.pkl')"
-"0","selectorr= ColumnTransformer([('selector', 'passthrough', best_features_from_cat)],"
-"0","          remainder= 'drop',"
-"0","          verbose_feature_names_out=False)"
-"0","final_cat_knn_pipeline_cv = pd.read_pickle('cv_l_knn_cat.pkl')"
-"0",""

@@ -1,29 +1,12 @@
-"0","final_cat_knn_pipeline_cv.fit(ames_x_train, Sale_Price_train)
-"
-"1","Fitting 10 folds for each of 208 candidates, totalling 2080 fits
-"
-"1","Pipeline(steps=[('prep',
-                 ColumnTransformer(transformers=[('onehotencoding',
-                                                  OneHotEncoder(drop='first',
-                                                                handle_unknown='ignore',
-                                                                min_frequency=15,
-                                                                sparse_output=False),
-                                                  ['MS_SubClass', 'MS_Zoning',"
-"1","
-                                                   'Street', 'Alley',
-                                                   'Lot_Shape', 'Land_Contour',
-                                                   'Utilities', 'Lot_Config',
-                                                   'Land_Slope', 'Neighborhood',
-                                                   'Condition_1', 'Condition_2',
-                                                   'Bldg_Type', 'House_Style',
-                                   "
-"1","                'Overall_...
-                                          'weights': ['distance', 'uniform']},
-                              refit='neg_mean_squared_error',
-                              scoring={'mape': make_scorer(mean_absolute_percentage_error, greater_is_better=False),
-                                       'neg_mean_absolute_error': make_scorer(mean_absolute_error, greater_is_better=False),
-                                       'neg_mean_squared_error': make_scorer(mean_squared_error"
-"1",", greater_is_better=False),
-                                       'r2': make_scorer(adjusted_r2_score, n=2051.0, p=35)},
-                              verbose=2))])
+"0","#| echo: false"
+"0","pd.options.display.float_format = '{:.2f}'.format"
+"0","idf = pd.read_csv('iters_knn_feature_selection.csv')"
+"0","best_features_from_fm = (idf >> mutate(MSE= (_.MSE)**(0.5) ) >> filter(_.MSE < 33500) >> top_n(1, _.R2_adj) >> pull('vars'))[0]"
+"0","(idf.iloc[:,1:] >> select(-_.vars)).head()"
+"1","            MSE  R2_adj  predictors
+0 1272507998.28    0.69         217
+1 1252918877.06    0.69         216
+2 1235138530.90    0.70         215
+3 1222218756.31    0.70         214
+4 1191222037.92    0.71         213
 "

@@ -1,7 +1,0 @@
-"0","#| echo: false"
-"0",""
-"0","# pd.to_pickle(idf, 'idf_fm_knn.pkl')"
-"0",""
-"0","idf= pd.read_pickle('idf_fm_knn.pkl')"
-"0","best_features_from_fm = (idf >> mutate(MSE= (_.MSE)**(0.5) ) >> filter(_.MSE < 33500) >> top_n(1, _.R2_adj) >> pull('vars'))[0]"
-"0",""
