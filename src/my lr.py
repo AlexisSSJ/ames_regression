@@ -1,99 +1,54 @@
-from mlxtend.feature_selection import ColumnSelector
+from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder,FunctionTransformer
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
 from sklearn.metrics import mean_squared_error, r2_score, make_scorer
 from sklearn.model_selection import train_test_split, KFold, cross_val_score, cross_validate
 import statsmodels.api as sm
-from sklearn.preprocessing import PolynomialFeatures
-from plydata.one_table_verbs import pull
-from mizani.formatters import comma_format, dollar_format
-from plotnine import *
-from siuba import *
-
-import pandas as pd
-import numpy as np
-pd.options.display.float_format = '{:.2f}'.format
 
 
-def div_columns(X, c1, c2):
-    X["c1_c2"] = X[c1]/ X[c2]
-    return X
+########   I M  O R T A N C E   MI AND F-TEST   
 
-def get_metrics (y_pred, y_obs,predictors):
-  me = np.mean(y_obs - y_pred)
-  mae = mean_absolute_error(y_obs, y_pred)
-  mape = mean_absolute_percentage_error(y_obs, y_pred)
-  mse = mean_squared_error(y_obs, y_pred)
-  rmse = np.sqrt(mse)
-  r2 = r2_score(y_obs, y_pred)
 
-  n = len(y_obs)  # Número de observaciones
-  p = len(predictors)  # Número de predictores 
-  r2_adj = 1 - (n - 1) / (n - p - 1) * (1 - r2)
-  
+f_test, _ = f_regression(ames_x_train.select_dtypes(exclude = 'object'), ames_y_train)
+f_test /= np.max(f_test)
 
-  metrics_data = {
-      "Metric": ["ME", "MAE", "MAPE", "MSE", "RMSE", "R^2", "R^2 Adj"],
-      "Value": [me, mae, mape, mse, rmse, r2, r2_adj]
-  }
-  return metrics_data
-
-def rmv_elements (list_of_elements, complete_list):
-  for element in list_of_elements:
-    complete_list.remove(element)
-  return complete_list
+mi = mutual_info_regression(ames_x_train.select_dtypes(exclude = 'object'), ames_y_train)
+mi /= np.max(mi)
 
 
 
 
-#### CARGA DE DATOS ####
-ames = pd.read_csv("data/ames.csv") >> mutate (Price_4_GLA= _.Sale_Price/_.Gr_Liv_Area)
-print("Tamaño de conjunto completo: ", ames.shape)
+columns = ames_x_train.select_dtypes(exclude = 'object').columns.to_list()
 
-y = ames >>  pull("Price_4_GLA")
-X = select(ames, -_.Sale_Price, -_.Price_4_GLA)
+importance = pd.DataFrame ({'Variable': columns, 
+                'F_test': f_test,
+                'MI': mi})
 
-X=(X >> mutate(wood_prop= _.Wood_Deck_SF/_.Gr_Liv_Area,
-              area_per_car=case_when({_.Garage_Cars== 0:0,
-                                  _.Garage_Cars== 0:0,
-                                  True:_.Garage_Area/ _.Garage_Cars}),
-              last_remod = case_when({_.Year_Built>_.Year_Remod_Add: 2023-_.Year_Remod_Add,
-                                  True: 2023-_.Year_Built}),
-              Mo_Sold= _.Mo_Sold.astype('object')))
-
-numeric_column = ames >> pull("Price_4_GLA")
-quartiles = np.percentile(numeric_column, [25, 50, 75])
-
-# Crea una nueva variable categórica basada en los cuartiles
-stratify_variable = pd.cut(
- numeric_column, 
- bins=[float('-inf'), quartiles[0], quartiles[1], quartiles[2], float('inf')],
- labels=["Q1", "Q2", "Q3", "Q4"]
- )
-
-ames_x_train, ames_x_test, ames_y_train, ames_y_test = train_test_split(
- X, y, 
- test_size = 0.20, 
- random_state = 12345, 
- stratify = stratify_variable
- )
- 
+(
+    importance 
+            >> pivot_longer(cols=['F_test', 'MI'], names_to='metric', values_to='value')
+            >> ggplot(aes (x= 'reorder(Variable,value)', y= 'value', fill = 'metric' ) )
+            +  geom_col(show_legend = False)
+            + facet_wrap('~metric' )
+            + coord_flip()
+)
 
 
-### FEATURE ENGINEERING ####
+#############################################################
+
+pd.options.display.float_format = '{:.8f}'.format
 
 
-# Seleccionamos las variales numéricas de interés
-num_cols = ['Wood_Deck_SF', 
+num_cols =['Wood_Deck_SF', 
             'First_Flr_SF',
-            'Fireplaces',
             'Open_Porch_SF',
             'Enclosed_Porch',
             'Lot_Area',
-            'wood_prop',
+            # 'Wood_prop',
             'Total_Bsmt_SF',
             'Garage_Area',
             'Gr_Liv_Area',
@@ -101,24 +56,16 @@ num_cols = ['Wood_Deck_SF',
             'last_remod',
             'Bsmt_Full_Bath', 
             'Three_season_porch',
-            'BsmtFin_SF_2', 'Bsmt_Unf_SF',
+            'BsmtFin_SF_1', 
+            'BsmtFin_SF_2', 
+            'Bsmt_Unf_SF',
             'Bsmt_Half_Bath', 
-            'Full_Bath',
             'Kitchen_AbvGr',
-            'Half_Bath',
             'Mas_Vnr_Area',
             'Misc_Val',
             'Lot_Frontage',
             'Bedroom_AbvGr']
-            
-            
-# 'Lot_Frontage', 'Lot_Area', 'Year_Built', 'Year_Remod_Add', 'Mas_Vnr_Area', 'BsmtFin_SF_1', 
-# 'BsmtFin_SF_2', 'Bsmt_Unf_SF', 'Total_Bsmt_SF', 'First_Flr_SF', 'Second_Flr_SF', 'Gr_Liv_Area', 
-# 'Bsmt_Full_Bath', 'Bsmt_Half_Bath', 'Full_Bath', 'Half_Bath', 'Bedroom_AbvGr', 'Kitchen_AbvGr', 
-# 'TotRms_AbvGrd', 'Fireplaces', 'Garage_Cars', 'Garage_Area', 'Wood_Deck_SF', 'Open_Porch_SF', 
-# 'Enclosed_Porch', 'Three_season_porch', 'Screen_Porch', 'Pool_Area', 'Misc_Val', 'Mo_Sold', 
-# 'Year_Sold', 'Sale_Price', 'Longitude', 'Latitude'
-# Seleccionamos las variables categóricas de interés
+
 cat_cols = ['Bldg_Type', 
             'Bsmt_Exposure', 
             'Central_Air','Mo_Sold', 
@@ -131,7 +78,7 @@ cat_cols = ['Bldg_Type',
             'Foundation', 
             'Garage_Finish', 
             'Garage_Type', 
-            'Misc_Feature', 
+            # 'Misc_Feature', 
             'Paved_Drive', 
             'Heating_QC',
             'Overall_Cond',
@@ -143,86 +90,76 @@ cat_cols = ['Bldg_Type',
             'Lot_Shape', #'Roof_Style'
             'Neighborhood']
 
-# Juntamos todas las variables de interés
+columnas_seleccionadas = num_cols + cat_cols + ['Full_Bath','Year_Built','Fireplaces','Half_Bath','Garage_Cars','Misc_Feature']
+ 
+######################################
 
-columnas_seleccionadas = num_cols +cat_cols_t+cat_cols_4+cat_cols_3+cat_num +['Year_Built','Garage_Cars']
-pipe = ColumnSelector(columnas_seleccionadas)
-ames_x_train_selected = pipe.fit_transform(ames_x_train)
+def div_columns(X, c1, c2, feature_name ):
+    name = feature_name+'_c_'
+    X[name] = X[c1]/ X[c2]
+    return X[[name]]
+  
+  
+featur_eng = ColumnTransformer(
+  [('Wood_Prop',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Wood_Deck_SF', 'c2': 'Lot_Area', 'feature_name' : 'Wood_Prop'}
+                                 ), ['Wood_Deck_SF', 'Lot_Area']),
+    ('Wood_propGLA',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Wood_Deck_SF', 'c2': 'Gr_Liv_Area', 'feature_name' : 'Wood_propGLA'}
+                                 ), ['Wood_Deck_SF', 'Gr_Liv_Area']),
+    ('Bsmt_Prop',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Total_Bsmt_SF', 'c2': 'Lot_Area', 'feature_name' : 'Bsmt_Prop'}
+                                 ),['Total_Bsmt_SF', 'Lot_Area'] ),
+    ('just_select', 'passthrough', ['Total_Bsmt_SF', 'Lot_Area','Gr_Liv_Area', 'Wood_Deck_SF' ])],
+    
+    verbose_feature_names_out = False,
+    remainder = 'passthrough').set_output(transform = 'pandas') 
 
-ames_train_selected = pd.DataFrame(
-  ames_x_train_selected, 
-  columns = columnas_seleccionadas
-  )
-
-ames_test_selected = pd.DataFrame(
-  pipe.fit_transform(ames_x_test), 
-  columns = columnas_seleccionadas
-  )
 
 
-## TRANSFORMACIÓN DE COLUMNAS
-
-###################################################
-############# CUSTOM FUNCTIONS ####################
-###################################################
-
-
-div_transformer = FunctionTransformer(
- custom_function,
- feature_names_out = 'one-to-one',
-  kw_args={'c1': 'Column1', 'c2': 'Column2'}
- )
-interaction_transformer = PolynomialFeatures(
- degree = 2, 
- interaction_only = True, 
- include_bias = False
- )
- interaction_transformer_wb = PolynomialFeatures(
- degree = 2, 
- interaction_only = True, 
- include_bias = False
- )
-# ColumnTransformer para aplicar transformaciones
-from sklearn.impute import SimpleImputer
-
+my_features = (featur_eng.fit_transform(ames_x_train) >> select (_.contains('_c_'))).columns.to_list()
 
 preprocessor_1 = ColumnTransformer(
     transformers = [
-        # ('first_selection', ColumnSelector(), columnas_seleccionadas),
         ('scaler', StandardScaler(), num_cols),
-        ('imputer',  SimpleImputer(missing_values=np.nan, strategy='mean'), ['Year_Built','Garage_Cars']),
-        ('OHE_total', OneHotEncoder(drop='first',handle_unknown='ignore' , sparse_output=False), cat_cols_t),
-        ('OHE_total1', OneHotEncoder(drop='first',handle_unknown='ignore' ,sparse_output=False,min_frequency =25), cat_cols_4),
-        ('OHE_total2', OneHotEncoder(drop='first',handle_unknown='ignore' ,sparse_output=False,min_frequency =25), cat_cols_3),
-        ('OHE_total3', OneHotEncoder(drop='first',handle_unknown='ignore' ,sparse_output=False,min_frequency  =25), cat_num)
-        # ('select','drop',drop_cols)
+        ('just_select', 'passthrough', my_features),
+        ('imputer',  SimpleImputer(missing_values=np.nan, strategy='mean'), ['Year_Built','Half_Bath','Fireplaces','Full_Bath','Garage_Cars']),
+        ('OHE', OneHotEncoder(drop='first',handle_unknown='ignore' , sparse_output=False, min_frequency=20), cat_cols),
+        ('OHE_1', OneHotEncoder(drop='first',handle_unknown='ignore' , sparse_output=False), ['Misc_Feature'])
+        
     ],
     verbose_feature_names_out = False,
-    remainder = 'passthrough'  # Mantener las columnas restantes sin cambios
-)
+    remainder = 'drop'  
+    ).set_output(transform = 'pandas') 
 
-ames_x_train_trans= pd.DataFrame(
-  preprocessor_1.fit_transform(ames_train_selected),
-  columns=preprocessor_1.get_feature_names_out()
-  )
-  
-ames_x_test_trans = pd.DataFrame(
-  preprocessor_1.transform(ames_test_selected),
-  columns=preprocessor_1.get_feature_names_out()
-  )
+
+
+
+
+
+interaction_transformer = PolynomialFeatures(degree = 2, interaction_only = True, include_bias = False)
+interaction_transformer_wb = PolynomialFeatures(degree = 2, interaction_only = True, include_bias = False)
+
 
 drop_cols=['Neighborhood_Crawford',
             'Neighborhood_infrequent_sklearn',
-            'House_Style_Two_Story',
-            'Foundation_Wood',
-            'Condition_2_Feedr',
+            'BsmtFin_Type_1_BLQ',
+            'Exter_Cond_Good',
+            'Neighborhood_Northridge',
             'Condition_1_RRAe',
-            'Condition_1_Feedr',
+            'Electrical_FuseF',
+            'Misc_Val',
             'Garage_Type_No_Garage',
-            'Condition_1_PosA',
+            'Condition_1_Feedr',
             'Bsmt_Full_Bath',
             'Bsmt_Half_Bath',
-            'Condition_2_RRAe',
+            'Fence_infrequent_sklearn',
             'Foundation_CBlock',
             'MS_SubClass_Two_Story_1946_and_Newer',
             'Garage_Finish_No_Garage',
@@ -230,30 +167,40 @@ drop_cols=['Neighborhood_Crawford',
             'Mo_Sold_5',
             'Paved_Drive_Partial_Pavement',
             'Bsmt_Cond_Typical',
-            'Condition_1_RRNe',
+            'Heating_QC_Fair',
             'BsmtFin_Type_1_Unf',
             'Electrical_SBrkr',
             'Fence_Good_Wood',
-            'Electrical_Unknown',
+            'Mo_Sold_4',
             'Garage_Type_Detchd',
             'Foundation_Slab',
-            # 'House_Style_infrequent_sklearn',
+            'House_Style_infrequent_sklearn',
             'Three_season_porch',
-            'Fence_Minimum_Wood_Wire',
+            'BsmtFin_Type_2_GLQ',
             'Mo_Sold_7',
+            'Misc_Val',
             'BsmtFin_Type_1_No_Basement',
             'Foundation_PConc',
             'Mo_Sold_12',
             'Mo_Sold_10',
             'BsmtFin_Type_2_No_Basement',
-            'Electrical_FuseP',
+            'last_remod',
             'Bsmt_Cond_No_Basement',
-            'Condition_1_RRNn',
+            'Condition_2_infrequent_sklearn',
             'Exter_Cond_Typical',
-            'Exter_Cond_Good',
-            'Garage_Type_CarPort',
-            'Electrical_Mix',
+            'Misc_Val',
+            'Bldg_Type_OneFam',
+            'Mo_Sold_9',
+            'House_Style_SFoyer',
+            'Misc_Feature_nan',
+            'Electrical_infrequent_sklearn',
             'Bsmt_Cond_infrequent_sklearn',
+            'House_Style_One_and_Half_Fin',
+            'Bsmt_Cond_Good',
+            'area_per_car',
+            'Mas_Vnr_Type_nan',
+            'Foundation_infrequent_sklearn',
+            'Bldg_Type_TwnhsE',
             'Fence_No_Fence']
 
   
@@ -263,59 +210,79 @@ preprocessor_2=ColumnTransformer(
     ("selector", "drop", drop_cols),
     ('interaction_1', interaction_transformer_wb, ['Lot_Area', 'Gr_Liv_Area']),
     ('interactions2', interaction_transformer, ['Year_Built', 'Overall_Cond_Average']),
-    ('interactions3', interaction_transformer, ['Full_Bath', 'Bedroom_AbvGr']),
-    ('interactions3.1', interaction_transformer, ['House_Style_SLvl', 'Overall_Cond_Fair']),
-    ('interactions3.2', interaction_transformer, ['Kitchen_AbvGr', 'last_remod']),
+    ('interactions3', interaction_transformer, ['Garage_Area', 'Bedroom_AbvGr']),
+    # ('interactions3.1', interaction_transformer, ['House_Style_SLvl', 'Overall_Cond_Fair']),
+    ('interactions3.4', interaction_transformer, ['Wood_propGLA_c_', 'Mas_Vnr_Area']),
+    # ('interactions3.2', interaction_transformer, ['Garage_Type_Basment', 'BsmtFin_SF_1']),
+    ('interactions3.5', interaction_transformer, ['BsmtFin_SF_1', 'First_Flr_SF']),
     ('interactions4', interaction_transformer, ['Misc_Val', 'Misc_Feature_TenC'])
-    # ('div', FunctionTransformer(
-    #               div_columns,
-    #               feature_names_out = 'one-to-one',
-    #               kw_args={'c1': 'Gr_Liv_Area', 'c2': 'Lot_Area'}), ['Gr_Liv_Area', 'Lot_Area'])
   ],
   verbose_feature_names_out = False,
   remainder='passthrough'
-)
+).set_output(transform = 'pandas')
 
-preprocessor_2.fit(ames_x_train_trans)
-# new_interactions= ['Lot_div_Gross']
-feature_names = list(preprocessor_2.get_feature_names_out())
-# feature_names.append(new_interactions)
+pipeline = Pipeline([
+  ('feat_eng', featur_eng),
+  ('preprocessor', preprocessor_1),
+  ('select_interac', preprocessor_2),
+  ('regressor', LinearRegression())])
 
-  
+# Entrenar el pipeline
+pipeline.fit(ames_x_train, ames_y_train)  
+# 
+# fitt={'variable' : ['intercept']+list(pipeline.named_steps['regressor'].feature_names_in_),
+# 'coef' :[pipeline.named_steps['regressor'].intercept_ ]+list(pipeline.named_steps['regressor'].coef_)}
+# coefs_reg =pd.DataFrame(fitt)
+#   
+# (
+#     coefs_reg 
+#         >> filter (_.variable != 'intercept')
+#         >> mutate( av = abs(_.coef) , m= _.av.max() , coef2=_.coef/_.m)
+#         >> top_n(10, abs(_.coef2) )
+#         >> ggplot(aes(x='reorder(variable,coef2)', y='coef'))
+#         + geom_col()
+#         + coord_flip()
+#         # 
+# )
+# 
+# (
+#     coefs_reg 
+#         >> filter (_.variable != 'intercept')
+#         >> mutate( av = abs(_.coef) , m= _.av.max() , coef2=_.coef/_.m)
+#         >> top_n(-10, abs(_.coef2) )
+#         >> ggplot(aes(x='reorder(variable,coef2)', y='coef'))
+#         + geom_col()
+#         + coord_flip()
+#         # 
+# )
+# abs(-10)
 ##### Extracción de coeficientes
-transformed_df = pd.DataFrame(
-  preprocessor_2.fit_transform(ames_x_train_trans),
-  columns=feature_names
-  )
-transformed_df.info()
+transformed_df = pipeline.named_steps['select_interac'].transform(pipeline.named_steps['preprocessor'].transform(pipeline.named_steps['feat_eng'].transform(ames_x_train)))
 
 X_train_with_intercept = sm.add_constant(transformed_df)
 model = sm.OLS(ames_y_train, X_train_with_intercept).fit()
-
+(
+  model.pvalues.reset_index() 
+    >> select( _.var == _.index, _.p_val == -1)
+    >> mutate (s = case_when({ 
+          _.p_val<0.025:'***',
+          _.p_val<0.05:'**',
+          _.p_val<0.1:'*',
+          True:''})
+          )
+    >> arrange (_.s,- _.p_val)
+)
 model.summary()
 
-
-pipeline =Pipeline([
-  ('prep2',preprocessor_2),
-  ('regressor', LinearRegression()),
-  
-])   
-
-# Entrenar el pipeline
-results = pipeline.fit(ames_x_train_trans, ames_y_train)
-
 ## PREDICCIONES
-y_pred = pipeline.predict(ames_x_test_trans)
+y_pred = pipeline.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
 
 ames_test = (
-  ames_x_test >>
-  mutate(Sale_Price_Pred = y_pred*_.Gr_Liv_Area, Sale_Price =ames_y_test*_.Gr_Liv_Area)
-)
-
-
-(
-ames_test >>
-  select(_.Sale_Price, _.Sale_Price_Pred)
+  ames_x_test >> mutate(
+                  Sale_Price_Pred = y_pred, 
+                  Sale_Price =Sale_Price_test
+                  )
+              >> select (_.contains('Sale_Price'))
 )
 
 ##### Métricas de desempeño
@@ -323,69 +290,12 @@ ames_test >>
 y_obs = ames_test["Sale_Price"]
 y_pred = ames_test["Sale_Price_Pred"]
 
-
-mtrcs_dt=get_metrics(y_pred, y_obs,predictors=columnas_seleccionadas)
-
-
-metrics_df = pd.DataFrame(mtrcs_dt)
-metrics_df
-
-#### Gráficos de desempeño de modelo
-
-(
-    ggplot(aes(x = y_obs, y = y_pred)) +
-    geom_point(alpha=0.5) +
-    scale_y_continuous(labels = dollar_format(digits=0, big_mark=','), limits = [0, 600000] ) +
-    scale_x_continuous(labels = dollar_format(digits=0, big_mark=','), limits = [0, 600000]) +
-    geom_abline(color = "red") +
-    coord_equal() +
-    labs(
-      title = "Comparación entre predicción y observación",
-      x = "Predicción",
-      y = "Observación")
-)
+predictores = transformed_df.columns.to_list()
+mtrcs_df =get_metrics(y_pred, y_obs,predictors= len(transformed_df.columns ))
 
 
-(
-ames_test >>
-  select(_.Sale_Price, _.Sale_Price_Pred) >>
-  mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
-  ggplot(aes(x = "error")) +
-  geom_histogram(color = "white", fill = "black") +
-  geom_vline(xintercept = 0, color = "red") +
-  scale_x_continuous(labels=dollar_format(big_mark=',', digits=0)) + 
-  ylab("Conteos de clase") + xlab("Errores") +
-  ggtitle("Distribución de error")
-)
-
-
-(
-ames_test >>
-  select(_.Sale_Price, _.Sale_Price_Pred) >>
-  mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
-  ggplot(aes(sample = "error")) +
-  geom_qq(alpha = 0.3) + stat_qq_line(color = "red") +
-  scale_y_continuous(labels=dollar_format(big_mark=',', digits = 0)) + 
-  xlab("Distribución normal") + ylab("Distribución de errores") +
-  ggtitle("QQ-Plot")
-)
-
-
-(
-ames_test >>
-  select(_.Sale_Price, _.Sale_Price_Pred) >>
-  mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
-  ggplot(aes(x = "Sale_Price")) +
-  geom_linerange(aes(ymin = 0, ymax = "error"), colour = "purple") +
-  geom_point(aes(y = "error"), size = 0.05, alpha = 0.5) +
-  geom_abline(intercept = 0, slope = 0) +
-  scale_x_continuous(labels=dollar_format(big_mark=',', digits=0)) + 
-  scale_y_continuous(labels=dollar_format(big_mark=',', digits=0)) +
-  xlab("Precio real") + ylab("Error de estimación") +
-  ggtitle("Relación entre error y precio de venta")
-)
-
-#### Validación cruzada ####
-
-# Definir el objeto K-Fold Cross Validator
-    
+print(mtrcs_df)
+# 
+# y_pred = pipeline.predict(ames_x_val)*ames_x_val.Gr_Liv_Area
+# 
+# get_metrics(y_pred,Sale_Price_validation,len(transformed_df.columns ) )
