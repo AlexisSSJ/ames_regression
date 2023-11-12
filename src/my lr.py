@@ -44,7 +44,7 @@ pd.options.display.float_format = '{:.8f}'.format
 
 
 num_cols =['Wood_Deck_SF', 
-            'First_Flr_SF',
+            '1st_Flr_SF',
             'Open_Porch_SF',
             'Enclosed_Porch',
             'Lot_Area',
@@ -52,10 +52,8 @@ num_cols =['Wood_Deck_SF',
             'Total_Bsmt_SF',
             'Garage_Area',
             'Gr_Liv_Area',
-            'area_per_car',
-            'last_remod',
             'Bsmt_Full_Bath', 
-            'Three_season_porch',
+            '3Ssn_Porch',
             'BsmtFin_SF_1', 
             'BsmtFin_SF_2', 
             'Bsmt_Unf_SF',
@@ -68,7 +66,7 @@ num_cols =['Wood_Deck_SF',
 
 cat_cols = ['Bldg_Type', 
             'Bsmt_Exposure', 
-            'Central_Air','Mo_Sold', 
+            'Central_Air',
             'Condition_1', 
             'Condition_2', 
             'Electrical', 
@@ -116,7 +114,22 @@ featur_eng = ColumnTransformer(
                                  feature_names_out = None,
                                  kw_args={'c1': 'Total_Bsmt_SF', 'c2': 'Lot_Area', 'feature_name' : 'Bsmt_Prop'}
                                  ),['Total_Bsmt_SF', 'Lot_Area'] ),
-    ('just_select', 'passthrough', ['Total_Bsmt_SF', 'Lot_Area','Gr_Liv_Area', 'Wood_Deck_SF' ])],
+    ('OPP_prop',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Open_Porch_SF', 'c2': 'Lot_Area', 'feature_name' : 'OPP_prop'}
+                                 ),['Open_Porch_SF', 'Lot_Area'] ),
+    ('Gr_Liv_Area / Loot_Area',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Gr_Liv_Area', 'c2': 'Lot_Area', 'feature_name' : 'Gr_Liv_Area / Loot_Area'}
+                                 ),['Gr_Liv_Area', 'Lot_Area'] ),
+    ('Garage_Prop_overGLA',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Garage_Area', 'c2': 'Gr_Liv_Area', 'feature_name' : 'Garage_Prop'}
+                                 ),['Garage_Area', 'Gr_Liv_Area'] ),
+    ('just_select', 'passthrough', ['Total_Bsmt_SF', 'Open_Porch_SF', 'Garage_Area', 'Lot_Area', 'Gr_Liv_Area', 'Wood_Deck_SF' ])],
     
     verbose_feature_names_out = False,
     remainder = 'passthrough').set_output(transform = 'pandas') 
@@ -141,81 +154,45 @@ preprocessor_1 = ColumnTransformer(
 
 
 
-
-
 interaction_transformer = PolynomialFeatures(degree = 2, interaction_only = True, include_bias = False)
 interaction_transformer_wb = PolynomialFeatures(degree = 2, interaction_only = True, include_bias = False)
 
-
-drop_cols=['Neighborhood_Crawford',
-            'Neighborhood_infrequent_sklearn',
-            'BsmtFin_Type_1_BLQ',
-            'Exter_Cond_Good',
-            'Neighborhood_Northridge',
-            'Condition_1_RRAe',
-            'Electrical_FuseF',
-            'Misc_Val',
-            'Garage_Type_No_Garage',
-            'Condition_1_Feedr',
-            'Bsmt_Full_Bath',
+intersection(r_cols, drop_cols)
+drop_cols=['Bsmt_Full_Bath',
             'Bsmt_Half_Bath',
+            'Misc_Val',
+            'Bldg_Type_TwnhsE',
+            'Condition_1_Feedr',
+            'Condition_2_infrequent_sklearn',
+            'Electrical_SBrkr',
+            'Electrical_infrequent_sklearn',
+            'Mas_Vnr_Type_nan',
             'Fence_infrequent_sklearn',
             'Foundation_CBlock',
-            'MS_SubClass_Two_Story_1946_and_Newer',
-            'Garage_Finish_No_Garage',
-            'Bldg_Type_TwoFmCon',
-            'Mo_Sold_5',
-            'Paved_Drive_Partial_Pavement',
-            'Bsmt_Cond_Typical',
-            'Heating_QC_Fair',
-            'BsmtFin_Type_1_Unf',
-            'Electrical_SBrkr',
-            'Fence_Good_Wood',
-            'Mo_Sold_4',
-            'Garage_Type_Detchd',
-            'Foundation_Slab',
-            'House_Style_infrequent_sklearn',
-            'Three_season_porch',
-            'BsmtFin_Type_2_GLQ',
-            'Mo_Sold_7',
-            'Misc_Val',
-            'BsmtFin_Type_1_No_Basement',
             'Foundation_PConc',
-            'Mo_Sold_12',
-            'Mo_Sold_10',
-            'BsmtFin_Type_2_No_Basement',
-            'last_remod',
-            'Bsmt_Cond_No_Basement',
-            'Condition_2_infrequent_sklearn',
-            'Exter_Cond_Typical',
-            'Misc_Val',
-            'Bldg_Type_OneFam',
-            'Mo_Sold_9',
-            'House_Style_SFoyer',
-            'Misc_Feature_nan',
-            'Electrical_infrequent_sklearn',
-            'Bsmt_Cond_infrequent_sklearn',
-            'House_Style_One_and_Half_Fin',
-            'Bsmt_Cond_Good',
-            'area_per_car',
-            'Mas_Vnr_Type_nan',
             'Foundation_infrequent_sklearn',
-            'Bldg_Type_TwnhsE',
-            'Fence_No_Fence']
+            'Garage_Type_Detchd',
+            'Bsmt_Cond_infrequent_sklearn',
+            'BsmtFin_Type_1_BLQ',
+            'BsmtFin_Type_1_Unf',
+            'House_Style_SFoyer',
+            'House_Style_infrequent_sklearn',
+            'Neighborhood_infrequent_sklearn',
+            'Misc_Feature_nan']
 
   
 
 preprocessor_2=ColumnTransformer(
   transformers=[
-    ("selector", "drop", drop_cols),
-    ('interaction_1', interaction_transformer_wb, ['Lot_Area', 'Gr_Liv_Area']),
-    ('interactions2', interaction_transformer, ['Year_Built', 'Overall_Cond_Average']),
-    ('interactions3', interaction_transformer, ['Garage_Area', 'Bedroom_AbvGr']),
+    ("selector", "drop", drop_cols)
+    # ('interaction_1', interaction_transformer_wb, ['Lot_Area', 'Gr_Liv_Area']),
+    # ('interactions2', interaction_transformer, ['Year_Built', 'Overall_Cond_Average']),
+    # ('interactions3', interaction_transformer, ['Garage_Area', 'Bedroom_AbvGr']),
     # ('interactions3.1', interaction_transformer, ['House_Style_SLvl', 'Overall_Cond_Fair']),
-    ('interactions3.4', interaction_transformer, ['Wood_propGLA_c_', 'Mas_Vnr_Area']),
+    # ('interactions3.4', interaction_transformer, ['Wood_propGLA_c_', 'Mas_Vnr_Area']),
     # ('interactions3.2', interaction_transformer, ['Garage_Type_Basment', 'BsmtFin_SF_1']),
-    ('interactions3.5', interaction_transformer, ['BsmtFin_SF_1', 'First_Flr_SF']),
-    ('interactions4', interaction_transformer, ['Misc_Val', 'Misc_Feature_TenC'])
+    # ('interactions3.5', interaction_transformer, ['BsmtFin_SF_1', '1st_Flr_SF']),
+    # ('interactions4', interaction_transformer, ['Misc_Val', 'Misc_Feature_TenC'])
   ],
   verbose_feature_names_out = False,
   remainder='passthrough'
@@ -261,9 +238,9 @@ transformed_df = pipeline.named_steps['select_interac'].transform(pipeline.named
 
 X_train_with_intercept = sm.add_constant(transformed_df)
 model = sm.OLS(ames_y_train, X_train_with_intercept).fit()
-(
+p_vals = (
   model.pvalues.reset_index() 
-    >> select( _.var == _.index, _.p_val == -1)
+    >> select( _.variable == _.index, _.p_val == -1)
     >> mutate (s = case_when({ 
           _.p_val<0.025:'***',
           _.p_val<0.05:'**',
@@ -272,6 +249,8 @@ model = sm.OLS(ames_y_train, X_train_with_intercept).fit()
           )
     >> arrange (_.s,- _.p_val)
 )
+
+p_vals >> filter (p_vals.variable.str.contains('_c_'))
 model.summary()
 
 ## PREDICCIONES
