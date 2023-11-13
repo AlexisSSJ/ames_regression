@@ -21,7 +21,7 @@ ames.info()
 
 
 y = ames >>  pull("Price_4_GLA")
-X = select(ames, -_.Sale_Price, -_.Price_4_GLA)
+X = select(ames, -_.SalePrice, -_.Price_4_GLA)
 
 
 numeric_column = ames >> pull("Price_4_GLA")
@@ -55,7 +55,7 @@ ames_x_test, ames_x_val, ames_y_test, ames_y_val = train_test_split(
        stratify = stratify_variable
        )
        
-Sale_Price_train= ames_y_train * ames_x_train.Gr_Liv_Area
+Sale_Price_train= ames_y_train * np.array(ames_x_train.Gr_Liv_Area)
 Sale_Price_test = ames_y_test * ames_x_test.Gr_Liv_Area
 Sale_Price_validation = ames_y_val * ames_x_val.Gr_Liv_Area
 print('Totales:\t', ames.shape[0],'\nTraining:\t', ames_y_train.shape[0],'\nTesting:\t', ames_y_test.shape[0],'\nValidation:\t', ames_y_val.shape[0])

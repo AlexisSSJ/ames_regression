@@ -1,12 +1,6 @@
 from sklearn.compose import make_column_selector
-ames_x_train.select_dtypes('float').info()
-ames_x_train.select_dtypes('object').info()
-
-ames_x_train.select_dtypes('int').info()
-
 
 ames_x_train.Lot_Frontage.mean()
-
 
 #Sólo 4 casas tienen Piscina/ por lo tanto esta variable no es útil
 ames_x_train >> select(_.contains('Pool')) >> filter (_.Pool_Area==0)
@@ -45,14 +39,22 @@ clean_and_imputers = ColumnTransformer(
      ('Impute_Electrical', SimpleImputer(
          missing_values=np.nan,
          strategy='most_frequent'),['Electrical']),
-     ('Impute_Bsmt_Qual-Cond-Exp', SimpleImputer(
+     ('Impute_Bsmt_Cat', SimpleImputer(
          missing_values=np.nan,
          strategy='constant', 
-         fill_value= 'No_Basement'), ['Bsmt_Qual', 'Bsmt_Cond', 'Bsmt_Exposure', 'BsmtFin_Type_1', 'BsmtFin_Type_2']),
+         fill_value= 'No_Basement'), make_column_selector(pattern = 'Bsmt',dtype_include = 'object')),
+     ('Impute_Bsmt_Numeric', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 0), make_column_selector(pattern = 'Bsmt',dtype_exclude = 'object')),
      ('Impute_Garage', SimpleImputer(
          missing_values=np.nan,
          strategy='constant', 
-         fill_value= 'No_Garage'), make_column_selector(pattern = 'Garage')),
+         fill_value= 'No_Garage'), make_column_selector(pattern = 'Garage',dtype_include = 'object')),
+     ('Impute_Garage_numeric', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 0), make_column_selector(pattern = 'Garage',dtype_exclude = 'object')),
      ('Impute_Fence', SimpleImputer(
          missing_values=np.nan,
          strategy='constant', 
@@ -66,5 +68,4 @@ clean_and_imputers = ColumnTransformer(
     verbose_feature_names_out = False
 ).set_output(transform = 'pandas')
 
-
-t.info()
+clean_ameS_x_train= clean_and_imputers.fit_transform(ames_x_train)
