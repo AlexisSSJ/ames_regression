@@ -1,5 +1,6 @@
 from sklearn.compose import make_column_selector
-
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
 ames_x_train.Lot_Frontage.mean()
 
 #Sólo 4 casas tienen Piscina/ por lo tanto esta variable no es útil

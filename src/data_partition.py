@@ -18,7 +18,7 @@ ames = (
         )
 
 ames.info()
-
+ames.drop(index= 821, inplace=True)
 
 y = ames >>  pull("Price_4_GLA")
 X = select(ames, -_.SalePrice, -_.Price_4_GLA)
@@ -50,7 +50,7 @@ stratify_variable = pd.cut(
 
 ames_x_test, ames_x_val, ames_y_test, ames_y_val = train_test_split(
        ames_x, ames_y, 
-       test_size = 1/3, 
+       test_size = 0.5, 
        random_state = 12345, 
        stratify = stratify_variable
        )
@@ -63,4 +63,4 @@ print('Totales:\t', ames.shape[0],'\nTraining:\t', ames_y_train.shape[0],'\nTest
 
 ames_x_train.info()
 
-
+#######################
