@@ -3,4 +3,7 @@
 .RData
 .Ruserdata
 .CD_amat_py.Rproj
+config/
+cache/
+munge/
 .Rproj.user/

@@ -96,3 +96,8 @@ def validation_results(x_val,y_val,  pipeline , n_preds):
   y_obs = ames_test["Sale_Price"]
   y_pred = ames_test["Sale_Price_Pred"]
   return get_metrics(y_pred, y_obs, n_preds)
+
+
+def intersection(lst1, lst2):
+    lst3 = [value for value in lst1 if value in lst2]
+    return lst3
