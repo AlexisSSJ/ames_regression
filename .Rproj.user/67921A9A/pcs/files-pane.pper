@@ -1,11 +1,11 @@
 {
     "sortOrder": [
         {
-            "columnIndex": 3,
+            "columnIndex": 4,
             "ascending": false
         },
         {
-            "columnIndex": 4,
+            "columnIndex": 3,
             "ascending": false
         },
         {
@@ -13,5 +13,5 @@
             "ascending": true
         }
     ],
-    "path": "~/CD_amat_py"
+    "path": "~/CD_amat_py/src"
 }
