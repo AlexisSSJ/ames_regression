@@ -5,5 +5,6 @@
 .CD_amat_py.Rproj
 config/
 cache/
+.Rhistory
 munge/
 .Rproj.user/
