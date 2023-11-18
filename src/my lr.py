@@ -442,7 +442,7 @@ step_rm =ColumnTransformer(
 
 
 
-pipeline = Pipeline([
+pipeline_linreg = Pipeline([
   ('clean_data', clean_and_imputers),
   ('feat_eng', feature_eng),
   ('preprocessor', preprocessor_1),
@@ -451,7 +451,7 @@ pipeline = Pipeline([
   ('regressor', LinearRegression())])
 
 # Entrenar el pipeline
-pipeline.fit(ames_x_train, ames_y_train)
+pipeline_linreg.fit(ames_x_train, ames_y_train)
 
 transformed_df = step_rm.fit_transform(interactions.fit_transform(prep_df))
 ##### Extracción de coeficientes
@@ -482,7 +482,7 @@ p_vals >> top_n(20,_.p_val) >> select (_.coefs, _.p_val,_.s,_.variable)
 model.summary2()
 
 ## PREDICCIONES
-y_pred = pipeline.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
+y_pred = pipeline_linreg.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
 y_obs = Sale_Price_test
 
 ##### Métricas de desempeño
@@ -490,11 +490,86 @@ y_obs = Sale_Price_test
 predictores = transformed_df.shape[1]
 get_metrics(y_pred, y_obs, predictores )
 
-# 
-y_pred = pipeline.predict(ames_x_val)*ames_x_val.Gr_Liv_Area
-# 
-get_metrics(y_pred,Sale_Price_validation,predictores )
+test = pd.DataFrame() >> mutate (Sale_Price = y_obs, Sale_Price_Pred = y_pred)
+
+(
+    ggplot(aes(x = y_pred, y =y_obs)) +
+    geom_point() +
+    scale_y_continuous(labels = dollar_format(digits=0, big_mark=','), limits = [0, 900000] ) +
+    scale_x_continuous(labels = dollar_format(digits=0, big_mark=','), limits = [0, 900000] ) +
+    geom_abline(color = "red") +
+    coord_equal() +
+    labs(
+      title = "Comparación entre predicción y observación",
+      x = "Predicción",
+      y = "Observación")+theme_tufte()
+)
+
+
+(
+test >>
+  select(_.Sale_Price, _.Sale_Price_Pred) >>
+  mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
+  ggplot(aes(x = "error")) +
+  geom_histogram(color = "white", fill = "black") +
+  geom_vline(xintercept = 0, color = "red") +
+  scale_x_continuous(labels=dollar_format(big_mark=',', digits=0)) + 
+  ylab("Conteos de clase") + xlab("Errores") +
+  ggtitle("Distribución de error")+theme_tufte()
+)
+
+(
+test >>
+  select(_.Sale_Price, _.Sale_Price_Pred) >>
+  mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
+  ggplot(aes(sample = "error")) +
+  geom_qq(alpha = 0.3) + stat_qq_line(color = "red") +
+  scale_y_continuous(labels=dollar_format(big_mark=',', digits = 0)) + 
+  xlab("Distribución normal") + ylab("Distribución de errores") +
+  ggtitle("QQ-Plot") +theme_tufte()
+)
+
+validation = pd.DataFrame() >> mutate (Sale_Price = Sale_Price_validation, Sale_Price_Pred = pipeline.predict(ames_x_val)*ames_x_val.Gr_Liv_Area )
+
+
 
 results_val = (ames_x_val >> mutate (Pred= pipeline.predict(ames_x_val), true= ames_y_val))
 
 
+(
+  validation >>
+    ggplot(aes(x = "Sale_Price_Pred", y = "Sale_Price")) +
+    geom_point() +
+    scale_y_continuous(labels = dollar_format(digits=0, big_mark=',') ) +
+    scale_x_continuous(labels = dollar_format(digits=0, big_mark=',')) +
+    geom_abline(color = "red") +
+    coord_equal() +
+    labs(
+      title = "Comparación entre predicción y observación",
+      x = "Predicción",
+      y = "Observación")+theme_tufte()
+)
+
+
+(
+validation >>
+  select(_.Sale_Price, _.Sale_Price_Pred) >>
+  mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
+  ggplot(aes(x = "error")) +
+  geom_histogram(color = "white", fill = "black") +
+  geom_vline(xintercept = 0, color = "red") +
+  scale_x_continuous(labels=dollar_format(big_mark=',', digits=0)) + 
+  ylab("Conteos de clase") + xlab("Errores") +
+  ggtitle("Distribución de error")+theme_tufte()
+)
+
+(
+validation >>
+  select(_.Sale_Price, _.Sale_Price_Pred) >>
+  mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
+  ggplot(aes(sample = "error")) +
+  geom_qq(alpha = 0.3) + stat_qq_line(color = "red") +
+  scale_y_continuous(labels=dollar_format(big_mark=',', digits = 0)) + 
+  xlab("Distribución normal") + ylab("Distribución de errores") +
+  ggtitle("QQ-Plot") +theme_tufte()
+)

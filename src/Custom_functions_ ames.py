@@ -101,3 +101,31 @@ def validation_results(x_val,y_val,  pipeline , n_preds):
 def intersection(lst1, lst2):
     lst3 = [value for value in lst1 if value in lst2]
     return lst3
+
+
+def check_cv (df, param_p = False):
+  if param_p == False:
+    (df 
+      >> mutate(RMSE = abs(_.mean_test_neg_mean_squared_error)**0.5, MAPE = abs (_.mean_test_mape))
+      >> pivot_longer(
+                      cols=['mean_test_r2', 'MAPE','RMSE'],
+                      names_to='parameter', 
+                      values_to='value')
+      >> ggplot( aes(x = "param_n_neighbors", y = "value", shape = "param_weights", color= 'param_metric')) 
+      + geom_point(alpha = 0.9,position=position_dodge(width=0.1))
+      + facet_wrap("~parameter",ncol =1, scales = "free_y")
+      + labs( y = '',x= 'Parámetro: vecinos cercanos K' ,shape = 'Ponderación',color = 'Métrica' )).draw(True)
+  else:
+    (df 
+      >> mutate(RMSE = abs(_.mean_test_neg_mean_squared_error)**0.5 , MAPE = abs (_.mean_test_mape))
+      >> pivot_longer(
+                      cols=['mean_test_r2', 'MAPE','RMSE'],
+                      names_to='parameter', 
+                      values_to='value')
+      >> ggplot( aes(x = "param_n_neighbors", y = "value", shape = "param_weights", color= 'param_metric',size = 'param_p')) 
+      + geom_point(alpha = 0.9,position=position_dodge(width=0.1))
+      + facet_wrap("~parameter",ncol =1, scales = "free_y")
+      + labs( y = '',x= 'Parámetro: vecinos cercanos K' ,shape = 'Ponderación',color = 'Métrica' )).draw(True)
+
+
+
