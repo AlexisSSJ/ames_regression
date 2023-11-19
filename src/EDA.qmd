@@ -12,7 +12,7 @@ editor: visual
 ### Variables continuas y númericas
 
 | Variable                    | Descrición                                                                           |
-|------------------------|:-----------------------------------------------|
+|-------------------------|:----------------------------------------------|
 | Lot_Frontage (Continua)     | Loguitud que conectan la calle con la propiedad (en pies)                            |
 | Lot Area (Continua)         | Tamaño del lote en pies cuadrados                                                    |
 | Mas Vnr Area (Continua)     | Área de revestimiento de mampostería en pies cuadrados                               |
@@ -49,7 +49,7 @@ editor: visual
 ### Varaibles categóricas
 
 | Variable                 | Descrición                                                                             |
-|-----------------------|-------------------------------------------------|
+|------------------------|-----------------------------------------------|
 | MS_Subclass (Nominal)    | Identifica el tipo de vivienda de la venta                                             |
 | MS_Zoning (Nominal)      | Identifica la clasificación de la zona asociada a la venta                             |
 | Street (Nominal)         | Tipo de camino de acceso a la propiedad                                                |
@@ -790,7 +790,7 @@ En este `ColumnTransformer()` se crean diferentes variables o se módifican algu
 
 -   Se colapsan las columnas de las variables `Overall_Cond` y `Overall_Qual`.
 
--   Todas estas transformaciones fueron hechas con `FunctionTransformer()` utilizando funciones creadas de manera p\[ropia que se encuentran en el apartado de **Funciones personalizadas**
+-   Todas estas transformaciones fueron hechas con `FunctionTransformer()` utilizando funciones creadas de manera propia que se encuentran en el apartado de **Funciones personalizadas**
 
 ```{python}
 #| label: feature_eng_lm
@@ -811,7 +811,7 @@ feature_eng = ColumnTransformer(
   ('Area_Per_Room',  FunctionTransformer(
                                  div_columns,
                                  feature_names_out = None,
-                                 kw_args={'c1': 'TotRms_AbvGrd', 'c2': 'Gr_Liv_Area', 'feature_name' : 'Area_Per_Room'}
+                                 kw_args={'c2': 'TotRms_AbvGrd', 'c1': 'Gr_Liv_Area', 'feature_name' : 'Area_Per_Room'}
                                  ), ['TotRms_AbvGrd', 'Gr_Liv_Area']),
     ('Wood_propGLA',  FunctionTransformer(
                                  div_columns,
@@ -1141,6 +1141,7 @@ step_rm =ColumnTransformer(
 
 ```{python}
 #| label: final_pipeline_lm
+#| output: false
 pipeline_linreg = Pipeline([
   ('clean_data', clean_and_imputers),
   ('feat_eng', feature_eng),
@@ -1153,6 +1154,8 @@ pipeline_linreg.fit(ames_x_train, ames_y_train)
 
 transformed_df = step_rm.fit_transform(interactions.fit_transform(prep_df))
 ```
+
+A continuaci'on se muestra el resumen de ajuste:
 
 ```{python}
 #| label: Extracción de coeficientes
@@ -1179,16 +1182,16 @@ p_vals = (
         >> left_join(_,conf_int, on = 'variable' )
         )
         
-
-pd.set_option('display.max_rows', 100)
-p_vals >> select (_.variable,_.coefs, _.p_val,_.s)
+model.summary2()
 ```
+
+También podemos ver que tanto impacto tienen las variables en el modelo en las siguientes gráficas, donde se representa el coficiente de regresión para cada variable, junto con su intervalo de confianza y el color representando su `p_value`:
 
 ```{python}
 #| label: p_values analysis
 (
     p_vals
-        >> filter(_.coefs.between(0,1000))
+        >> filter(_.coefs.between(0,10000000))
         >> ggplot(aes (x= 'reorder(variable, coefs)', y= 'coefs', color = 'p_val'))
         +  geom_point()
         + geom_errorbar(aes(ymin='min', ymax='max'),width=0.3)
@@ -1217,6 +1220,16 @@ p_vals >> select (_.variable,_.coefs, _.p_val,_.s)
 )
 ```
 
+Puntos a considerar de las gráficas anteriores:
+
+-   Los coeficientes más grandes suelen pertencer a variables que representan alguna proporción, por lo que no es raro el tamaño de sus coeficientes pues siempre seran multiplicados por un número entre 0 y 1.
+
+-   La mayoría de las variables tiene `p_value` cercano a 0, sin embargo algunos otros tienen valores más altos (los más azules), estos se incluyeron en el modelo ya sea porque ayudan en su performance o porque existen interaciones de estas variables.
+
+### Resutados de test y validación
+
+Finalmente en los resultados se lograron las siguiente métricas
+
 ```{python}
 #| label: test_resutls_lm
 y_pred = pipeline_linreg.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
@@ -1226,8 +1239,9 @@ y_obs = Sale_Price_test
 
 predictores = transformed_df.shape[1]
 get_metrics(y_pred, y_obs, predictores )
-
 ```
+
+En cuanto al análisis de los residuos se tienen resultados bastante aceptables, donde los residuos parecen seguir una distribución normal con media 0, y no se ven indicios de heterocedasticidad.
 
 ```{python}
 #| label: analisis de errores lm
@@ -1269,61 +1283,14 @@ test >>
   xlab("Distribución normal") + ylab("Distribución de errores") +
   ggtitle("QQ-Plot") +theme_tufte()
 )
+
+
 ```
 
-El modelo muestra una $R^2_{adj}=0.85$ con los datos de test, y tienen un error aproximado del $\pm10\%$ con respecto del precio real.
+Finalmente, se tiene la siguiente estimación con el conjunto de validación
 
 ```{python}
 y_pred = pipeline_linreg.predict(ames_x_val)*ames_x_val.Gr_Liv_Area
 
 get_metrics(y_pred,Sale_Price_validation,len(transformed_df.columns ) )
 ```
-
-En cuanto al análisis de los residuos, no parece seguir completamente los supuestos, pues visualmete se puede detectar heterocedasticidad, lo cual puede afectar el preformance del modelo.
-
-```{python}
-validation = pd.DataFrame() >> mutate (Sale_Price = Sale_Price_validation, Sale_Price_Pred = pipeline_linreg.predict(ames_x_val)*ames_x_val.Gr_Liv_Area )
-
-(
-  validation >>
-    ggplot(aes(x = "Sale_Price_Pred", y = "Sale_Price")) +
-    geom_point() +
-    scale_y_continuous(labels = dollar_format(digits=0, big_mark=',') ) +
-    scale_x_continuous(labels = dollar_format(digits=0, big_mark=',')) +
-    geom_abline(color = "red") +
-    coord_equal() +
-    labs(
-      title = "Comparación entre predicción y observación",
-      x = "Predicción",
-      y = "Observación")+theme_tufte()
-)
-
-
-(
-validation >>
-  select(_.Sale_Price, _.Sale_Price_Pred) >>
-  mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
-  ggplot(aes(x = "error")) +
-  geom_histogram(color = "white", fill = "black") +
-  geom_vline(xintercept = 0, color = "red") +
-  scale_x_continuous(labels=dollar_format(big_mark=',', digits=0)) + 
-  ylab("Conteos de clase") + xlab("Errores") +
-  ggtitle("Distribución de error")+theme_tufte()
-)
-
-(
-validation >>
-  select(_.Sale_Price, _.Sale_Price_Pred) >>
-  mutate(error = _.Sale_Price - _.Sale_Price_Pred) >>
-  ggplot(aes(sample = "error")) +
-  geom_qq(alpha = 0.3) + stat_qq_line(color = "red") +
-  scale_y_continuous(labels=dollar_format(big_mark=',', digits = 0)) + 
-  xlab("Distribución normal") + ylab("Distribución de errores") +
-  ggtitle("QQ-Plot") +theme_tufte()
-)
-
-```
-
-# Regresión con Knn
-
-## Cross validation con todas las variables

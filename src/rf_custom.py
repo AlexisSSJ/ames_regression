@@ -210,25 +210,21 @@ summary_df
 )
 
 
+voting = VotingRegressor([
+  ('lm', pipeline_linreg),
+  ('rf',rf_pipline)],
+  weights = [0.75,0.25])
 
+
+
+voting.fit(ames_x_train, ames_y_train)
+
+
+y_pred = voting.predict(ames_x_test) *ames_x_test.Gr_Liv_Area
+y_obs = Sale_Price_test
+get_metrics(y_pred, y_obs, 67)
 (
-  summary_df >> filter ( _.mean_test_r2>0.8)>>
-  ggplot(aes(x = "param_min_samples_leaf", y = "mean_test_r2", color ="param_max_features") )+
-  geom_jitter(alpha = 0.4) +
-  ggtitle("Parametrización de Random Forest vs R^2") +
-  xlab("Parámetro: Número de features por árbol") +
-  ylab("R^2 promedio")
+  ggplot (aes(x=y_pred, y=y_obs))
+  + geom_point()
+  + geom_abline(intercept = 0, slope =1)
 )
-)
-
-
-
-(
-  summary_df >> filter ( _.mean_test_r2>0.8)>>
-  ggplot(aes(x = "param_min_samples_split", y = "param_min_samples_leaf", color ='mean_test_r2')) +
-  geom_jitter(alpha = 0.7) +
-  ggtitle("Parametrización de Random Forest vs R^2") +
-  xlab("Mín sample split") +
-  ylab("Min Sample Leaf")
-)
-
