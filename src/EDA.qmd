@@ -12,7 +12,7 @@ editor: visual
 ### Variables continuas y númericas
 
 | Variable                    | Descrición                                                                           |
-|-----------------------|:------------------------------------------------|
+|------------------------|:-----------------------------------------------|
 | Lot_Frontage (Continua)     | Loguitud que conectan la calle con la propiedad (en pies)                            |
 | Lot Area (Continua)         | Tamaño del lote en pies cuadrados                                                    |
 | Mas Vnr Area (Continua)     | Área de revestimiento de mampostería en pies cuadrados                               |
@@ -49,7 +49,7 @@ editor: visual
 ### Varaibles categóricas
 
 | Variable                 | Descrición                                                                             |
-|----------------------|--------------------------------------------------|
+|-----------------------|-------------------------------------------------|
 | MS_Subclass (Nominal)    | Identifica el tipo de vivienda de la venta                                             |
 | MS_Zoning (Nominal)      | Identifica la clasificación de la zona asociada a la venta                             |
 | Street (Nominal)         | Tipo de camino de acceso a la propiedad                                                |
@@ -107,7 +107,7 @@ use_virtualenv("CD_AMAT_2023")
 
 ```{python}
 #| label: load-py-packages
-#| include: false
+
 
 import pandas as pd
 from siuba import *
@@ -125,10 +125,6 @@ from plydata.one_table_verbs import pull
 from mizani.formatters import comma_format, dollar_format
 
 
-```
-
-```{r}
-py_run_file('Custom_functions_ ames.py')
 ```
 
 ## Analísis de Sale Price
@@ -184,11 +180,7 @@ Sale_Price_validation = ames_y_val * ames_x_val.Gr_Liv_Area
 print('Totales:\t', ames.shape[0],'\nTraining:\t', ames_y_train.shape[0],'\nTesting:\t', ames_y_test.shape[0],'\nValidation:\t', ames_y_val.shape[0])
 ```
 
-Cómo se observa, la distribución de los precios de venta se encuentra sesgada a la derecha, tienendo el 75% de las casas vendidas a un precio menor a \$212,075 y aclumulando un la mitad de estos entre \$129K y 212K. También en el siguiente qqplot podemos ver que la distribución de los precios de venta no parece seguir una distribución normal.
-
 ```{python}
-#| output: false
-#| echo: false
 summary = "count: 974\nmean: $180,757.27 \nstd: $80,744.88\nQ1: $129,062.5\nQ2:$160,000\nQ3: $213,099.75\nmin: $12,789\nmax:$755,000"
 ```
 
@@ -383,7 +375,7 @@ labels=(
 
 ```
 
-Como podemos observar para ser que las varaibles de `'BsmtFin_SF_1', 'First_Flr_SF', 'Second_Flr_SF', 'Total_Bsmt_SF'` son las que tienen correlaciones más grandes con el precio de venta por el precio por pie cuadrado habitable. En el gráfico sólo se muestran etiquetas de correlaciones que no estan en el intervalo (-0.3.0.3).
+Como podemos observar para ser que las varaibles de `'BsmtFin_SF_1', '2nd_Flr_SF', 'Total_Bsmt_SF'` son las que tienen correlaciones más grandes con el precio de venta por el precio por pie cuadrado habitable. En el gráfico sólo se muestran etiquetas de correlaciones que no estan en el intervalo (-0.3.0.3).
 
 ```{python}
 #| label: corr_sp/gla
@@ -392,11 +384,11 @@ Como podemos observar para ser que las varaibles de `'BsmtFin_SF_1', 'First_Flr_
 #| fig-keep: 'all'
 (
     ames_train[continuas].corr().reset_index(drop=False) 
-    >> select(_['Sale_Price/Gr_Liv_Area'],_.index)
-    >> filter(_['Sale_Price/Gr_Liv_Area'] != 1)
-    >> mutate (labels = np.round(_['Sale_Price/Gr_Liv_Area'], 3))
-    >> arrange(_['Sale_Price/Gr_Liv_Area'])
-    >> ggplot(aes(y='Sale_Price/Gr_Liv_Area', x='index', fill='Sale_Price/Gr_Liv_Area'))
+    >> select(_.spgl == _['Sale_Price/Gr_Liv_Area'],_.index)
+    >> filter(_.spgl != 1)
+    >> mutate (labels = np.round(_.spgl, 3))
+    >> arrange(_.spgl)
+    >> ggplot(aes(y='spgl', x='reorder(index,spgl)', fill='spgl'))
     + geom_col()
     + geom_text(aes(label = 'labels') , size=8, va='center', angle=90)
     + ylim([-0.5,0.5])
@@ -504,7 +496,7 @@ Puntos a considerar:
 
 -   En `Bsmt_Type_2` se tiene el mismo caso que en el anterior. Además se muestran elementos con `Total_Bmst_SF`\>0 que caen en la categoría de No basement, lo cual puede deberse a un error.
 
-# Regresión Líneal
+# Fuciones personalizadas
 
 ```{python}
 #| label: libraries lm
@@ -517,14 +509,15 @@ from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
 from sklearn.metrics import mean_squared_error, r2_score, make_scorer
 from sklearn.model_selection import train_test_split, KFold, cross_val_score, cross_validate
 import statsmodels.api as sm
+pd.options.display.float_format = '{:.4f}'.format
 
 ```
 
 ```{python}
-#| label: funciones creadas lm
+#| label: custom_fucntions
 #| results: hide
 #| code-fold: true
-pd.options.display.float_format = '{:.2f}'.format
+
 def importance_from_model (test_frame, y_obs, selected_columns, pipeline, actual_mse, n_permutations=50 ,trans_pred= False ):
   performance_losses = []
   
@@ -703,8 +696,18 @@ def antique_func(X,yb, yr):
 
 ```
 
-# Imputacion de datos
+# Regresión Líneal
+
+## Preparación de los datos
+
+En la documentación del dataset podemos encontrar información útil para saber como imputar los NA's , se creó un `ColumnTransformer()` con el nombre de `clean_and_imputer`, este transformador hace lo siguiente:
+
+-   Elimina columnas que potencialmente podría provocar data leakage
+
+-   Imputación de NA's de variables categorias y númericas de acuerdo a la documentación de los datos.
+
 ```{python}
+#| data_clean_lm
 from sklearn.compose import make_column_selector
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
@@ -779,9 +782,18 @@ clean_and_imputers = ColumnTransformer(
 clean_ames_x_train = clean_and_imputers.fit_transform(ames_x_train)
 ```
 
+## Feature Engineering
+
+En este `ColumnTransformer()` se crean diferentes variables o se módifican algunas otras, en resumen el siguente transformador hace lo siguiente:
+
+-   Se crean 11 variables que en su mayoría se refieren a proporciones.
+
+-   Se colapsan las columnas de las variables `Overall_Cond` y `Overall_Qual`.
+
+-   Todas estas transformaciones fueron hechas con `FunctionTransformer()` utilizando funciones creadas de manera p\[ropia que se encuentran en el apartado de **Funciones personalizadas**
 
 ```{python}
-#| label: resultaqdos lm test
+#| label: feature_eng_lm
 #| code-fold: true
 cond ={1: 'Poor', 2:'Poor',3:'Poor',4:'Average', 5:'Average',6:'Average', 7:'Good_or_Excellent', 8:'Good_or_Excellent', 9:'Good_or_Excellent', 10 :'Good_or_Excellent'}
 
@@ -850,7 +862,12 @@ feature_eng_df = feature_eng.fit_transform(clean_ames_x_train)
 my_features = (feature_eng_df>> select (_.contains('_c_'))).columns.to_list()
 ```
 
+## Preprocesado de los datos
+
+Una vez se limpiaron los datos y se crearon variables, se define el preprocesado para hacer el One Hot Encoding y la estandarización de variables seleccionadas, `preprocesor_1` es un transformador que estandariza algunas variables númericas y aplica `OneHotEncoder()` a todas las variables del tipo `Object`, colapsando categorias que tienen menos de 12 datos.
+
 ```{python}
+#| label: preprocesado1_lm
 num_cols =['Wood_Deck_SF',
             '1st_Flr_SF',
             'Open_Porch_SF',
@@ -883,11 +900,35 @@ preprocessor_1 = ColumnTransformer(
 prep_df = preprocessor_1.fit_transform(feature_eng_df)
 ```
 
-
-
+## Resultados preeliminares del modelo líneal
 
 ```{python}
+#| label: resultados_fullmodel_lm
+lm_pre = Pipeline([
+  ('clean_data', clean_and_imputers),
+  ('feat_eng', feature_eng),
+  ('preprocessor', preprocessor_1),
+  ('regressor', LinearRegression())])
+ 
+lm_pre.fit(ames_x_train, ames_y_train)
 
+y_pred = lm_pre.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
+y_obs = Sale_Price_test
+
+##### Métricas de desempeño
+
+predictores = prep_df.shape[1]
+get_metrics(y_pred, y_obs, predictores)
+```
+
+## Mejora del modelo
+
+Se crearon dos transformadores adicionales; `interactions`, el cual crea intercaciones entre diferentes variables y `step_rm` el cual elimina columnas que no aportan al modelo antes de aplicar la regresión.
+
+Durante este proceso se fueron creando diferentes interacciones y se removieron variables tomando en cuenta los contrastes de hipotesis del modelo, se dejaron las interacciones que mostraron mejores resultados, al igual que las variables que se decidieron remover para buscar el modelo más parsimonioso.
+
+```{python}
+#| label: interactions_lm
 interactions = ColumnTransformer(
   [('Garage_interaction', FunctionTransformer(
                                  cross_interactions, feature_names_out = None,
@@ -929,7 +970,9 @@ interactions = ColumnTransformer(
   verbose_feature_names_out = False,
   remainder='passthrough').set_output(transform = 'pandas')
 ```
+
 ```{python}
+#| label: step_remove_lm
 drop_cols=['2nd_Flr_SF',
 		'3Ssn_Porch',
 		'Neighborhood_IDOTRR',
@@ -1088,17 +1131,16 @@ drop_cols=['2nd_Flr_SF',
 		#############removing sf
             ]
 
-## end
-
 step_rm =ColumnTransformer(
   [('TO_DROP', 'drop', drop_cols )],
   verbose_feature_names_out = False,
   remainder='passthrough').set_output(transform = 'pandas')
 ```
 
+## Creación del pipiline final y analísis de resultados
+
 ```{python}
-
-
+#| label: final_pipeline_lm
 pipeline_linreg = Pipeline([
   ('clean_data', clean_and_imputers),
   ('feat_eng', feature_eng),
@@ -1107,13 +1149,13 @@ pipeline_linreg = Pipeline([
   ('remove', step_rm),
   ('regressor', LinearRegression())])
 
-# Entrenar el pipeline
 pipeline_linreg.fit(ames_x_train, ames_y_train)
 
 transformed_df = step_rm.fit_transform(interactions.fit_transform(prep_df))
 ```
+
 ```{python}
-##### Extracción de coeficientes
+#| label: Extracción de coeficientes
 coefs = pd.DataFrame({
   'variable':transformed_df.columns.to_list(),
   'coefs': pipeline_linreg.named_steps['regressor'].coef_.round(5)
@@ -1122,7 +1164,7 @@ coefs = pd.DataFrame({
 
 model = sm.OLS(ames_y_train, sm.add_constant(transformed_df) ).fit()
 
-
+conf_int  = model.conf_int().reset_index().rename(columns ={'index': 'variable', 0:"min", 1: 'max'})
 
 p_vals = (
         model.pvalues.reset_index()
@@ -1134,17 +1176,49 @@ p_vals = (
               True:''}))
         >> arrange (_.s,- _.p_val)
         >>left_join(_, coefs, on = 'variable')
+        >> left_join(_,conf_int, on = 'variable' )
         )
         
 
 pd.set_option('display.max_rows', 100)
-p_vals >> select (_.variable,_.coefs, _.p_val,_.s) 
+p_vals >> select (_.variable,_.coefs, _.p_val,_.s)
 ```
 
+```{python}
+#| label: p_values analysis
+(
+    p_vals
+        >> filter(_.coefs.between(0,1000))
+        >> ggplot(aes (x= 'reorder(variable, coefs)', y= 'coefs', color = 'p_val'))
+        +  geom_point()
+        + geom_errorbar(aes(ymin='min', ymax='max'),width=0.3)
+        + scale_color_gradient(low='#B05F43',
+                       # mid='#B05F43',
+                       high= '#3A3AD5',
+                       limits=(0,1),
+                       name='p_value')
+        +  labs(y= 'Coeficiente', x = '', title = 'Analisís de variables con \ncoeficiente positivo')
+    +  coord_flip()
+)
 
+(
+    p_vals
+        >> filter(_.coefs.between(-1000,0))
+        >> ggplot(aes (x= 'reorder(variable, coefs)', y= 'coefs', color = 'p_val'))
+        +  geom_point()
+        + geom_errorbar(aes(ymin='min', ymax='max'),width=0.3)
+        + scale_color_gradient(low='#B05F43',
+                       # mid='#B05F43',
+                       high= '#3A3AD5',
+                       limits=(0,1),
+                       name='p_value')
+        +  labs(y= 'Coeficiente', x = '', title = 'Analisís de variables con \ncoeficiente negativo')
+    +  coord_flip()
+)
+```
 
 ```{python}
-## PREDICCIONES
+#| label: test_resutls_lm
 y_pred = pipeline_linreg.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
 y_obs = Sale_Price_test
 
@@ -1154,7 +1228,9 @@ predictores = transformed_df.shape[1]
 get_metrics(y_pred, y_obs, predictores )
 
 ```
+
 ```{python}
+#| label: analisis de errores lm
 test = pd.DataFrame() >> mutate (Sale_Price = y_obs, Sale_Price_Pred = y_pred)
 
 (
@@ -1194,7 +1270,6 @@ test >>
   ggtitle("QQ-Plot") +theme_tufte()
 )
 ```
-
 
 El modelo muestra una $R^2_{adj}=0.85$ con los datos de test, y tienen un error aproximado del $\pm10\%$ con respecto del precio real.
 
