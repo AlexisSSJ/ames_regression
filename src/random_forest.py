@@ -189,7 +189,7 @@ results_imp_tunning = pd.read_csv('model/Random_forest/importance_tunning_1.csv'
         + facet_wrap("~metric",ncol = 1, scales  = 'free_y')
 )
 
-selected_vars = (results >> filter (_.R_adj>0.86) >> pull("used_vars"))[0]
+selected_vars = (results >> filter (_.P==34) >> pull("used_vars"))[0]
 
 step_select =ColumnTransformer(
   [('selector', 'passthrough', selected_vars )],
@@ -238,30 +238,10 @@ results_pipe = pickle.load(open('model/Random_forest/rf_1_cv.pkl', 'rb'))
 # pickle.dump(pipeline_cv.named_steps['regressor'], open('model/Random_forest/rf_1_cv.pkl', 'wb'))
 
 # Convierte los resultados en un DataFrame
-results_df = pd.DataFrame(results_pipe.cv_results_)
-
-
-
-# Puedes seleccionar las columnas de interés, por ejemplo:
-
-summary_df = (
-  results_df >>
-  select(-_.contains("split._"), -_.contains("time"), -_.params)
-)
-summary_df
-
+summary_df = pd.DataFrame(results_pipe.cv_results_) >> select(-_.contains("split._"), -_.contains("time"), -_.params)
 
 (
-  summary_df >>
-  ggplot(aes(x = "param_max_features", y = "mean_test_r2", color = "param_max_depth")) +
-  geom_point() +
-  ggtitle("Parametrización de Random Forest vs R^2") +
-  xlab("Parámetro: Número de features por árbol") +
-  ylab("R^2 promedio")
-)
-
-(
-  summary_df >> top_n(20 ,  _.mean_test_r2 )>>
+  summary_df >> top_n(30 ,  _.mean_test_r2 )>>
   select(_.param_max_depth, _.param_max_features, _.param_min_samples_leaf, 
          _.param_min_samples_split, _.mean_test_r2) >>
   pivot_longer(
@@ -276,10 +256,12 @@ summary_df
   ggtitle("Parametrización de Random Forest vs R^2")
 )
 
-pipeline_cv.named_steps['regressor'].best_estimator_
+pipeline_cv.named_steps['regressor'].best_params_
 
 rf2 = RandomForestRegressor(n_estimators = 70, max_depth=12, max_features=21, min_samples_leaf=4,
                       min_samples_split=5, random_state =7, n_jobs = 6)
+                      
+                      
 pipeline_cv_final = Pipeline([
     ('preprocessor', get_df),
     ('step_select', step_select),
@@ -291,19 +273,19 @@ pipeline_cv_final.fit(ames_x_train, ames_y_train)
 
 
 y_pred_rf = pipeline_cv_final.predict(ames_x_test)*ames_x_test.Gr_Liv_Area
+
 results_reg = (
   ames_x_test >>
   mutate(final_rf_pred = y_pred_rf, 
         Sale_Price = Sale_Price_test) >>
-  select(_.Sale_Price, _.final_rf_pred)
-)
+  select(_.Sale_Price, _.final_rf_pred))
+
 (
     results_reg
         >> ggplot (aes (x = 'final_rf_pred', y ='Sale_Price'))
         +  geom_point()
         + geom_abline(intercept = 0 ,slope =1)
 )
-results_reg
 
 y_obs = Sale_Price_test
 
@@ -312,13 +294,11 @@ get_metrics(y_pred_rf,y_obs, len(selected_vars))
 
 pipeline_cv_final.named_steps['regressor'].feature_names_in_
 
-bs.base_estimator
 
 importances  = pd.DataFrame() >> mutate (Variable =pipeline_cv_final.named_steps['regressor'].feature_names_in_, Importance = pipeline_cv_final.named_steps['regressor'].feature_importances_ )
 
 y_pred = final_rf_pipeline.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
 y_obs = Sale_Price_test
-pd.options.display.float_format = '{:.5f}'.format
 
 metrics = get_metrics(y_pred, y_obs, len(transformed_df.columns))
 
@@ -352,14 +332,14 @@ r2=[]
 mse_=[]
 p=[]
 best_estimator = RandomForestRegressor(
-    n_estimators  = 500,
-    max_depth = 14,
-    max_features=23, 
-    min_samples_leaf=2,
-    random_state= 7,
-    n_jobs = 7
-)
-for i in range(50, 180):
+                                n_estimators = 70, 
+                                max_depth=12, 
+                                max_features=21, 
+                                min_samples_leaf=4,
+                                min_samples_split=5, 
+                                random_state =7, 
+                                n_jobs = 6)
+for i in range( 20):
     vars_to_train = vars_importance_order[i:]
     
     
@@ -373,14 +353,52 @@ for i in range(50, 180):
     v.append(vars_to_train)
     
 
-results = pd.DataFrame() >> mutate (MSE = mse_, P= p, used_vars = v , R_adj = r2)
-    
+# results = pd.DataFrame() >> mutate (MSE = mse_, P= p, used_vars = v , R_adj = r2)
+# results.to_csv('model/Random_forest/importance_tunning_final.csv')
+results = pd.read_csv('model/Random_forest/importance_tunning_final.csv')
 (
-    results >> top_n(20, _.R_adj)
+    results 
         >> pivot_longer(cols=['MSE','R_adj'], names_to='metric', values_to='Score' )
         >> ggplot (aes (x = 'P',y= 'Score' ))
         +  geom_point()
         + facet_wrap("~metric",ncol = 1, scales  = 'free_y')
 )
 
-selected_vars = (results >> filter (_.P==36) >> pull("used_vars"))[0]
+selected_vars2 = (results >> top_n(1, _.R_adj)>> pull("used_vars"))[0]
+
+step_select =ColumnTransformer(
+  [('selector', 'passthrough', selected_vars2 )],
+  verbose_feature_names_out = False,
+  remainder='drop').set_output(transform = "pandas")
+# ['Area_Per_Room_c_', 'Garage_Area', '1st_Flr_SF', '1s_Floor_prop_c_', 'Kitchen_Qual_TA_x_Kitchen_AbvGr', 'Total_Bsmt_SF', 'Gr_Liv_A/Loot_A_c__x_Gr_Liv_A/Loot_A_c_', 'Neighborhood_NridgHt_x_Gr_Liv_Area', 'Gr_Liv_A/Loot_A_c_', 'Garage_Yr_Blt', 'Garage_Qual_TA_x_Garage_Prop_overGLA_c_', 'Gr_Liv_Area', 'Bsmt_Qual_TA_x_Bsmt_Prop_c_', 'Year_Remod/Add', 'Last_remod_c_', 'Garage_Prop_overGLA_c_', 'Antique2_c_', 'Bsmt_Unf_SF', 'Antique_c_', 'BsmtFin_SF_1', 'Year_Built', 'Overall_Qual_Good_or_Excellent_x_1s_Floor_prop_c_', 'Bsmt_Prop_c_']
+rf_pipline = Pipeline([
+    ('preprocessor', get_df),
+    ('step_select', step_select),
+    ('regressor', rf2)
+])
+
+rf_pipline.fit(ames_x_train, ames_y_train)
+"""
+        R E S U L T A D O S 
+              F I N A L E S
+                    T E S T 
+                
+"""
+
+
+
+y_pred = rf_pipline.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
+
+get_metrics(y_pred, Sale_Price_test, len (selected_vars2))
+
+
+
+"""
+         R E S U L T A D O S 
+                 F I N A L E S
+                     V A L I D A T I O N 
+"""
+
+y_pred = rf_pipline.predict(ames_x_val) * ames_x_val.Gr_Liv_Area
+
+get_metrics(y_pred, Sale_Price_validation, len (selected_vars2))
