@@ -61,6 +61,5 @@ Sale_Price_validation = ames_y_val * ames_x_val.Gr_Liv_Area
 print('Totales:\t', ames.shape[0],'\nTraining:\t', ames_y_train.shape[0],'\nTesting:\t', ames_y_test.shape[0],'\nValidation:\t', ames_y_val.shape[0])
 
 
-ames_x_train.info()
 
 #######################
