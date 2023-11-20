@@ -189,16 +189,13 @@ use_virtualenv("CD_AMAT_2023")
 
 ```{python}
 #| label: load-py-packages
-
-
+#| code-fold: false
 import pandas as pd
 from siuba import *
 import numpy as np
 from plotnine import *
 from plydata.tidy import pivot_wider, pivot_longer
 import matplotlib.pyplot as plt
-
-
 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import f_regression, mutual_info_regression
@@ -302,7 +299,7 @@ summary = "count: 974\nmean: $180,757.27 \nstd: $80,744.88\nQ1: $129,062.5\nQ2:$
                         axis_ticks_major_y=element_blank(),
                         axis_text_y=element_blank()
                         )+
-                theme(figure_size=(8, 6))
+                theme(figure_size=(11, 7))
 )
 
 ```
@@ -322,7 +319,7 @@ params={'loc':Sale_Price_train.mean(), 'scale':Sale_Price_train.std()}
                 scale_x_continuous(labels=dollar_format(big_mark=',', digits = 0)) + 
                 xlab("Cuantilies de la dist. normal teórica") + ylab("Cuantiles de Sale Price") +
                 ggtitle("QQ-Plot N~(mu=180,996.79, sd=81,186.69)")+
-                theme_seaborn()
+                theme_seaborn()+ theme(figure_size=(11, 7))
             
 )
 ```
@@ -363,7 +360,7 @@ summary = "count: 974\nmean: $122.11\nstd: $32.60\nQ1: $100.69\nQ2:$120.64\nQ3: 
                         axis_ticks_major_y=element_blank(),
                         axis_text_y=element_blank()
                         )+
-                theme(figure_size=(8, 6))
+                theme(figure_size=(11, 7))
 )
 
 ```
@@ -382,7 +379,7 @@ params={'loc':ames_y_train.mean(), 'scale':ames_y_train.std()}
                 scale_x_continuous(labels=dollar_format(big_mark=',', digits = 0)) + 
                 xlab("Cuantilies de la dist. normal teórica") + ylab("Cuantiles de Sale Price") +
                 ggtitle("QQ-Plot N~(mean=180,996.79, sd=81,186.69)")+
-                theme_seaborn()
+                theme_seaborn() + theme(figure_size=(11, 7))
             
 )
 ```
@@ -443,7 +440,7 @@ labels=(
         ggtitle('Mapa de calor de correlaciones para variables continuas')+
         xlab('')+ylab('')+#guides(fill=guide_legend(title="New Legend Title"))+
         theme(axis_text_x=element_text(rotation=90,hjust = -1),
-                figure_size=(8,6))
+                figure_size=(11,7))
 )
 
 
@@ -473,7 +470,7 @@ Como podemos observar para ser que las varaibles de `'BsmtFin_SF_1', '2nd_Flr_SF
                            limits=(-1,1),
                            name='Correlación')
     + theme_bw()
-    + theme(axis_text_x=element_text(angle=90))
+    + theme(axis_text_x=element_text(angle=90), figure_size=(11, 7))
 )
 ```
 
@@ -495,7 +492,7 @@ Como podemos observar para ser que las varaibles de `'BsmtFin_SF_1', '2nd_Flr_SF
         + theme(axis_text_x=element_text(angle=90))
         + scale_y_continuous(labels=dollar_format(big_mark=',', digits = 0)) 
         +coord_flip()
-        +labs(y='Precio  promedio por pie cuadrado de área habitable', x='')
+        +labs(y='Precio  promedio por pie cuadrado de área habitable', x='')+ theme(figure_size=(11, 7))
 )
 ```
 
@@ -515,7 +512,7 @@ Se puede ver que se tiene una relación líneal creciente entre `Total_Bsmt_SF` 
         + scale_y_continuous(labels = dollar_format(digits=0, big_mark=',') )
         +xlim([0,2500])
         + labs(title = 'Total_Bsmt_SF vs  Sale Price/ Gr_Liv_Area', x='Total_Bsmt_SF', y='Sale Price/ Gr_Liv_Area')
-        + theme_538()
+        + theme_538()+ theme(figure_size=(11, 7))
 )
 ```
 
@@ -553,7 +550,7 @@ for category in cat_columns[cat_columns.str.contains('Bsmt')]:
               + geom_point(alpha= 0.5, show_legend=False) + geom_smooth(color='black', method = 'lm')
               +xlim([0,3000])
               +labs(x='Área total del sótano', y='Precio por pie cuadrado de área habitable bruta', title=titulo)
-              + facet_wrap('~{}'.format(category))+theme_538 ()) +theme_minimal()
+              + facet_wrap('~{}'.format(category)) +theme_minimal() +theme(figure_size=(11, 7)))
 ```
 
 Puntos a considerar:
@@ -1291,7 +1288,7 @@ También podemos ver que tanto impacto tienen las variables en el modelo en las 
                        name='p_value')
         +  labs(y= 'Coeficiente', x = '', title = 'Analisís de variables con \ncoeficiente positivo')
     +  coord_flip()
-)
+)+ theme(figure_size=(11, 7))
 
 (
     p_vals
@@ -1306,7 +1303,7 @@ También podemos ver que tanto impacto tienen las variables en el modelo en las 
                        name='p_value')
         +  labs(y= 'Coeficiente', x = '', title = 'Analisís de variables con \ncoeficiente negativo')
     +  coord_flip()
-)
+)+ theme(figure_size=(11, 7))
 ```
 
 Puntos a considerar de las gráficas anteriores:
@@ -1352,18 +1349,31 @@ En cuanto al análisis de los residuos se tienen resultados bastante aceptables,
 #| label: analisis de errores lm
 #| fig-keep: all
 #| results: hide
-y_pred = pipeline_linreg.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
+#| code-fold: false
+results_reg = (
+  ames_x_test >>
+  mutate(final_lm_pred = pipeline_linreg.predict(ames_x_test)*_.Gr_Liv_Area, 
+        Sale_Price = Sale_Price_test, cat = 'test') >>
+  select(_.Sale_Price, _.final_lm_pred, _.cat))
+  
+results_val = (
+  ames_x_val >>
+  mutate(final_lm_pred = pipeline_linreg.predict(ames_x_val)*_.Gr_Liv_Area , 
+        Sale_Price = Sale_Price_validation, cat = 'validation') >>
+  select(_.Sale_Price, _.final_lm_pred, _.cat) )
+  
 (
-    ggplot(aes(x = y_pred, y =y_obs)) +
-    geom_point(alpha = 0.6) +
-    scale_y_continuous(labels = dollar_format(digits=0, big_mark=',') ) +
-    scale_x_continuous(labels = dollar_format(digits=0, big_mark=',') ) +
-    geom_abline(color = "red") +
-    coord_equal() +
-    labs(
-      title = "Comparación entre predicción y observación",
-      x = "Predicción",
-      y = "Observación")+theme_tufte()
+    pd.concat([results_reg, results_val])
+        >> ggplot (aes (x = 'final_lm_pred', y ='Sale_Price', color = 'cat'))
+        +  geom_point(alpha = 0.6)
+        + geom_abline(intercept = 0 ,slope =1, color = 'red')
+        + scale_y_continuous(labels = dollar_format(digits=0, big_mark=',') ) 
+        + scale_x_continuous(labels = dollar_format(digits=0, big_mark=',') ) 
+        + coord_equal()
+        + labs(
+              title = "Comparación entre predicción y observación",
+              x = "Predicción",
+              y = "Observación", color ='Datos')+theme_tufte()
 )
 
 
@@ -1376,7 +1386,7 @@ test >>
   geom_vline(xintercept = 0, color = "red") +
   scale_x_continuous(labels=dollar_format(big_mark=',', digits=0)) + 
   ylab("Conteos de clase") + xlab("Errores") +
-  ggtitle("Distribución de error")+theme_tufte()
+  ggtitle("Distribución de error")+theme_tufte()+ theme(figure_size=(11, 7))
 )
 
 (
@@ -1387,7 +1397,7 @@ test >>
   geom_qq(alpha = 0.3) + stat_qq_line(color = "red") +
   scale_y_continuous(labels=dollar_format(big_mark=',', digits = 0)) + 
   xlab("Distribución normal") + ylab("Distribución de errores") +
-  ggtitle("QQ-Plot") +theme_tufte()
+  ggtitle("QQ-Plot") +theme_tufte()+ theme(figure_size=(11, 7))
 )
 ```
 
@@ -1740,14 +1750,14 @@ results_knn_model_iterations = pd.read_csv ('../model/knn/interations_results_kn
   results_knn_model_iterations
     >> ggplot (aes(x='p', y= 'r2' ,color= 'mse'))
     +  geom_point(alpha = 0.6)
-    +  labs (x= 'Número de predictores', y= 'R^2', color = 'MSE', title = 'Resultados de iteraciónes con dif.\ncombinaciones de predictores')
+    +  labs (x= 'Número de predictores', y= 'R^2', color = 'MSE', title = 'Resultados de iteraciónes con dif.\ncombinaciones de predictores')+ theme(figure_size=(11, 7))
 )
 
 (
   results_knn_model_iterations >> filter (_.r2>0.85)
     >> ggplot (aes(x='p', y= 'r2' ,color= 'mse'))
     +  geom_point(alpha = 0.6)
-    +  labs (x= 'Número de predictores', y= 'R^2', color = 'MSE', title = 'Resultados de iteraciónes con dif. \ncombinaciones de predictores')
+    +  labs (x= 'Número de predictores', y= 'R^2', color = 'MSE', title = 'Resultados de iteraciónes con dif. \ncombinaciones de predictores')+ theme(figure_size=(11, 7))
 )
 ```
 
@@ -1847,11 +1857,13 @@ importance_final_knn = pd.read_csv('../model/knn/importance_final.csv')
     width=0.2, position=position_dodge(0.9)) +
   geom_point(alpha = 0.65) +
   labs(title='Importancia de las Variables', x='Variable', y='Importancia') +
-  coord_flip() +theme_minimal()
+  coord_flip() +theme_minimal()+ theme(figure_size=(11, 7))
 )
 ```
 
-# Random Forest regressor
+# Random Forest 
+
+Para encontrar una configuración adecuada para el modelo, se buscaron los mejores hiper-parámetros para el full-model, posteriormente se elmiminaron variables por importancia de estas, hasta obtener una buena métrica. Una vez se seleccionaron las variables se volvió a correr un grid search para optimizar el modelo modificando sus hiper-parámetros.
 
 ```{python}
 #| label: RF librerias
@@ -1859,6 +1871,22 @@ importance_final_knn = pd.read_csv('../model/knn/importance_final.csv')
 from sklearn.ensemble import RandomForestRegressor
 import pickle
 ```
+
+## Primer ronda de CV
+
+En los resultados de grid search se obtuvo que el mejor modelo de acuerdo a su $R^2_{adj}$ fue el siguiente:
+
+-   `n_estimators = 500`
+
+-   `max_depth = 14`
+
+-   `max_features=23`
+
+-   `min_samples_leaf=2`
+
+-   `random_state= 7`
+
+-   `n_jobs = 7`
 
 ```{python}
 #| label: CV random forest
@@ -1910,11 +1938,11 @@ results_cv = pickle.load(open('../model/Random_forest/grid_search_random_forest_
 ```
 
 ```{python}
+#| label: summary 1st cv rf
+#| results: hide
+
 summary_df = pd.DataFrame(results_cv.cv_results_) >> select(-_.contains("split._"), -_.contains("time"), -_.params)
 
-
-
-# Puedes seleccionar las columnas de interés, por ejemplo:
 (
   summary_df >> top_n(20 ,  _.mean_test_r2 )>>
   select(_.param_max_depth, _.param_max_features, _.param_min_samples_leaf, 
@@ -1928,29 +1956,31 @@ summary_df = pd.DataFrame(results_cv.cv_results_) >> select(-_.contains("split._
   facet_wrap("~parameter", scales = "free_x") +
   xlab("Parameter value") +
   ylab("R^2 promedio") +
-  ggtitle("Parametrización de Random Forest vs R^2")
+  ggtitle("Parametrización de Random Forest vs R^2 - TOP 20 mejores CV scores")+ theme(figure_size=(10, 6))
 )
 ```
 
-
 ```{python}
-
+#| label: preliminar_model fit
+#| code-fold: false
+#| results: hide
 results_cv.best_params_
-
 
 preliminar_regressor = Pipeline([
    ('preprocessor', get_df),
    ('regressor', results_cv.best_estimator_)
 ])
 
-# Entrenar el pipeline
 preliminar_regressor.fit(ames_x_train, ames_y_train)
-
 ```
 
+## Selección de variables
+
+A continuación se muestrann los resultados de los modelos con haciendo backward selection tomando como criterio la importancia de la variable, el modelo seleccionado fue el que se queda con 34 predictores, el cuál alcanza una $R^2_{adj} = 0.863$.
 
 ```{python}
-
+#| label: importances from preliminar model
+#| code-fold: false
 importances  = pd.DataFrame() >> mutate (Variable = results_cv.best_estimator_.feature_names_in_, Importance = results_cv.best_estimator_.feature_importances_ )
 
 y_pred = preliminar_regressor.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
@@ -1959,7 +1989,6 @@ y_obs = Sale_Price_test
 metrics = get_metrics(y_pred, y_obs, len(transformed_df.columns))
 ```
 
-
 ```{python}
 (
 importances 
@@ -1967,7 +1996,7 @@ importances
     >>ggplot (aes(x = 'reorder(Variable,Importance)', y = 'Importance'))
     + geom_col()
     + labs(title = 'Top 40 variables con mayor importancia')
-    + coord_flip()
+    + coord_flip() + theme(figure_size=(11, 7))
 )
 
 (
@@ -1976,11 +2005,10 @@ importances
     >>ggplot (aes(x = 'reorder(Variable,Importance)', y = 'Importance'))
     + geom_col()
     + labs(title = 'Top 40 variables con menos importancia')
-    + coord_flip()
+    + coord_flip() + theme(figure_size=(11, 7))
 )
 
 ```
-
 
 ```{python}
 #| label: importance iterations removing
@@ -2012,41 +2040,43 @@ for i in range(50, 180):
     v.append(vars_to_train)
 ```
 
-
 ```{python}
-results_imp_tunning = pd.read_csv('../model/Random_forest/importance_tunning_1.csv')
 # results_imp_tunning.to_csv('model/Random_forest/importance_tunning_1.csv')
+results_imp_tunning = pd.read_csv('../model/Random_forest/importance_tunning_1.csv')
 (
     results_imp_tunning 
         >> pivot_longer(cols=['MSE','R_adj'], names_to='metric', values_to='Score' )
         >> ggplot (aes (x = 'P',y= 'Score' ))
+        + labs(title = 'Resultados diferentes modelos Radom Forest', x='Predictores', y= 'Métrica')
         +  geom_point()
         + facet_wrap("~metric",ncol = 1, scales  = 'free_y')
+        + theme(figure_size=(11, 7))
 )
 
 selected_vars = ['MS_Zoning_RL', 'Bsmt_Qual_Gd', 'Condition_1_infrequent_sklearn', 'Bsmt_Qual_TA', 'Condition_1_Norm', 'Enclosed_Porch', 'Alley_No_Alley_Access', 'Bsmt_Qual_Gd_x_Bsmt_Prop_c_', 'Central_Air_Y', 'House_Style_1Story', 'Kitchen_Qual_TA', 'Lot_Config_Inside', 'Neighborhood_Crawfor_x_Gr_Liv_Area', 'Full_Bath', 'Garage_Finish_RFn', 'Garage_Cars', 'Overall_Qual_Good_or_Excellent', 'Kitchen_Qual_Gd', 'Neighborhood_NoRidge_x_Gr_Liv_Area', 'Antique_c_', 'Garage_Area', 'Gr_Liv_A/Loot_A_c__x_Gr_Liv_A/Loot_A_c_', 'Year_Built', 'Neighborhood_NridgHt_x_Gr_Liv_Area', 'TotRms_AbvGrd', 'Bedroom_AbvGr', 'Lot_Area', 'Area_Per_Room_c_', '2nd_Flr_SF', 'Fireplaces', 'Exter_Qual_Gd', 'Total_Bsmt_SF', '1st_Flr_SF', 'Gr_Liv_Area']
 #(results >> filter (_.P==34) >> pull("used_vars"))[0]
+```
+
+## Segunda ronda de CV
+
+Para poder mejorar aúnn más el modelo se hace otro grid search en busca de mejores hiper-parámetros para este:
+
+```{python}
+#| label: def_cv_2_rf
+#| code-fold: false
+#| eval: false
 
 step_select =ColumnTransformer(
   [('selector', 'passthrough', selected_vars )],
   verbose_feature_names_out = False,
   remainder='drop').set_output(transform = "pandas")
-
-```
-
-## Segunda ronda de CV
-
-
-```{python}
-#| label: def_cv_2_rf 
-#| eval: false
+  
 param_grid = {
  'max_depth': range(11, 18),
  'min_samples_split': range(2,9),
  'min_samples_leaf': range(2,6),
  'max_features': range(19,26,2)
 }
-
 
 scoring = {
     'neg_mean_squared_error': make_scorer(mean_squared_error, greater_is_better=False),
@@ -2074,6 +2104,7 @@ best_features_pipe= Pipeline([
 best_features_pipe.fit(ames_x_train ,ames_y_train)
 # results_cv_final = pipeline_cv.named_steps['regressor']
 ```
+
 ```{python}
 #| label: load rf_cv2
 #| code-fold: false
@@ -2097,13 +2128,32 @@ summary_df = pd.DataFrame(results_pipe.cv_results_) >> select(-_.contains("split
   facet_wrap("~parameter", scales = "free_x") +
   xlab("Parameter value") +
   ylab("R^2 promedio") +
-  ggtitle("Parametrización de Random Forest vs R^2")
+  ggtitle("Parametrización de Random Forest vs R^2") + theme(figure_size=(11, 7))
 )
 ```
 
+Con los resultados del grid search se decide escoger los siguientes hiper-parámetros para el modelo final:
+
+-   `n_estimators = 70`
+
+-   `max_depth=12`
+
+-   `max_features=21`
+
+-   `min_samples_leaf=4`
+
+-   `min_samples_split=5`
+
 ```{python}
-rf2 = RandomForestRegressor(n_estimators = 70, max_depth=12, max_features=21, min_samples_leaf=4,
-                      min_samples_split=5, random_state =7, n_jobs = 6)
+#| label: results_rf
+#| code-fold: false
+#| results: hide
+rf2 = RandomForestRegressor(n_estimators = 70, max_depth=12, max_features=21, min_samples_leaf=4,min_samples_split=5, random_state =7, n_jobs = 6)
+
+step_select =ColumnTransformer(
+  [('selector', 'passthrough', selected_vars )],
+  verbose_feature_names_out = False,
+  remainder='drop').set_output(transform = "pandas")
                       
                       
 pipeline_cv_final = Pipeline([
@@ -2116,28 +2166,54 @@ pipeline_cv_final = Pipeline([
 pipeline_cv_final.fit(ames_x_train, ames_y_train)
 
 
-y_pred_rf = pipeline_cv_final.predict(ames_x_test)*ames_x_test.Gr_Liv_Area
 
 results_reg = (
   ames_x_test >>
-  mutate(final_rf_pred = y_pred_rf, 
-        Sale_Price = Sale_Price_test) >>
-  select(_.Sale_Price, _.final_rf_pred))
-
+  mutate(
+          pred = pipeline_cv_final.predict(ames_x_test)*_.Gr_Liv_Area, 
+          Sale_Price = Sale_Price_test, 
+          cat = 'Test'
+        ) >>
+  select(_.Sale_Price, _.pred, _.cat))
+  
+results_val = (
+  ames_x_val >>
+  mutate(pred = pipeline_cv_final.predict(ames_x_val)*_.Gr_Liv_Area , 
+        Sale_Price = Sale_Price_validation, cat = 'Validation') >>
+  select(_.Sale_Price, _.pred, _.cat) )
+  
 (
-    results_reg
-        >> ggplot (aes (x = 'final_rf_pred', y ='Sale_Price'))
-        +  geom_point()
-        + geom_abline(intercept = 0 ,slope =1)
+   results_reg
+        >> ggplot (aes (x = 'pred', y ='Sale_Price'))
+        +  geom_point(alpha = 0.6)
+        + geom_abline(intercept = 0 ,slope =1, color = 'red')
+        + scale_y_continuous(labels = dollar_format(digits=0, big_mark=',') ) 
+        + scale_x_continuous(labels = dollar_format(digits=0, big_mark=',') ) 
+        + coord_equal()
+        + labs(
+              title = "Comparación entre predicción y observación",
+              x = "Predicción",
+              y = "Observación", color ='Datos') + theme_tufte()
 )
+results_rf= pd.DataFrame(
+  {'Resultados Test': list(get_metrics(results_reg.pred,results_reg.Sale_Price, len(selected_vars)).Value),
+  "Resultados Validación" : list(get_metrics(results_val.pred ,results_val.Sale_Price, len(selected_vars)).Value)}, index = np.array(['ME', 'MAE', 'MAPE', 'MSE', 'RMSE', 'R2', 'R2Adj']))
 
-y_obs = Sale_Price_test
-
-get_metrics(y_pred_rf,y_obs, len(selected_vars))
 ```
 
 ```{python}
-from siuba import *
+#| label: tbl_results_rf2
+#| output: asis
+#| echo: false
+results_rf[['Resultados Test']].to_html()
+```
+
+## Segunda selección de variables
+Se calcula la importancia de las variables nuevamente y se vuelve a hacer una selección de estas.
+
+```{python}
+#| label: importancia rf2
+#| code-fold: false
 importances  = pd.DataFrame() >> mutate (Variable =pipeline_cv_final.named_steps['regressor'].feature_names_in_, Importance = pipeline_cv_final.named_steps['regressor'].feature_importances_ )
 
 y_pred = pipeline_cv_final.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
@@ -2147,22 +2223,14 @@ metrics = get_metrics(y_pred, y_obs, len(transformed_df.columns))
 
 (
 importances 
-                >> top_n(40, _.Importance)
                 >>ggplot (aes(x = 'reorder(Variable,Importance)', y = 'Importance' ))
                 + geom_col()
                 + labs(title = 'Top 40 variables con mayor importancia')
-                + coord_flip()
-)
-
-(
-importances
-                >> top_n(-40, _.Importance)
-                >>ggplot (aes(x = 'reorder(Variable,Importance)', y = 'Importance'))
-                + geom_col()
-                + labs(title = 'Top 40 variables con menos importancia')
-                + coord_flip()
+                + coord_flip()+ theme(figure_size=(11, 7))
 )
 ```
+
+Nuevamente se vuelve a iterar para eliminar variables, se eliminan las 7 variables menos importantes y nos quedamos con un modelo de únicamente 27 variables.
 
 ```{python}
 #| label: 2dn round vars importance rf
@@ -2178,9 +2246,9 @@ r2=[]
 mse_=[]
 p=[]
 best_estimator = RandomForestRegressor(
-                                n_estimators = 70, 
+                                n_estimators = 150, 
                                 max_depth=12, 
-                                max_features=21, 
+                                max_features=19, 
                                 min_samples_leaf=4,
                                 min_samples_split=5, 
                                 random_state =7, 
@@ -2200,12 +2268,11 @@ for i in range( 20):
     
 
 # results = pd.DataFrame() >> mutate (MSE = mse_, P= p, used_vars = v , R_adj = r2)
-# results.to_csv('model/Random_forest/importance_tunning_final.csv')
+# results.to_csv('../model/Random_forest/importance_tunning_final.csv')
 ```
 
-
-
 ```{python}
+#| label: variables selection final rf
 results = pd.read_csv('../model/Random_forest/importance_tunning_final.csv')
 (
     results 
@@ -2213,49 +2280,78 @@ results = pd.read_csv('../model/Random_forest/importance_tunning_final.csv')
         >> ggplot (aes (x = 'P',y= 'Score' ))
         +  geom_point()
         + facet_wrap("~metric",ncol = 1, scales  = 'free_y')
+        + labs (
+            title = 'Resultados haciendo Backward selection',
+            x = 'Predictores usados',
+            y = 'Métrica')
 )
-
-selected_vars2 = ['Area_Per_Room_c_', 'Garage_Area', '1st_Flr_SF', '1s_Floor_prop_c_', 'Kitchen_Qual_TA_x_Kitchen_AbvGr', 'Total_Bsmt_SF', 'Gr_Liv_A/Loot_A_c__x_Gr_Liv_A/Loot_A_c_', 'Neighborhood_NridgHt_x_Gr_Liv_Area', 'Gr_Liv_A/Loot_A_c_', 'Garage_Yr_Blt', 'Garage_Qual_TA_x_Garage_Prop_overGLA_c_', 'Gr_Liv_Area', 'Bsmt_Qual_TA_x_Bsmt_Prop_c_', 'Year_Remod/Add', 'Last_remod_c_', 'Garage_Prop_overGLA_c_', 'Antique2_c_', 'Bsmt_Unf_SF', 'Antique_c_', 'BsmtFin_SF_1', 'Year_Built', 'Overall_Qual_Good_or_Excellent_x_1s_Floor_prop_c_', 'Bsmt_Prop_c_']
-#(results >> top_n(1, _.R_adj)>> pull("used_vars"))[0]
 ```
-
-
+## Resultados en test y validación
+Finalmente se escoge el siguiente modelo que alcanza una $R^2_{adj}\approx 0.888$ en test:
 ```{python}
+#| label: final pipe rf and results
+#| code-fold: false
+#| results: hide
+# (results >> top_n(1, _.R_adj) >> pull("used_vars"))[0]
+best_estimator = RandomForestRegressor(
+                                n_estimators = 150, 
+                                max_depth=12, 
+                                max_features=19, 
+                                min_samples_leaf=4,
+                                min_samples_split=5, 
+                                random_state =7, 
+                                n_jobs = 6)
+selected_vars2 = ['Enclosed_Porch', 'Exter_Qual_Gd', 'Full_Bath', 'Neighborhood_Crawfor_x_Gr_Liv_Area', 'Kitchen_Qual_Gd', 'Garage_Cars', 'Overall_Qual_Good_or_Excellent', 'Bsmt_Qual_Gd', 'Fireplaces', 'MS_Zoning_RL', 'Kitchen_Qual_TA', 'House_Style_1Story', 'Neighborhood_NridgHt_x_Gr_Liv_Area', 'Central_Air_Y', 'Bedroom_AbvGr', 'Lot_Area', 'Area_Per_Room_c_', 'Garage_Area', '1st_Flr_SF', 'Gr_Liv_A/Loot_A_c__x_Gr_Liv_A/Loot_A_c_', 'TotRms_AbvGrd', 'Gr_Liv_Area', 'Total_Bsmt_SF', 'Bsmt_Qual_Gd_x_Bsmt_Prop_c_', '2nd_Flr_SF','Year_Built', 'Antique_c_']
 
 step_select =ColumnTransformer(
   [('selector', 'passthrough', selected_vars2 )],
   verbose_feature_names_out = False,
   remainder='drop').set_output(transform = "pandas")
-# ['Area_Per_Room_c_', 'Garage_Area', '1st_Flr_SF', '1s_Floor_prop_c_', 'Kitchen_Qual_TA_x_Kitchen_AbvGr', 'Total_Bsmt_SF', 'Gr_Liv_A/Loot_A_c__x_Gr_Liv_A/Loot_A_c_', 'Neighborhood_NridgHt_x_Gr_Liv_Area', 'Gr_Liv_A/Loot_A_c_', 'Garage_Yr_Blt', 'Garage_Qual_TA_x_Garage_Prop_overGLA_c_', 'Gr_Liv_Area', 'Bsmt_Qual_TA_x_Bsmt_Prop_c_', 'Year_Remod/Add', 'Last_remod_c_', 'Garage_Prop_overGLA_c_', 'Antique2_c_', 'Bsmt_Unf_SF', 'Antique_c_', 'BsmtFin_SF_1', 'Year_Built', 'Overall_Qual_Good_or_Excellent_x_1s_Floor_prop_c_', 'Bsmt_Prop_c_']
+
 rf_pipline = Pipeline([
     ('preprocessor', get_df),
     ('step_select', step_select),
-    ('regressor', rf2)
+    ('regressor', best_estimator)
 ])
 
 rf_pipline.fit(ames_x_train, ames_y_train)
-"""
-        R E S U L T A D O S 
-              F I N A L E S
-                    T E S T 
-                
-"""
 
-
-
-y_pred = rf_pipline.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
-
-get_metrics(y_pred, Sale_Price_test, len (selected_vars2))
+results_reg = (
+  ames_x_test >>
+  mutate(
+          pred = rf_pipline.predict(ames_x_test)*_.Gr_Liv_Area, 
+          Sale_Price = Sale_Price_test, 
+          cat = 'Test'
+        ) >>
+  select(_.Sale_Price, _.pred, _.cat))
+  
+results_val = (
+  ames_x_val >>
+  mutate(pred = rf_pipline.predict(ames_x_val)*_.Gr_Liv_Area , 
+        Sale_Price = Sale_Price_validation, cat = 'Validation') >>
+  select(_.Sale_Price, _.pred, _.cat) )
+  
+(
+   pd.concat([results_reg, results_val])
+        >> ggplot (aes (x = 'pred', y ='Sale_Price', color = 'cat'))
+        +  geom_point(alpha = 0.6)
+        + geom_abline(intercept = 0 ,slope =1)
+        + scale_y_continuous(labels = dollar_format(digits=0, big_mark=',') ) 
+        + scale_x_continuous(labels = dollar_format(digits=0, big_mark=',') ) 
+        + coord_equal()
+        + labs(
+              title = "Comparación entre predicción y observación",
+              x = "Predicción",
+              y = "Observación", color ='Datos')+theme_tufte()
+)
+results_rf = pd.DataFrame(
+  {'Resultados Test': list(get_metrics(results_reg.pred,results_reg.Sale_Price, len(selected_vars2)).Value),
+  "Resultados Validación" : list(get_metrics(results_val.pred ,results_val.Sale_Price, len(selected_vars2)).Value)}, index = np.array(['ME', 'MAE', 'MAPE', 'MSE', 'RMSE', 'R2', 'R2Adj']))
 ```
 
 ```{python}
-"""
-         R E S U L T A D O S 
-                 F I N A L E S
-                     V A L I D A T I O N 
-"""
-
-y_pred = rf_pipline.predict(ames_x_val) * ames_x_val.Gr_Liv_Area
-
-get_metrics(y_pred, Sale_Price_validation, len (selected_vars2))
+#| label: tbl_results_rf final
+#| output: asis
+#| echo: false
+results_rf.to_html()
 ```
