@@ -1,7 +1,9 @@
 ---
 title: "EDA"                    
 author: "Uriel Alexis Luna López"
-format: html                    
+format: 
+    html :          
+        code-fold: true
 editor: visual                  
 ---
 
@@ -11,91 +13,171 @@ editor: visual
 
 ### Variables continuas y númericas
 
-| Variable                    | Descrición                                                                           |
-|-------------------------|:----------------------------------------------|
++-----------------------------+--------------------------------------------------------------------------------------+
+| # Variable                  | Descrición                                                                           |
++=============================+:=====================================================================================+
 | Lot_Frontage (Continua)     | Loguitud que conectan la calle con la propiedad (en pies)                            |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Lot Area (Continua)         | Tamaño del lote en pies cuadrados                                                    |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Mas Vnr Area (Continua)     | Área de revestimiento de mampostería en pies cuadrados                               |
++-----------------------------+--------------------------------------------------------------------------------------+
 | BsmtFin SF 1 (Continua)     | Area del sótano terminada Tipo 1 en pies cuadrados                                   |
++-----------------------------+--------------------------------------------------------------------------------------+
 | BsmtFin SF 2 (Continua)     | Area del sótano terminada Tipo 2 en pies cuadrados                                   |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Bsmt Unf SF (Continua)      | Área sin terminar del sótano en pies cuadrados                                       |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Total Bsmt SF (Continua)    | Área total del sótano                                                                |
++-----------------------------+--------------------------------------------------------------------------------------+
 | 1st Flr SF (Continua)       | Pies cuadrqados del primer piso                                                      |
++-----------------------------+--------------------------------------------------------------------------------------+
 | 2nd Flr SF (Continua)       | Pies cuadrados del segundo piso                                                      |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Low Qual Area SF (Continua) | Pies cuadrados terminados de baja calidad                                            |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Gr Liv Area (Continua)      | Superficie habitable sobre el nivel del suelo en pies cuadrados                      |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Wood Deck SF (Continua)     | Área de cubierta de madera en pies cuadrados                                         |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Open Porch SF (Continua)    | Área abierta del porche en pies cuadrados                                            |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Enclose Porch (Continua)    | Área cerrada del proche en pies cuadrados                                            |
++-----------------------------+--------------------------------------------------------------------------------------+
 | 3-Ssn Porch (Continua)      | Área de porche de tres estaciones en pies cuadrados                                  |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Screen Porch (Continua)     | Área del porche cubierto en pies cuadrados                                           |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Pool Area (Continua)        | Área de la piscina en pies cuadrados                                                 |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Misc Val (Continua)         | Valor de la característica miscelanea                                                |
++-----------------------------+--------------------------------------------------------------------------------------+
 | **Sale_Price (Continua)**   | Precio de venta.                                                                     |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Year Built (Discreta)       | Año original de construcción                                                         |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Year Remod/Add (Discreta)   | Fecha de remodelación (la misma que la fecha de construcción si no se ha remodelado) |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Bsmt Full Bath (Discreta)   | Baños completos en el sótano                                                         |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Bsmt Half Bath (Discreta)   | Medios baños en el sótano                                                            |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Full Bath (Discreta)        | Baños completos sobre el nivel del suelo                                             |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Half Bath (Discreta)        | Medios baños sobre el nivel del suelo                                                |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Kitchen (Discreta)          | Concinas sobre el nivel del suelo                                                    |
++-----------------------------+--------------------------------------------------------------------------------------+
 | TotRmsAbvGrd                | Total de habitaciones sobre el nivel del suelo (no incluye baños)                    |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Fireplaces (Discreta)       | Número de chimeneas                                                                  |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Garage Yr Blt (Discreta)    | Año en que se construyó el garage                                                    |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Garage Cars (Discreta)      | Tamaño del garage en cuanto a capacidad para autos.                                  |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Mo Sold (Discreta)          | Mes de la venta (MM)                                                                 |
++-----------------------------+--------------------------------------------------------------------------------------+
 | Yr Sold (Discreta)          | Año de la venta (YYYY)                                                               |
++-----------------------------+--------------------------------------------------------------------------------------+
 
 ### Varaibles categóricas
 
++--------------------------+----------------------------------------------------------------------------------------+
 | Variable                 | Descrición                                                                             |
-|------------------------|-----------------------------------------------|
++==========================+========================================================================================+
 | MS_Subclass (Nominal)    | Identifica el tipo de vivienda de la venta                                             |
++--------------------------+----------------------------------------------------------------------------------------+
 | MS_Zoning (Nominal)      | Identifica la clasificación de la zona asociada a la venta                             |
++--------------------------+----------------------------------------------------------------------------------------+
 | Street (Nominal)         | Tipo de camino de acceso a la propiedad                                                |
++--------------------------+----------------------------------------------------------------------------------------+
 | Alley (Nominal)          | Tipo de callejón de acceso a la propiedad                                              |
++--------------------------+----------------------------------------------------------------------------------------+
 | Lot Contour (Nominal)    | Planitud de la propiedad                                                               |
++--------------------------+----------------------------------------------------------------------------------------+
 | Lot Config (Nominal)     | Configurarición del lote                                                               |
++--------------------------+----------------------------------------------------------------------------------------+
 | Neightboorhood (Nominal) | Ubicación física dentro de los límites de la ciudad de Ames                            |
++--------------------------+----------------------------------------------------------------------------------------+
 | Condition 1 (Nominal)    | Proximidad a varias condiciones                                                        |
++--------------------------+----------------------------------------------------------------------------------------+
 | Condition 2 (Nominal)    | Proximidad a varias condiciones (Si más de una es presente)                            |
++--------------------------+----------------------------------------------------------------------------------------+
 | Bldg Type (Nominal)      | Tipo de vivienda                                                                       |
++--------------------------+----------------------------------------------------------------------------------------+
 | House Style (Nominal)    | Estilo de la vivienda                                                                  |
++--------------------------+----------------------------------------------------------------------------------------+
 | Roof Style (Nominal)     | Tipo de techo                                                                          |
++--------------------------+----------------------------------------------------------------------------------------+
 | Roof Matl (Nominal)      | Material del techo                                                                     |
++--------------------------+----------------------------------------------------------------------------------------+
 | Exterior 1 (Nominal)     | Revestimiento exterior de la casa                                                      |
++--------------------------+----------------------------------------------------------------------------------------+
 | Exterior 2 (Nominal)     | Revestimiento exterior de la casa (Si hay más de un material)                          |
++--------------------------+----------------------------------------------------------------------------------------+
 | Mas Vnr Type (Nominal)   | Tipo de revestimiento de mampostería                                                   |
++--------------------------+----------------------------------------------------------------------------------------+
 | Foundation (Nominal)     | Tipo de cimentación                                                                    |
++--------------------------+----------------------------------------------------------------------------------------+
 | Heating (Nominal)        | Tipo de calefacción                                                                    |
++--------------------------+----------------------------------------------------------------------------------------+
 | Central Air (Nominal)    | Aire acondicionado centralizado                                                        |
++--------------------------+----------------------------------------------------------------------------------------+
 | Garage Type (Nominal)    | Ubicación del garage                                                                   |
++--------------------------+----------------------------------------------------------------------------------------+
 | Misc Feature (Nominal)   | Característica miscelánea no cubierta en otras categorías                              |
++--------------------------+----------------------------------------------------------------------------------------+
 | Sale Type (Nominal)      | Tipo de venta                                                                          |
++--------------------------+----------------------------------------------------------------------------------------+
 | Sale Condition (Nominal) | Condicón de la venta.                                                                  |
++--------------------------+----------------------------------------------------------------------------------------+
 | Functional (Ordinal)     | Funcionalidad del hogar (suponga que es típico a menos que se justifiquen deducciones) |
++--------------------------+----------------------------------------------------------------------------------------+
 | FireplaceQu (Ordinal)    | Calidad de las chimeneas                                                               |
++--------------------------+----------------------------------------------------------------------------------------+
 | Lot Shape (Ordinal)      | Forma general de la propiedad                                                          |
++--------------------------+----------------------------------------------------------------------------------------+
 | Pool QC (Ordinal)        | Calidad de la piscina                                                                  |
++--------------------------+----------------------------------------------------------------------------------------+
 | Utilities (Ordinal)      | Tipo de utilidades disponibles                                                         |
++--------------------------+----------------------------------------------------------------------------------------+
 | Land Slope (Ordinal)     | Pendiente de la propiedad                                                              |
++--------------------------+----------------------------------------------------------------------------------------+
 | Overall Qual (Ordinal)   | Califica el material general y el acabado de la casa.                                  |
++--------------------------+----------------------------------------------------------------------------------------+
 | Overall Cond (Ordinal)   | Califica la condición general de la casa                                               |
++--------------------------+----------------------------------------------------------------------------------------+
 | Exter Qual (Ordinal)     | Evalua la calidad materiales de los exteriores                                         |
++--------------------------+----------------------------------------------------------------------------------------+
 | Exter Cond (Ordinal)     | Evalua la condición presente del materia en el exterior                                |
++--------------------------+----------------------------------------------------------------------------------------+
 | Bsmt Qua (Ordinal)       | Evalua la altura del sótano                                                            |
++--------------------------+----------------------------------------------------------------------------------------+
 | Bsmt Cond (Ordinal)      | Evalua la condición general del sótano                                                 |
++--------------------------+----------------------------------------------------------------------------------------+
 | Bsmt Exposure (Ordinal)  | Se refiere a paredes a nivel de jardín o de salida                                     |
++--------------------------+----------------------------------------------------------------------------------------+
 | BsmtFin Type 1 (Ordinal) | Calificación del area terminada del sótano                                             |
++--------------------------+----------------------------------------------------------------------------------------+
 | BsmtFin Type 2 (Ordinal) | Clasificación del área terminada del sótano (si hay varios tipos)                      |
++--------------------------+----------------------------------------------------------------------------------------+
 | Heating QC (Ordinal)     | Calidad y condición de la calefacción                                                  |
++--------------------------+----------------------------------------------------------------------------------------+
 | Electrical (Ordinal)     | Sistema electrico                                                                      |
++--------------------------+----------------------------------------------------------------------------------------+
 | Kitchen Qaul (Ordinal)   | Calidad de la cocina                                                                   |
++--------------------------+----------------------------------------------------------------------------------------+
 | Garage Qual (Ordinal)    | Calidad del Garage                                                                     |
++--------------------------+----------------------------------------------------------------------------------------+
 | Garage cond (Ordinal)    | Condicón del garage                                                                    |
++--------------------------+----------------------------------------------------------------------------------------+
 | Paved Drive (Ordinal)    | Camino pavimentado.                                                                    |
++--------------------------+----------------------------------------------------------------------------------------+
 | Garage Finish (Ordnal)   | El interior del garage esta terminado                                                  |
++--------------------------+----------------------------------------------------------------------------------------+
 | Fence (Ordinal)          | Calidad de la cerca.                                                                   |
++--------------------------+----------------------------------------------------------------------------------------+
 
 ```{r}
 #| label: startPy
@@ -133,6 +215,7 @@ A continuación se muestra el split inicial
 
 ```{python}
 #| label: intial_split
+#| code-fold: false
 #| echo: true
 
 ames = (pd.read_excel( '../data/proyecto_ames_train.xlsx'  ).rename(columns = lambda x: x.replace (' ','_') )
@@ -181,16 +264,16 @@ print('Totales:\t', ames.shape[0],'\nTraining:\t', ames_y_train.shape[0],'\nTest
 ```
 
 ```{python}
+#| echo: false
 summary = "count: 974\nmean: $180,757.27 \nstd: $80,744.88\nQ1: $129,062.5\nQ2:$160,000\nQ3: $213,099.75\nmin: $12,789\nmax:$755,000"
 ```
 
 ```{python}
 #| results: hide
-#| code-fold: true
 #| label: sale_price_dist
 #| fig-keep: 'all'
 
-# plt.figure()
+
 (
   ggplot(aes(y=Sale_Price_train, x=0))+
                 geom_violin( fill='#702C27',
@@ -248,7 +331,6 @@ A diferencia de la distribución de los precios se venta de la casa, el precio p
 
 ```{python}
 #| results: hide
-#| code-fold: true
 #| label: sale_price_GLA_DIST 
 #| fig-keep: 'all'
 summary = "count: 974\nmean: $122.11\nstd: $32.60\nQ1: $100.69\nQ2:$120.64\nQ3: $141.27\nmin: $17.87\nmax:$276.25"
@@ -288,7 +370,6 @@ summary = "count: 974\nmean: $122.11\nstd: $32.60\nQ1: $100.69\nQ2:$120.64\nQ3: 
 
 ```{python}
 #| results: hide
-#| code-fold: true
 #| label: qq plot new y
 #| fig-keep: 'all'
 params={'loc':ames_y_train.mean(), 'scale':ames_y_train.std()}
@@ -309,7 +390,9 @@ params={'loc':ames_y_train.mean(), 'scale':ames_y_train.std()}
 ## Variables Continuas VS Transformación de Sale_Price
 
 ```{python}
-#| echo: false
+#| label: corr_heatmap_HCC
+#| results: hide
+#| fig-keep: 'all'
 continuas = [   'Lot_Frontage',
                 'Lot_Area', 
                 'Mas_Vnr_Area', 
@@ -329,15 +412,6 @@ continuas = [   'Lot_Frontage',
                 'Screen_Porch', 
                 'Pool_Area', 
                 'Misc_Val']
-
-```
-
-```{python}
-#| label: corr_heatmap_HCC
-#| results: hide
-#| code-fold: true
-#| fig-keep: 'all'
-
 ames_train = ames_x_train.copy()
 ames_train['Sale_Price/Gr_Liv_Area'] = ames_y_train
 correlation_data = (
@@ -380,7 +454,6 @@ Como podemos observar para ser que las varaibles de `'BsmtFin_SF_1', '2nd_Flr_SF
 ```{python}
 #| label: corr_sp/gla
 #| results: hide
-#| code-fold: true
 #| fig-keep: 'all'
 (
     ames_train[continuas].corr().reset_index(drop=False) 
@@ -409,7 +482,6 @@ Como podemos observar para ser que las varaibles de `'BsmtFin_SF_1', '2nd_Flr_SF
 ```{python}
 #| label: error_bars por vecindario
 #| results: hide
-#| code-fold: true
 #| fig-keep: 'all'
 (
   ames_train 
@@ -434,7 +506,6 @@ Se puede ver que se tiene una relación líneal creciente entre `Total_Bsmt_SF` 
 ```{python}
 #| label: price vs sf sotano
 #| results: hide
-#| code-fold: true
 #| fig-keep: 'all'
 (
     ames_x_train 
@@ -453,7 +524,6 @@ En cuanto a las variables categóricas relacionadas al sótano encontramos lo si
 ```{python}
 #| label: analisis sotano
 #| results: hide
-#| code-fold: true
 #| fig-keep: 'all'
 cat_columns = pd.Series(['Bldg_Type', 
             'Bsmt_Exposure', 
@@ -483,7 +553,7 @@ for category in cat_columns[cat_columns.str.contains('Bsmt')]:
               + geom_point(alpha= 0.5, show_legend=False) + geom_smooth(color='black', method = 'lm')
               +xlim([0,3000])
               +labs(x='Área total del sótano', y='Precio por pie cuadrado de área habitable bruta', title=titulo)
-              + facet_wrap('~{}'.format(category))+theme_538 ()) 
+              + facet_wrap('~{}'.format(category))+theme_538 ()) +theme_minimal()
 ```
 
 Puntos a considerar:
@@ -500,7 +570,8 @@ Puntos a considerar:
 
 ```{python}
 #| label: libraries lm
-#| echo: false
+#| results: hide
+#| code-fold: false
 
 from sklearn.preprocessing import StandardScaler, OneHotEncoder,FunctionTransformer
 from sklearn.linear_model import LinearRegression
@@ -516,7 +587,7 @@ pd.options.display.float_format = '{:.4f}'.format
 ```{python}
 #| label: custom_fucntions
 #| results: hide
-#| code-fold: true
+#| code-fold: false
 
 def importance_from_model (test_frame, y_obs, selected_columns, pipeline, actual_mse, n_permutations=50 ,trans_pred= False ):
   performance_losses = []
@@ -702,19 +773,18 @@ def antique_func(X,yb, yr):
 
 En la documentación del dataset podemos encontrar información útil para saber como imputar los NA's , se creó un `ColumnTransformer()` con el nombre de `clean_and_imputer`, este transformador hace lo siguiente:
 
--   Elimina columnas que potencialmente podría provocar data leakage
+-   Elimina columnas que potencialmente podría provocar data leakage o son poco informativas.
 
 -   Imputación de NA's de variables categorias y númericas de acuerdo a la documentación de los datos.
 
 ```{python}
-#| data_clean_lm
+#| label: data_clean_lm
+#| code-fold: false
+#| results: hide 
 from sklearn.compose import make_column_selector
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 
-
-#Sólo 4 casas tienen Piscina/ por lo tanto esta variable no es útil
-ames_x_train >> select(_.contains('Pool')) >> filter (_.Pool_Area==0)
 
 
 n_usefull = ['Sale_Type', 'Sale_Condition', 'Pool_QC', 'Pool_Area', 'Yr_Sold']
@@ -794,7 +864,8 @@ En este `ColumnTransformer()` se crean diferentes variables o se módifican algu
 
 ```{python}
 #| label: feature_eng_lm
-#| code-fold: true
+#| code-fold: false
+#| results: hide
 cond ={1: 'Poor', 2:'Poor',3:'Poor',4:'Average', 5:'Average',6:'Average', 7:'Good_or_Excellent', 8:'Good_or_Excellent', 9:'Good_or_Excellent', 10 :'Good_or_Excellent'}
 
 feature_eng = ColumnTransformer(
@@ -868,6 +939,8 @@ Una vez se limpiaron los datos y se crearon variables, se define el preprocesado
 
 ```{python}
 #| label: preprocesado1_lm
+#| code-fold: false
+#| results: hide
 num_cols =['Wood_Deck_SF',
             '1st_Flr_SF',
             'Open_Porch_SF',
@@ -902,8 +975,12 @@ prep_df = preprocessor_1.fit_transform(feature_eng_df)
 
 ## Resultados preeliminares del modelo líneal
 
+A continuación se muestran las métricas de test con el full model
+
 ```{python}
 #| label: resultados_fullmodel_lm
+#| code-fold: false
+#| results: hide
 lm_pre = Pipeline([
   ('clean_data', clean_and_imputers),
   ('feat_eng', feature_eng),
@@ -915,10 +992,16 @@ lm_pre.fit(ames_x_train, ames_y_train)
 y_pred = lm_pre.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
 y_obs = Sale_Price_test
 
-##### Métricas de desempeño
-
 predictores = prep_df.shape[1]
-get_metrics(y_pred, y_obs, predictores)
+```
+
+*Métrcias de desempeño del full-model*
+
+```{python}
+#| label: resultados fm lm
+#| output: asis
+#| echo: false
+get_metrics(y_pred, y_obs, predictores).to_html()
 ```
 
 ## Mejora del modelo
@@ -929,6 +1012,8 @@ Durante este proceso se fueron creando diferentes interacciones y se removieron 
 
 ```{python}
 #| label: interactions_lm
+#| code-fold: false
+#| results: hide
 interactions = ColumnTransformer(
   [('Garage_interaction', FunctionTransformer(
                                  cross_interactions, feature_names_out = None,
@@ -973,6 +1058,8 @@ interactions = ColumnTransformer(
 
 ```{python}
 #| label: step_remove_lm
+#| code-fold: false
+#| results: hide
 drop_cols=['2nd_Flr_SF',
 		'3Ssn_Porch',
 		'Neighborhood_IDOTRR',
@@ -1141,7 +1228,8 @@ step_rm =ColumnTransformer(
 
 ```{python}
 #| label: final_pipeline_lm
-#| output: false
+#| code-fold: false
+#| results: hide
 pipeline_linreg = Pipeline([
   ('clean_data', clean_and_imputers),
   ('feat_eng', feature_eng),
@@ -1159,6 +1247,7 @@ A continuaci'on se muestra el resumen de ajuste:
 
 ```{python}
 #| label: Extracción de coeficientes
+#| code-fold: false
 coefs = pd.DataFrame({
   'variable':transformed_df.columns.to_list(),
   'coefs': pipeline_linreg.named_steps['regressor'].coef_.round(5)
@@ -1232,24 +1321,41 @@ Finalmente en los resultados se lograron las siguiente métricas
 
 ```{python}
 #| label: test_resutls_lm
+#| output: false
+#| code-fold: false
 y_pred = pipeline_linreg.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
 y_obs = Sale_Price_test
-
-##### Métricas de desempeño
+test = pd.DataFrame() >> mutate (Sale_Price = y_obs, Sale_Price_Pred = y_pred)
 
 predictores = transformed_df.shape[1]
-get_metrics(y_pred, y_obs, predictores )
+
+metrics_testing = get_metrics(y_pred, y_obs, predictores )
+
+y_pred = pipeline_linreg.predict(ames_x_val)*ames_x_val.Gr_Liv_Area
+metrics_val = get_metrics(y_pred,Sale_Price_validation,len(transformed_df.columns))
+
+metrics_testing['Resultados validación'] = metrics_val.values
+metrics_testing['Resultados test'] = metrics_testing.Value
+resultados = metrics_testing >> select(_.contains('test'),_.contains('val')) 
+```
+
+```{python}
+#| label: tbl testing results lm
+#| output: asis
+#| echo: false
+resultados.to_html()
 ```
 
 En cuanto al análisis de los residuos se tienen resultados bastante aceptables, donde los residuos parecen seguir una distribución normal con media 0, y no se ven indicios de heterocedasticidad.
 
 ```{python}
 #| label: analisis de errores lm
-test = pd.DataFrame() >> mutate (Sale_Price = y_obs, Sale_Price_Pred = y_pred)
-
+#| fig-keep: all
+#| results: hide
+y_pred = pipeline_linreg.predict(ames_x_test) * ames_x_test.Gr_Liv_Area
 (
     ggplot(aes(x = y_pred, y =y_obs)) +
-    geom_point() +
+    geom_point(alpha = 0.6) +
     scale_y_continuous(labels = dollar_format(digits=0, big_mark=',') ) +
     scale_x_continuous(labels = dollar_format(digits=0, big_mark=',') ) +
     geom_abline(color = "red") +
@@ -1283,14 +1389,464 @@ test >>
   xlab("Distribución normal") + ylab("Distribución de errores") +
   ggtitle("QQ-Plot") +theme_tufte()
 )
+```
 
+# Preprocesado Generlaizado
+
+Para los siguientes modelos se utilizaron los mismos transformadores que para la regresión líneal, con algunos ligeros cambios, con estos transformadores se creó un pipeline llamado `get_df`, el cual hace todo el proceso para regresar el DataFrame útil a la hora de ajustar los modelos:
+
+```{python}
+#| label: preprocesado
+#| code-fold: false
+#| code-overflow: scroll
+#| results: hide
+n_usefull = ['Sale_Type', 'Sale_Condition', 'Pool_QC', 'Pool_Area', 'Yr_Sold']
+
+clean_and_imputers = ColumnTransformer(
+    [('not_usefull_variables', 'drop', n_usefull),
+     ('Impute_Alley', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 'No_Alley_Access'), ['Alley']),
+     ('Impute_Mas_Vnr_Type', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 'None'), ['Mas_Vnr_Type']),
+     ('Impute_Mas_Vnr_Area', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 0), ['Mas_Vnr_Area']),
+     ('Impute_Lot_Frontage', SimpleImputer(
+         missing_values=np.nan,
+         strategy='mean'), ['Lot_Frontage']),
+     ('Impute_Fireplace_Qu', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 'No_Fireplace'), ['Fireplace_Qu']),
+     ('Impute_Electrical', SimpleImputer(
+         missing_values=np.nan,
+         strategy='most_frequent'),['Electrical']),
+     ('Impute_Bsmt_Cat', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 'No_Basement'), make_column_selector(pattern = 'Bsmt',dtype_include = 'object')),
+     ('Impute_Bsmt_Numeric', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 0), make_column_selector(pattern = 'Bsmt',dtype_exclude = 'object')),
+     ('Impute_Garage', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 'No_Garage'), make_column_selector(pattern = 'Garage',dtype_include = 'object')),
+     ('Impute_Garage_numeric', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 0), make_column_selector(pattern = 'Garage',dtype_exclude = 'object')),
+     ('Impute_Fence', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 'No_Fence'), ['Fence']),
+     ('Impute_Misc_Feature', SimpleImputer(
+         missing_values=np.nan,
+         strategy='constant', 
+         fill_value= 'None'), ['Misc_Feature'])
+    ],
+    remainder= 'passthrough',
+    verbose_feature_names_out = False
+).set_output(transform = 'pandas')
+
+clean_ames_x_train= clean_and_imputers.fit_transform(ames_x_train)
+
+cond ={1: 'Poor', 2:'Poor',3:'Poor',4:'Average', 5:'Average',6:'Average', 7:'Good_or_Excellent', 8:'Good_or_Excellent', 9:'Good_or_Excellent', 10 :'Good_or_Excellent'}
+
+feature_eng = ColumnTransformer(
+  [('collapse_cond',  FunctionTransformer(
+                                 collapse,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Overall_Cond', 'dic' : cond }
+                                 ), ['Overall_Cond']),
+  ('collapse_cond2',  FunctionTransformer(
+                                 collapse,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Overall_Qual', 'dic' : cond }
+                                 ), ['Overall_Qual']),
+  ('Area_Per_Room',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'TotRms_AbvGrd', 'c2': 'Gr_Liv_Area', 'feature_name' : 'Area_Per_Room'}
+                                 ), ['TotRms_AbvGrd', 'Gr_Liv_Area']),
+    ('Wood_propGLA',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Wood_Deck_SF', 'c2': 'Gr_Liv_Area', 'feature_name' : 'Wood_propGLA'}
+                                 ), ['Wood_Deck_SF', 'Gr_Liv_Area']),
+    ('MVNRA_prop',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Mas_Vnr_Area', 'c2': 'Lot_Area', 'feature_name' : 'MVNRA_propLA'}
+                                 ), ['Mas_Vnr_Area', 'Lot_Area']),
+    ('2nd_Flr_SF_propGLA',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': '2nd_Flr_SF', 'c2': 'Gr_Liv_Area', 'feature_name' : '2nd_Flr_SF_propGLA'}
+                                 ), ['2nd_Flr_SF', 'Gr_Liv_Area']),
+    ('Bsmt_Prop',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Total_Bsmt_SF', 'c2': 'Gr_Liv_Area', 'feature_name' : 'Bsmt_Prop'}
+                                 ),['Total_Bsmt_SF', 'Gr_Liv_Area'] ),
+    ('Time_var',  FunctionTransformer(
+                                 antique_func,
+                                 feature_names_out = None,
+                                 kw_args={'yb': 'Year_Built', 'yr': 'Year_Remod/Add'}
+                                 ), ['Year_Built', 'Year_Remod/Add']),
+    ('Gr_Liv_Area / Loot_Area',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Gr_Liv_Area', 'c2': 'Lot_Area', 'feature_name' : 'Gr_Liv_A/Loot_A'}
+                                 ),['Gr_Liv_Area', 'Lot_Area'] ),
+    ('Garage_Prop_overGLA',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': 'Garage_Area', 'c2': 'Gr_Liv_Area', 'feature_name' : 'Garage_Prop_overGLA'}
+                                 ),['Garage_Area', 'Gr_Liv_Area'] ),
+    ('1s_Floor_prop',  FunctionTransformer(
+                                 div_columns,
+                                 feature_names_out = None,
+                                 kw_args={'c1': '1st_Flr_SF', 'c2': 'Gr_Liv_Area', 'feature_name' : '1s_Floor_prop'}
+                                 ),['1st_Flr_SF', 'Gr_Liv_Area'] ),
+    ('just_select', 'passthrough', ['Total_Bsmt_SF','2nd_Flr_SF', 'TotRms_AbvGrd', '1st_Flr_SF', 'Year_Built', 'Year_Remod/Add', 'Garage_Area', 'Lot_Area', 'Gr_Liv_Area', 'Mas_Vnr_Area','Wood_Deck_SF' ])],
+    verbose_feature_names_out = False,
+    remainder = 'passthrough').set_output(transform = 'pandas')
+
+
+feature_eng_df = feature_eng.fit_transform(clean_ames_x_train)
+my_features = (feature_eng_df>> select (_.contains('_c_'))).columns.to_list()
+
+preprocessor_1 = ColumnTransformer(
+    transformers = [
+        ('scaler', StandardScaler(), make_column_selector(dtype_exclude  = 'object')),
+        # ('just_select', 'passthrough', my_features ),
+        ('OHE', OneHotEncoder(drop='first',handle_unknown='infrequent_if_exist' , sparse_output=False, min_frequency = 12), make_column_selector(dtype_include  = 'object'))],
+    verbose_feature_names_out = False,
+    remainder = 'drop').set_output(transform = 'pandas')
+
+interactions = ColumnTransformer(
+  [('Garage_interaction', FunctionTransformer(
+                                 cross_interactions, feature_names_out = None,
+                                 kw_args={'num': 'Garage_Prop_overGLA_c_', 'cat': 'Garage_Qual', 'return_inputs':'both'}
+                                 ), make_column_selector ('Garage_Qual|Garage_Prop_overGLA_c_')),
+  ('inter_kitchen', FunctionTransformer(
+                                 cross_interactions, feature_names_out = None,
+                                 kw_args={'num': 'Kitchen_AbvGr', 'cat': 'Kitchen_Qual', 'return_inputs':'both'}
+                                 ), make_column_selector ('Kitchen_Qual|Kitchen_AbvGr')),
+  ('Last_remod_c_', FunctionTransformer(
+                                 cross_interactions, feature_names_out = None,
+                                 kw_args={'num': 'Gr_Liv_A/Loot_A_c_', 'cat': 'Gr_Liv_A/Loot_A_c_', 'return_inputs':'num'}
+                                 ), make_column_selector ('Gr_Liv_A/Loot_A_c_')),
+  ('1s_Floor_prop_c_|Overall_Q', FunctionTransformer(
+                                 cross_interactions, feature_names_out = None,
+                                 kw_args={'num': '1s_Floor_prop_c_', 'cat': 'Overall_Q', 'return_inputs':'both'}
+                                 ), make_column_selector ('1s_Floor_prop_c_|Overall_Q')),
+  ('Bsmt_Qual|Bsmt_Prop_c_', FunctionTransformer(
+                                 cross_interactions, feature_names_out = None,
+                                 kw_args={'num': 'Bsmt_Prop_c_', 'cat': 'Bsmt_Qual', 'return_inputs':'both'}
+                                 ), make_column_selector ('Bsmt_Qual|Bsmt_Prop_c_')),
+  ('Area_Per_Room_c_|Overall', FunctionTransformer(
+                                 cross_interactions, feature_names_out = None,
+                                 kw_args={'num': '2nd_Flr_SF_propGLA_c_', 'cat': 'Antique', 'return_inputs':'both'}
+                                 ), make_column_selector ('2nd_Flr_SF_propGLA_c_|Antique')),
+  ('MVNRA_propGLA_c_|Mas_Vnr_Type', FunctionTransformer(
+                                 cross_interactions, feature_names_out = None,
+                                 kw_args={'num': 'MVNRA_propLA_c_', 'cat': 'Mas_Vnr_Type', 'return_inputs':'both'}
+                                 ), make_column_selector ('MVNRA_propLA_c_|Mas_Vnr_Type')),
+  ('Wood_propGLA_c_|Fireplaces', FunctionTransformer(
+                                 cross_interactions, feature_names_out = None,
+                                 kw_args={'num': 'Wood_propGLA_c_', 'cat': 'Fireplaces', 'return_inputs':'both'}
+                                 ), make_column_selector ('Wood_propGLA_c_|Fireplaces')),
+  ('Gr_Liv_Area_x_Neighborhood', FunctionTransformer(
+                                 cross_interactions, feature_names_out = None,
+                                 kw_args={'num': 'Gr_Liv_Area', 'cat': 'Neighborhood', 'return_inputs':'both'}
+                                 ), make_column_selector ('Gr_Liv_Area|Neighborhood')),
+  ('TO_DROP_', 'drop', make_column_selector('No_Basement|No_Garage|Exterior|Land|Fence')) ],
+  verbose_feature_names_out = False,
+  remainder='passthrough').set_output(transform = 'pandas')
+  
+  
+get_df = Pipeline([ 
+  ('clean_data', clean_and_imputers),
+  ('feat_eng', feature_eng),
+  ('preprocessor', preprocessor_1),
+  ('interactions', interactions)])
+  
+get_df.fit(ames_x_train)
+```
+
+# KNN model
+
+Se opta por empezar con unmodelo de KNN con todas las variables, esté modelo tiene las siguientes características:
+
+-   El modelo incluye las variables creadas para regresión lineal.
+
+-   Se estandarizaron todas las variables númericas.
+
+-   El One Hot Encoding mantiene una minima frecuencia de 12 elementos por categoría.
+
+Posterior al ajuste de este modelo se busco optimizarlo removiendo variables y probando diferentes comibianciones de estás teniendo como critero la importancia calculada.
+
+## Cross-validation
+
+```{python}
+#| label: Libraries KNN
+#| code-fold: false
+#| results: hide
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.model_selection import train_test_split, KFold, cross_val_score, cross_validate
+from sklearn.model_selection import GridSearchCV
+
+transformed_df =get_df.transform(ames_x_train)
+transformed_test = get_df.transform(ames_x_test)
+```
+
+A continuación se hace la validación cruzada para encontrar el mejor hiper-parámetro para el full model:
+
+```{python}
+#| eval: false
+#| label: KNN CV code
+#| code-fold: false 
+k = 10
+kf = KFold(n_splits=k, shuffle=True, random_state=42)
+
+param_grid = {
+ 'n_neighbors': range(3, 60 ,2),
+ 'weights': ['uniform', 'distance'],
+ 'metric': ['euclidean', 'manhattan','haversine', 'cosine', 'correlation', 'mahalanobis','minkowski'],
+ 'p' : [5,15,20]
+}
+
+scoring = {
+    'neg_mean_squared_error': make_scorer(mean_squared_error, greater_is_better=False),
+    'r2': make_scorer(adjusted_r2_score, greater_is_better=True, n=np.ceil(len(ames_x_train)), p=transformed_df.shape[1]),
+    'neg_mean_absolute_error': make_scorer(mean_absolute_error, greater_is_better=False),
+    'mape': make_scorer(mean_absolute_percentage_error, greater_is_better=False)
+}
+
+
+pipeline_knn_cv = Pipeline([
+  ('clean_data', clean_and_imputers),
+  ('feat_eng', feature_eng),
+  ('preprocessor', preprocessor_1),
+  ('interactions', interactions),
+  ('regressor', GridSearchCV(
+      KNeighborsRegressor(),
+      param_grid,
+      cv=kf,
+      scoring=scoring,
+      refit='neg_mean_squared_error',
+      verbose=3,
+      n_jobs=7)
+     )]
+)
+pd.set_option('display.max_columns', 500)
+pipeline_knn_cv.fit(ames_x_train, ames_y_train)
 
 ```
 
-Finalmente, se tiene la siguiente estimación con el conjunto de validación
+Tenemos mejores resultados con $K=3$ y distancia de `manhattan`, con ponderación `distance`.
 
 ```{python}
-y_pred = pipeline_linreg.predict(ames_x_val)*ames_x_val.Gr_Liv_Area
+#| label: read CV results KNN
+#| code-fold: false
+#| output: false
+#| fig-keep: all
+results_cv_trans = pd.read_pickle('..\model/knn/cv_trans_sp.pkl')
+results_df_trans = pd.DataFrame(results_cv_trans.cv_results_)
 
-get_metrics(y_pred,Sale_Price_validation,len(transformed_df.columns ) )
+summary_cv_t = (results_df_trans >>select(-_.contains("split"), -_.contains("time"), -_.params))
+
+check_cv(summary_cv_t, param_p=False)
+```
+
+Para poder mejorar el modelo se hizo un bucle en el cual en cada iteración se eliminaban las 5 variables con menor importancia, posterior a su remoción se recalcula la importancia de las variables y se repite el proceso, dentro de los bucles se ajusta el modelo $p-i\cdot 5$ veces eliminando las variables por orden de importanca hasta quedarse con una variable y calculando sus métricas, variables usadas y número de variables, se guardan todos los modelos que obtienen una $R^2_{adj} > 0.7$.
+
+```{python}
+#| eval: false
+#| label: iteraciones drop variables KNN
+#| code-fold: false
+predictores = transformed_test.columns.shape[0]
+best_mods = []
+score_mse =[]
+score_r = []
+for k in range (0,185,5):
+  t= 207-k
+  if k == 0:
+    sc = transformed_df.columns.to_list()
+  else: 
+    sc = (results >> filter (_.P==t) >> pull ('used_vars'))[0]
+
+  knn_reg.fit(transformed_df[sc], Sale_Price_train)
+  metrics = get_metrics(knn_reg.predict(transformed_test[sc]), Sale_Price_test, len(sc))
+  importance_df = importance_from_model(
+    test_frame = transformed_test,
+    y_obs = Sale_Price_test ,
+    selected_columns =  sc, 
+    pipeline = knn_reg,
+    actual_mse = metrics.loc['MSE'].values[0] ,
+    n_permutations= 50,
+    trans_pred= False
+  )
+  
+  vars_importance_order = list( importance_df >> arrange(_.Mean_Loss) >> pull('Variable'))
+  transformed_df =get_df.transform(ames_x_train)
+  
+  v=[]
+  r2=[]
+  mse_=[]
+  p=[]
+  for i in range(t):
+    vars_to_train = vars_importance_order[i:]
+    p.append(len(vars_to_train))
+    knn_reg.fit(transformed_df[vars_to_train], Sale_Price_train)
+    pred= knn_reg.predict(transformed_test[vars_to_train])
+    mse_.append(get_metrics(pred,Sale_Price_test, len(vars_to_train)).loc['MSE'].values[0])
+    r2.append(get_metrics(pred,Sale_Price_test, len(vars_to_train)).loc['R2Adj'].values[0])
+    v.append(vars_to_train)
+    
+  results = pd.DataFrame() >> mutate(MSE = mse_, P=p,R2=r2,used_vars = v)
+  best_mods.append( (results >> filter (_.R2>0.7) >> pull ('used_vars')) )
+  score_r.append( (results >> filter (_.R2>0.7) >> pull ('R2')) )
+  score_mse.append( (results >> filter (_.R2>0.7) >> pull ('MSE')) )
+
+
+scoresr =  [item for sub_list in score_r for item in sub_list]
+scoresmse=  [item for sub_list in score_mse for item in sub_list]
+best_mods_ = [item for sub_list in best_mods for item in sub_list] 
+num_pred = [len(l) for l in best_mods_]
+
+
+results_knn_model_iterations = pd.DataFrame() >> mutate (used_vars = best_mods_, r2 = scoresr ,mse = scoresmse, p= num_pred) 
+# results_knn_model_iterations.to_csv('data/knn_mod_it.csv')
+```
+
+A continuación se muestran los resultados de los modelos salvados durante el bucle, podemos ver que los mejores modelos tienen entre 30 y 60 predictores, estos tienen tanto un $MSE$ bajo como una mayor $R^2_{adj}$.
+
+```{python}
+#| label: iter_graficas_knn
+#| results: hide
+#| fig-keep: all
+
+results_knn_model_iterations = pd.read_csv ('../model/knn/interations_results_knn.csv')
+(
+  results_knn_model_iterations
+    >> ggplot (aes(x='p', y= 'r2' ,color= 'mse'))
+    +  geom_point(alpha = 0.6)
+    +  labs (x= 'Número de predictores', y= 'R^2', color = 'MSE', title = 'Resultados de iteraciónes con dif.\ncombinaciones de predictores')
+)
+
+(
+  results_knn_model_iterations >> filter (_.r2>0.85)
+    >> ggplot (aes(x='p', y= 'r2' ,color= 'mse'))
+    +  geom_point(alpha = 0.6)
+    +  labs (x= 'Número de predictores', y= 'R^2', color = 'MSE', title = 'Resultados de iteraciónes con dif. \ncombinaciones de predictores')
+)
+```
+
+```{python}
+#| label: tbl iter knn
+#| echo: false
+#| output: asis
+top = (results_knn_model_iterations 
+            >> top_n(20, _.r2) 
+            >> arrange (_.p) 
+            >> select(  _['$R^2_{adj}$']==_.r2,
+                        _['$MSE$'] == -_.mse,
+                        _.Predictores == _.p))
+top.to_html()
+#results_knn_model_iterations.loc[3450].used_vars
+```
+
+```{python}
+#| label: var selection knn
+#| code-fold: false
+#| code-overflow: scroll
+selected_vars = ['MS_Zoning_RL', 'Bsmt_Qual_Gd', 'Condition_1_infrequent_sklearn', 'Bsmt_Qual_TA', 'Condition_1_Norm', 'Enclosed_Porch', 'Alley_No_Alley_Access', 'Bsmt_Qual_Gd_x_Bsmt_Prop_c_', 'Central_Air_Y', 'House_Style_1Story', 'Kitchen_Qual_TA', 'Lot_Config_Inside', 'Neighborhood_Crawfor_x_Gr_Liv_Area', 'Full_Bath', 'Garage_Finish_RFn', 'Garage_Cars', 'Overall_Qual_Good_or_Excellent', 'Kitchen_Qual_Gd', 'Neighborhood_NoRidge_x_Gr_Liv_Area', 'Antique_c_', 'Garage_Area', 'Gr_Liv_A/Loot_A_c__x_Gr_Liv_A/Loot_A_c_', 'Year_Built', 'Neighborhood_NridgHt_x_Gr_Liv_Area', 'TotRms_AbvGrd', 'Bedroom_AbvGr', 'Lot_Area', 'Area_Per_Room_c_', '2nd_Flr_SF', 'Fireplaces', 'Exter_Qual_Gd', 'Total_Bsmt_SF', '1st_Flr_SF', 'Gr_Liv_Area']
+
+step_select =ColumnTransformer(
+  [('selector', 'passthrough', selected_vars )],
+  verbose_feature_names_out = False,
+  remainder='drop').set_output(transform = 'pandas')
+
+knn_reg = KNeighborsRegressor(
+    n_neighbors = 4 ,
+    metric = 'manhattan',
+    weights = 'distance')
+    
+knn_regressor = Pipeline([
+  ('feat_eng', get_df),
+  ('feature_selection', step_select),
+  ('regressor', knn_reg)
+    ])
+
+knn_regressor.fit(ames_x_train, Sale_Price_train)
+```
+
+## Resultados del mejor modelo
+
+Podemos ver que las métricas que se obtienen en los conjuntos de validación y testing, a comparación del modelo de regresión líneal nuestra estimación se aleja más del valor de testing en todas las métricas, aunado a que el modelo tiene únicamente 34 variables y el número de vecinos cercanos es bajo puede que el modelo sea demasiado flexible.
+
+```{python}
+#| label: results_knn
+#| code-fold: false
+#| results: hide
+y_pred = knn_regressor.predict(ames_x_test)
+y_obs = Sale_Price_test
+
+test_r = get_metrics(y_pred, y_obs, len(selected_vars))
+
+val_r = get_metrics( knn_regressor.predict(ames_x_val), Sale_Price_validation, len(selected_vars))
+test_r['vr'] = val_r.values
+
+results = test_r.rename(columns = {'vr': 'Resultados Validación', 'Value':'Resultados test'})
+```
+
+```{python}
+#| label: tbl_results_knn
+#| output: asis
+#| echo: false
+results.to_html()
+```
+
+## Importancia de las variables
+
+A diferencia de la regresión líneal, KNN tiende a darle más importancia a variables relacionadas al área en lugar de proporciones, además el modelo tiene menos de la mitad de variables que el modelo líneal, entre las variables más importantes encontramos los pies cuadrados del primer piso, los pies cuadrados totales del sótano y el área habitable así como variables relacionadas a la edad de la casa como el año de construcción y su antigüedad.
+
+```{python}
+#| label: final importance knn
+#| eval: false
+#| code-fold: false
+importance_final_knn  = importance_from_model(
+    test_frame = step_select.transform(transformed_test),
+    y_obs = Sale_Price_test ,
+    selected_columns =  selected_vars, 
+    pipeline = knn_reg,
+    actual_mse = results['Resultados test'].MSE ,
+    n_permutations= 50,
+    trans_pred= False
+  )
+```
+
+```{python}
+importance_final_knn = pd.read_csv('../model/knn/importance_final.csv')
+(
+  importance_final_knn >>
+  mutate(
+    ymin = _.Mean_Loss - _.Std_Loss,
+    ymax = _.Mean_Loss + _.Std_Loss) >>
+  ggplot(aes(x = 'reorder(Variable, Mean_Loss)', y = "Mean_Loss")) +
+  geom_errorbar(aes(ymin='ymin', ymax='ymax'),
+    width=0.2, position=position_dodge(0.9)) +
+  geom_point(alpha = 0.65) +
+  labs(title='Importancia de las Variables', x='Variable', y='Importancia') +
+  coord_flip() +theme_minimal()
+)
 ```
