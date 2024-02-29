@@ -69,4 +69,8 @@ clean_and_imputers = ColumnTransformer(
     verbose_feature_names_out = False
 ).set_output(transform = 'pandas')
 
-clean_ameS_x_train= clean_and_imputers.fit_transform(ames_x_train)
+clean_ames_x_train= clean_and_imputers.fit_transform(ames_x_train)
+
+
+clean_ames_x_train.info()
+

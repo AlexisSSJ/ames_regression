@@ -1,11 +1,11 @@
-from sklearn.preprocessing import StandardScaler, OneHotEncoder,FunctionTransformer
-from sklearn.linear_model import LinearRegression
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
-from sklearn.metrics import mean_squared_error, r2_score, make_scorer
-from sklearn.model_selection import train_test_split, KFold, cross_val_score, cross_validate
-import statsmodels.api as sm
+    from sklearn.preprocessing import StandardScaler, OneHotEncoder,FunctionTransformer
+    from sklearn.linear_model import LinearRegression
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import PolynomialFeatures
+    from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
+    from sklearn.metrics import mean_squared_error, r2_score, make_scorer
+    from sklearn.model_selection import train_test_split, KFold, cross_val_score, cross_validate
+    import statsmodels.api as sm
 
 
 ########   I M  O R T A N C E   MI AND F-TEST   
@@ -457,7 +457,7 @@ transformed_df = step_rm.fit_transform(interactions.fit_transform(prep_df))
 ##### Extracción de coeficientes
 coefs = pd.DataFrame({
   'variable':transformed_df.columns.to_list(),
-  'coefs': pipeline.named_steps['regressor'].coef_.round(5)
+  'coefs': pipeline_linreg.named_steps['regressor'].coef_.round(5)
   })
 
 

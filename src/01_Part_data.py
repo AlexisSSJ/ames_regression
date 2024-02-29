@@ -11,6 +11,7 @@ from siuba import *
 
 
 
+
 #Crear transformación de la variable de respuesta
 ames = (
         pd.read_excel( 'data/proyecto_ames_train.xlsx'  ).rename(columns = lambda x: x.replace (' ','_') )

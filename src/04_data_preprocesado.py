@@ -1,6 +1,6 @@
 from sklearn.compose import make_column_selector
 from sklearn.preprocessing import StandardScaler, OneHotEncoder,FunctionTransformer
-from sklearn.compose import ColumnTransformer
+from sklearn.compose import ColumnTransformer, 
 from sklearn.impute import SimpleImputer
 ames_x_train.Lot_Frontage.mean()
 from sklearn.pipeline import Pipeline

@@ -1,7 +1,0 @@
-"0","  r2_adj = 1 - (n - 1) / (n - p - 1) * (1 - r2)
-"
-"2","Traceback (most recent call last):
-  File ""<string>"", line 1, in <module>
-NameError: name 'n' is not defined
-"
-"0",""

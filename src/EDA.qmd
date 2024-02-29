@@ -184,7 +184,7 @@ editor: visual
 #| include: false
 library(reticulate)
 
-use_virtualenv("CD_AMAT_2023")
+use_virtualenv("ml_act_uaq")
 ```
 
 ```{python}
@@ -380,7 +380,6 @@ params={'loc':ames_y_train.mean(), 'scale':ames_y_train.std()}
                 xlab("Cuantilies de la dist. normal teórica") + ylab("Cuantiles de Sale Price") +
                 ggtitle("QQ-Plot N~(mean=180,996.79, sd=81,186.69)")+
                 theme_seaborn() + theme(figure_size=(11, 7))
-            
 )
 ```
 

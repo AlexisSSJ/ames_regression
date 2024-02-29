@@ -1,39 +1,71 @@
-# CD_amat_py
+### **Modelo predictivo de precios de casas en Ames, Iowa**
 
-Welcome to ProjectTemplate!
+**Descripción:**
 
-This file introduces you to ProjectTemplate, but you should eventually replace
-the contents of this file with an introduction to your project. People who
-work with your data in the future will thank you for it, including your future
-self.
+Este proyecto presenta un modelo predictivo desarrollado en Python para estimar el precio de venta de viviendas en Ames, Iowa. Se utilizan técnicas de Machine Learning para analizar un conjunto de datos con información sobre las propiedades (superficie, habitaciones, ubicación, etc.).
 
-ProjectTemplate is an R package that helps you organize your statistical
-analysis projects. Since you're reading this file, we'll assume that you've
-already called `create.project()` to set up this project and all of its
-contents.
+**Contenido:**
 
-To load your new project, you'll first need to `setwd()` into the directory
-where this README file is located. Then you need to run the following two
-lines of R code:
+-   **data:** Contiene los conjuntos de datos utilizados:
 
-	library('ProjectTemplate')
-	load.project()
+    -   `proyecto_ames_train.xlsx`: Datos etiquetados para entrenamiento.
 
-After you enter the second line of code, you'll see a series of automated
-messages as ProjectTemplate goes about doing its work. This work involves:
-* Reading in the global configuration file contained in `config`.
-* Loading any R packages you listed in the configuration file.
-* Reading in any datasets stored in `data` or `cache`.
-* Preprocessing your data using the files in the `munge` directory.
+    -   `proyecto_ames_test.csv`: Datos no etiquetados para evaluación.
 
-Once that's done, you can execute any code you'd like. For every analysis
-you create, we'd recommend putting a separate file in the `src` directory.
-If the files start with the two lines mentioned above:
+    -   `predictions.csv`: Predicciones del modelo final.
 
-	library('ProjectTemplate')
-	load.project()
+-   **model:** Contiene carpetas con archivos del análisis de modelos no paramétricos (KNN y Random Forest):
 
-You'll have access to all of your data, already fully preprocessed, and
-all of the libraries you want to use.
+    -   `knn`: contiene resultados de importancia de variables y cross-validation para la selección de hiper-parámetros para el modelo de KNN.
 
-For more details about ProjectTemplate, see http://projecttemplate.net
+    -   `Random_forest`: contiene resultados de importancia de variables y cross-validation para la selección de hiper-parámetros para el modelo de RF.
+
+-   **src:** Contiene los scripts con el desarrollo del proyecto:
+
+    -   Particionamiento de datos.
+
+        -   `01_Part_data.py`
+
+    -   Funciones creadas para el análisis.
+
+        -   `02_custom_functions.py`
+
+    -   Preprocesamiento de datos.
+
+        -   `03_data_cleaning.py`, `04_data_preprocesado.py`
+
+    -   Ajuste de diferentes modelos.
+
+        -   `05_linear_regression.py`, `06_knn_regression.py`, `07_random_forest_regression.py`,
+
+    -   Predicciones finales
+
+        -   `08_test_predictions\.py`
+
+    -   Reporte del proyecto.
+
+        -   `EDA.qmd`
+
+**Herramientas:**
+
+-   Manejo de datos : Pandas y Siuba
+
+-   Visualización: Plotnine
+
+-   Analisis estadistico y Machine Learning: Scikit-learn y Statsmodels
+
+**Resultados:**
+
+-   Para las predicciones finales se utilizó la regresión líneal, ya que era un modelo bastante simple y con buenos resultados, el valor que arrojó como resultado final fue de $0.83$.
+
+-   $R^2_{adj} = 0.91$ en test, $0.90$ en validación.
+
+-   Identificación de los factores que más influyen en el precio (Variables de superficies en pies cuadrados, proporcines relativas al tamaño del lote, cantidad de baños, recamaras, chimeneas, etc.).
+
+**Próximos pasos:**
+
+-   Mejorar la estructura del reporte.
+
+-   Intentar stacking.
+
+-   Creación de presentación tipo profesional resumiendo resultados.
